@@ -21,5 +21,14 @@
         <servlet-name>PersonServlet</servlet-name>
         <url-pattern>/personServlet</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>InfoServlet</servlet-name>
+        <servlet-class>com.ctf.web.InfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InfoServlet</servlet-name>
+        <url-pattern>/infoServlet</url-pattern>
+    </servlet-mapping>
         
 </web-app>
