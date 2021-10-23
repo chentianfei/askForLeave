@@ -1,45 +1,26 @@
-function cancelToLastPage(basepath){
-    location.href = basepath+"pages/service/personinformation.jsp";
+
+//遍历选中行数据数组对象，根据str的值返回对应参数
+function queryAndBindInfo_array(data_array,str){
+    var key,key_in;
+    //循环data,发现匹配str的就返回对应值
+    for(key in data_array){
+        for(key_in in data_array[key]){
+            if(key_in === str){
+                return data_array[key][key_in];
+            }
+        }
+    }
+
 }
 
-
-//全选功能
-var isCheckAll = false;
-function swapCheck() { // checkbox
-
-    if (isCheckAll) {
-        $("input[type='checkbox']").each(function () {
-            this.checked = false;
-        });
-        isCheckAll = false;
-    } else {
-        $("input[type='checkbox']").each(function () {
-            this.checked = true;
-        });
-        isCheckAll = true;
+//遍历选中行数据对象，根据str的值返回对应参数
+function queryAndBindInfo_obj(data_obj,str){
+    var key;
+    //循环data,发现匹配str的就返回对应值
+    for(key in data_obj){
+        if(key === str){
+            return data_obj[key];
+        }
     }
-}
 
-//判断重名
-function isMultiName(){
-    var event = arguments.callee.caller.arguments[0];
-    if(event.code === "Enter"){
-        /*window.open ('pages/service/tanchuangTest.jsp', 'newwindow', 'height=100, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no')*/
-        showModalDialog('pages/service/tanchuangTest.jsp','example04','dialogWidth:400px;dialogHeight:300px;dialogLeft:200px;dialogTop:150px;center:yes;help:yes;resizable:yes;status:yes')
-    }
-}
-
-function name_event3() {
-    // 回车键
-    var event = arguments.callee.caller.arguments[0] || window.event;
-    if (event.keyCode == 13) {// 判断是否按了回车，enter的keycode代码是13
-        var name = document.getElementById("user_name").value;// 调半天竟然是少了.value!
-        // alert(name);
-        // $("#get_userInfo").trigger("click");//回车提交表单
-        $.post("temporaryLeave?opt=nameSearch", {
-            "user_name": name
-        }, function (data) {
-            $("#getoneUser").html(data);
-        });
-    }
 }

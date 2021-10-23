@@ -25,6 +25,7 @@ public class BaseServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
+//        System.out.println(action);
         try {
             //通过反射找到该类或继承该类的子类中的该方法
             Method declaredMethod = this.getClass().getDeclaredMethod(action,HttpServletRequest.class,HttpServletResponse.class);

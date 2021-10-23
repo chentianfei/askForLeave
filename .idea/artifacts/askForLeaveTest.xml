@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="askForLeaveTest">
+    <output-path>$USER_HOME$/Desktop/Project/war</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>false</exploded>
+        <module>askForLeave</module>
+        <packaging>war</packaging>
+        <unpackNestedArchives>false</unpackNestedArchives>
+      </options>
+    </properties>
+    <root id="archive" name="askForLeaveTest.war">
+      <element id="artifact" artifact-name="askForLeave:war exploded" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="lib" />
+      </element>
+    </root>
+  </artifact>
+</component>

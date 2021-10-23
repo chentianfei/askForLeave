@@ -1,25 +1,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    String basepath = request.getScheme() +
-            "://" +
-            request.getServerName() +
-            ":" +
-            request.getServerPort() +
-            request.getContextPath() +
-            "/";
-    pageContext.setAttribute("basepath", basepath);
-%>
+<div class="layui-header"
+     style="height: 70px;
+                 color:white;
+                 letter-spacing:0.5em;
+                 vertical-align: middle;
+                 line-height: 70px;
+                 text-align: center; ">
 
-<!-- base:定义每个页面跳转起始的相对位置-->
-<base href="<%=basepath%>">
-<link rel="stylesheet" href="static/layui/css/layui.css">
-<script type="text/javascript" src="static/js/jquery-3.6.0.js"></script>
+       <div class="layui-fluid">
+           <div class="layui-row">
+               <div class="layui-col-md3" style="height: 70px">
+               </div>
+               <div class="layui-col-md6">
+                   <h1>【演示】仲巴县委组织部请销假管理系统</h1>
+               </div>
+               <div class="layui-col-md3" style="height: 70px">
+                   <div class="layui-row" style="padding-top: 20px;padding-left: 60px">
+                       <p>
+                           当前用户：****，<a href="#">退出</a>
+                       </p>
+                   </div>
 
-<script type="text/javascript" src="static/layui/layui.js"></script>
+               </div>
+           </div>
 
-<script type="text/javascript" src="static/js/leave_ctf.js"></script>
-<script type="text/javascript" src="static/js/data.js"></script>
-<script type="text/javascript"  src="static/js/province2.js"></script>
-
-
-
+       </div>
+</div>

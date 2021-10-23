@@ -1,4 +1,7 @@
 package com.ctf.utils;
+
+import java.util.List;
+
 /**
 *@Description :
 *@ClassName WebUtils
@@ -16,5 +19,17 @@ public class WebUtils {
             return defaultValue;
         }
     }
+
+    //根据条件（可变参数）查询查询指定表中的数据，并返回结果集
+    public static List queryDataByConfidition(){
+        return null;
+    }
+
+
+    //短信发送功能
+    public static void sendMsg(){ }
+
+    //数据导出到excel
+    public static void exportToExcel(){}
 
 }
