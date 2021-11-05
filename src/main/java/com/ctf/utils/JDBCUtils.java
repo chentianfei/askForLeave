@@ -2,7 +2,7 @@ package com.ctf.utils;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
-import com.alibaba.druid.util.JdbcUtils;
+import org.apache.commons.dbutils.DbUtils;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -16,13 +16,12 @@ public class JDBCUtils {
     static {
         try {
             Properties properties = new Properties();
-            // 读取 jdbc.properties属性配置文件
-            InputStream inputStream = JdbcUtils.class.getClassLoader().getResourceAsStream("jdbc.properties");
+            // 读取druid.properties属性配置文件
+            InputStream inputStream = JDBCUtils.class.getClassLoader().getResourceAsStream("druid.properties");
             // 从流中加载数据
             properties.load(inputStream);
             // 创建 数据库连接 池
             dataSource = (DruidDataSource) DruidDataSourceFactory.createDataSource(properties);
-
         } catch (Exception e) {
             e.printStackTrace();
         }

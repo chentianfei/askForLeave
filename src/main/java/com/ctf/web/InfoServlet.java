@@ -85,52 +85,14 @@ public class InfoServlet extends BaseServlet{
     //待审核_查询全部待审核数据
     public void queryAuditInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("调用了InfoServlet的queryAuditInfo方法");
-        Person person1 = new Person(12,"测试1","男",DateUtils.StringToDate("1994-05-17"),
-                "四川省眉山市彭山区","政府办","科员","二类区","一级科员","18089922014",50,12,"汉族");
-        Person person2 = new Person(13,"测试2","女",DateUtils.StringToDate("1994-05-17"),
-                "四川省眉山市彭山区","县委办","主任","二类区","一级科员","18089922014",50,12,"藏族");
-        Person person3 = new Person(14,"测试3","男",DateUtils.StringToDate("1994-05-17"),
-                "四川省眉山市彭山区","组织部","部长","二类区","一级科员","18089922014",50,12,"满族");
+        Person person1 = new Person();
+        Person person2 = new Person();
+        Person person3 = new Person();
 
         LeaveInfo leaveInfo1 = new LeaveInfo();
-        leaveInfo1.setPerson(person1);
-        leaveInfo1.setInfo_id("D23434355");
-        leaveInfo1.setPerson_name(person1.getPerson_name());
-        leaveInfo1.setOffice(person1.getOffice());
-        leaveInfo1.setJob(person1.getJob());
-        leaveInfo1.setLeaveType("事假");
-        leaveInfo1.setDays(50);
-        leaveInfo1.setPhoneNum(person1.getPhoneNum());
-        leaveInfo1.setStartDate(DateUtils.StringToDate("2021-5-1"));
-        leaveInfo1.setEndDate(DateUtils.StringToDate("2021-9-1"));
-        leaveInfo1.setWorkLeader("测试领导1");
-        leaveInfo1.setReason("家中有事");
-        leaveInfo1.setPermitPerson("测试批准人1");
-        leaveInfo1.setStartLocation("西藏自治区日喀则市谢通门县");
-        leaveInfo1.setEndLocation("四川省888");
-        leaveInfo1.setThisYearRestDays(20);
-        leaveInfo1.setNextYearRestDays(50);
-        leaveInfo1.setLeaveRemark("请假备注测试");
+
 
         LeaveInfo leaveInfo2 = new LeaveInfo();
-        leaveInfo2.setInfo_id("T345654645");
-        leaveInfo2.setPerson(person2);
-        leaveInfo2.setPerson_name(person2.getPerson_name());
-        leaveInfo2.setOffice(person2.getOffice());
-        leaveInfo2.setJob(person2.getJob());
-        leaveInfo2.setLeaveType("事假");
-        leaveInfo2.setDays(50);
-        leaveInfo2.setPhoneNum(person2.getPhoneNum());
-        leaveInfo2.setStartDate(DateUtils.StringToDate("2021-5-1"));
-        leaveInfo2.setEndDate(DateUtils.StringToDate("2021-9-1"));
-        leaveInfo2.setWorkLeader("测试领导2");
-        leaveInfo2.setReason("哈哈哈哈哈");
-        leaveInfo2.setPermitPerson("测试批准人2");
-        leaveInfo2.setStartLocation("西藏自治区日喀则市谢通门县");
-        leaveInfo2.setEndLocation("四川省999");
-        leaveInfo2.setThisYearRestDays(20);
-        leaveInfo2.setNextYearRestDays(50);
-        leaveInfo2.setLeaveRemark("请假备注测试");
 
 
         List<LeaveInfo> leaveInfos = new ArrayList<LeaveInfo>();
@@ -287,52 +249,16 @@ public class InfoServlet extends BaseServlet{
     //查询待销假数据
     public void queryNotArrive (HttpServletRequest request,HttpServletResponse response) throws IOException {
         System.out.println("调用了InfoServlet的queryNotArrive方法");
-        Person person1 = new Person(12,"测试1","男",DateUtils.StringToDate("1994-05-17"),
-                "四川省888","政府办","科员","二类区","一级科员","18089922014",50,12,"汉族");
-        Person person2 = new Person(13,"测试3","女",DateUtils.StringToDate("1994-05-17"),
-                "四川省999","县委办","主任","二类区","一级科员","18089922014",50,12,"藏族");
-        Person person3 = new Person(14,"测试2","男",DateUtils.StringToDate("1994-05-17"),
-                "四川省000","组织部","部长","二类区","一级科员","18089922014",50,12,"满族");
+        Person person1 = new Person();
+        Person person2 = new Person();
+        Person person3 = new Person();
 
         LeaveInfo leaveInfo1 = new LeaveInfo();
-        leaveInfo1.setPerson(person1);
-        leaveInfo1.setInfo_id("D23434355");
-        leaveInfo1.setPerson_name(person1.getPerson_name());
-        leaveInfo1.setOffice(person1.getOffice());
-        leaveInfo1.setJob(person1.getJob());
-        leaveInfo1.setLeaveType("事假");
-        leaveInfo1.setPhoneNum(person1.getPhoneNum());
-        leaveInfo1.setDays(50);
-        leaveInfo1.setStartDate(DateUtils.StringToDate("2021-5-1"));
-        leaveInfo1.setEndDate(DateUtils.StringToDate("2021-9-1"));
-        leaveInfo1.setWorkLeader("测试领导1");
-        leaveInfo1.setReason("家中有事");
-        leaveInfo1.setPermitPerson("测试批准人1");
-        leaveInfo1.setStartLocation("西藏自治区日喀则市谢通门县");
-        leaveInfo1.setEndLocation("四川省888");
-        leaveInfo1.setThisYearRestDays(20);
-        leaveInfo1.setNextYearRestDays(50);
-        leaveInfo1.setLeaveRemark("请假备注测试");
+
 
         LeaveInfo leaveInfo2 = new LeaveInfo();
-        leaveInfo2.setPerson(person2);
-        leaveInfo2.setInfo_id("T345654645");
-        leaveInfo2.setPerson_name(person2.getPerson_name());
-        leaveInfo2.setPhoneNum(person2.getPhoneNum());
-        leaveInfo2.setOffice(person2.getOffice());
-        leaveInfo2.setJob(person2.getJob());
-        leaveInfo2.setLeaveType("事假");
-        leaveInfo2.setDays(50);
-        leaveInfo2.setStartDate(DateUtils.StringToDate("2021-5-1"));
-        leaveInfo2.setEndDate(DateUtils.StringToDate("2021-9-1"));
-        leaveInfo2.setWorkLeader("测试领导2");
-        leaveInfo2.setReason("哈哈哈哈哈");
-        leaveInfo2.setPermitPerson("测试批准人2");
-        leaveInfo2.setStartLocation("西藏自治区日喀则市谢通门县");
-        leaveInfo2.setEndLocation("四川省999");
-        leaveInfo2.setThisYearRestDays(20);
-        leaveInfo2.setNextYearRestDays(50);
-        leaveInfo2.setLeaveRemark("请假备注测试");
+
+
 
         List<LeaveInfo> leaveInfos = new ArrayList<LeaveInfo>();
         leaveInfos.add(leaveInfo1);
@@ -362,52 +288,15 @@ public class InfoServlet extends BaseServlet{
     public void queryAllHistoryLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
 
         System.out.println("调用了InfoServlet的queryNotArrive方法");
-        Person person1 = new Person(12,"测试1","男",DateUtils.StringToDate("1994-05-17"),
-                "四川省999","政府办","科员","二类区","一级科员","18089922014",50,12,"汉族");
-        Person person2 = new Person(13,"测试2","女",DateUtils.StringToDate("1994-05-17"),
-                "四川省888","县委办","主任","二类区","一级科员","18089922014",50,12,"藏族");
-        Person person3 = new Person(14,"测试3","男",DateUtils.StringToDate("1994-05-17"),
-                "四川省000","组织部","部长","二类区","一级科员","18089922014",50,12,"满族");
+        Person person1 = new Person();
+        Person person2 = new Person();
+        Person person3 = new Person();
 
         LeaveInfo leaveInfo1 = new LeaveInfo();
-        leaveInfo1.setPerson(person1);
-        leaveInfo1.setInfo_id("D23434355");
-        leaveInfo1.setPerson_name(person1.getPerson_name());
-        leaveInfo1.setOffice(person1.getOffice());
-        leaveInfo1.setJob(person1.getJob());
-        leaveInfo1.setLeaveType("事假");
-        leaveInfo1.setPhoneNum(person1.getPhoneNum());
-        leaveInfo1.setDays(50);
-        leaveInfo1.setStartDate(DateUtils.StringToDate("2021-5-1"));
-        leaveInfo1.setEndDate(DateUtils.StringToDate("2021-9-1"));
-        leaveInfo1.setWorkLeader("测试领导1");
-        leaveInfo1.setReason("家中有事");
-        leaveInfo1.setPermitPerson("测试批准人1");
-        leaveInfo1.setStartLocation("西藏自治区日喀则市谢通门县");
-        leaveInfo1.setEndLocation("四川省888");
-        leaveInfo1.setThisYearRestDays(20);
-        leaveInfo1.setNextYearRestDays(50);
-        leaveInfo1.setLeaveRemark("请假备注测试");
+
 
         LeaveInfo leaveInfo2 = new LeaveInfo();
-        leaveInfo2.setPerson(person2);
-        leaveInfo2.setPerson_name(person2.getPerson_name());
-        leaveInfo2.setInfo_id("T345654645");
-        leaveInfo2.setPhoneNum(person2.getPhoneNum());
-        leaveInfo2.setOffice(person2.getOffice());
-        leaveInfo2.setJob(person2.getJob());
-        leaveInfo2.setLeaveType("事假");
-        leaveInfo2.setDays(50);
-        leaveInfo2.setStartDate(DateUtils.StringToDate("2021-5-1"));
-        leaveInfo2.setEndDate(DateUtils.StringToDate("2021-9-1"));
-        leaveInfo2.setWorkLeader("测试领导2");
-        leaveInfo2.setReason("哈哈哈哈哈");
-        leaveInfo2.setPermitPerson("测试批准人2");
-        leaveInfo2.setStartLocation("西藏自治区日喀则市谢通门县");
-        leaveInfo2.setEndLocation("四川省999");
-        leaveInfo2.setThisYearRestDays(20);
-        leaveInfo2.setNextYearRestDays(50);
-        leaveInfo2.setLeaveRemark("请假备注测试");
+
 
 
         List<LeaveInfo> leaveInfos = new ArrayList<LeaveInfo>();

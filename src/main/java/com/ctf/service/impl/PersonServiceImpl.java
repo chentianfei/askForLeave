@@ -17,9 +17,13 @@ public class PersonServiceImpl implements PersonService {
     PersonDao personDao = new PersonDao();
 
     @Override
+    public List<Person> queryAllPersonLimit(int pageNo,int pageSize) {
+        return personDao.queryAllPersonLimit(pageNo,pageSize);
+    }
+
+    @Override
     public List<Person> queryAllPerson() {
-        List<Person> personList = personDao.queryAllPerson();
-        return personList;
+        return personDao.queryAllPerson();
     }
 
     @Override

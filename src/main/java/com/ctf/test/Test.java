@@ -15,6 +15,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
  * @Version v1.0
  */
 public class Test {
+
+
     public static void test(String[] args)throws Exception
     {
 
@@ -24,7 +26,7 @@ public class Test {
         NameValuePair[] data ={
                 new NameValuePair("Uid", "ctf001"),
                 new NameValuePair("Key", "5ca42f7364fa83a6efdf"),
-                new NameValuePair("smsMob","18780292551"),
+                new NameValuePair("smsMob","18089922014"),
                 new NameValuePair("smsText","这是飞哥用程序向你发来的第一条短信，加油")};
         post.setRequestBody(data);
 

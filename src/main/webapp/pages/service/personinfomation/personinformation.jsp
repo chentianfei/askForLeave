@@ -197,17 +197,31 @@
         <script type="text/html" id="baseInfo">
             <a class="layui-btn layui-btn-xs" lay-event="update" >修改</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
-        </script>
-        <%--表格内部工具栏2--%>
-        <script type="text/html" id="relatedLeader">
+
+            {{# if(d.leader.length === 0){ }}
             <a type="button"
-                    class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
-                    lay-event="bindLeader"
-            id="relatedLeader">
+               class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
+               lay-event="bindLeader">
                 绑定相关领导
             </a>
-            <%--<a layui-btn-normal layui-btn-radius lay-event="edit">绑定相关领导</a>--%>
+            <%--<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unPass">未审批</a>--%>
+            {{#  } }}
+
+            {{#  if(d.leader.length >0 ){ }}
+            <a type="button"
+               class="layui-btn  layui-btn-xs layui-btn-primary layui-btn-radius"
+               lay-event="showRelatedLeader">
+                查看相关领导
+            </a>
+            <%--<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pass">已审批</a>--%>
+            {{#  } }}
+
         </script>
+        <%--表格内部工具栏2--%>
+        <%--<script type="text/html" id="relatedLeader">
+
+            &lt;%&ndash;<a layui-btn-normal layui-btn-radius lay-event="edit">绑定相关领导</a>&ndash;%&gt;
+        </script>--%>
 
         <script>
             layui.use(['table','upload','laydate','element','form', 'layer', 'util'], function(){
@@ -219,6 +233,7 @@
                 var form = layui.form;
                 var laydate = layui.laydate;
 
+
                 //全局取消回车默认事件
                 document.onkeydown = function(e){
                     if(e.keyCode==13){e.preventDefault();//禁用回车的默认事件
@@ -229,27 +244,35 @@
                     skin:'layui-layer-molv'
                 })
 
+
                 //表格数据读取参数
                 table.render({
                     elem: '#personinformation'
-                    ,url:'personServlet?action=queryAllPerson_json'
+                    ,url:'personServlet?action=queryAllPerson'
                     ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
                     ,title: '人员信息表'
+                    ,request: {
+                        pageName: 'curr' //页码的参数名称，默认：page
+                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                    }
+                    ,limit:5
+                    ,limits:[5,10,15,20]
                     ,cols: [[
                         //{type: 'checkbox', fixed: 'left'}
-                        {field:'person_id', title:'人员编号'}
-                        ,{field:'person_name', title:'姓名'}
-                        ,{field:'sex', title:'性别'}
-                        ,{field:'birthDay', title:'出生年月'}
-                        ,{field:'nationality', title:'民族'}
+                        {field:'person_id', title:'人员编号',width: 120}
+                        ,{field:'name', title:'姓名',width: 100}
+                        ,{field:'sex', title:'性别',width: 60}
+                        ,{field:'birthDate', title:'出生年月',width: 120}
+                        ,{field:'area_class', title:'所在类区',width: 100}
+                        ,{field:'nation', title:'民族',width: 100}
                         ,{field:'nativePlace', title:'本人籍贯'}
                         ,{field:'office', title:'工作单位'}
-                        ,{field:'job', title:'现任职务'}
-                        ,{field:'level', title:'职级'}
-                        ,{field:'phoneNum', title:'联系电话'}
-                        ,{field:'leaveDays', title:'允许休假天数'}
-                        ,{field:'leaderID', title:'相关领导',  toolbar: '#relatedLeader'}
-                        ,{fixed: 'right', title:'操作', toolbar: '#baseInfo',width:120}
+                        ,{field:'post', title:'现任职务'}
+                        ,{field:'level', title:'职级',width: 150}
+                        ,{field:'phone', title:'联系电话',width: 150}
+                        ,{field:'allow_Leave_Days', title:'允许休假天数',width: 120}
+                        ,{field:'leader', title:'相关领导',hide:true,width: 120}
+                        ,{fixed: 'right', title:'操作', toolbar: '#baseInfo',width:220}
                     ]]
                     ,page: true
                 });
@@ -379,7 +402,44 @@
                             shade: false,
                             maxmin: true, //开启最大化最小化按钮
                             area: ['600px', '600px'],
-                            content: "pages/service/personinfomation/_addPerson.jsp",
+                            content: "pages/service/personinfomation/_bindLeader.jsp",
+                            anim:2,
+                            resize:false,
+                            btn:['提交','重置'],
+                            yes:function (index, layero) {
+                                var body = layer.getChildFrame('body', index);
+                                // 找到隐藏的提交按钮模拟点击提交
+                                body.find('#submitbtn').click();
+                                return false;
+                                //按钮【按钮一】的回调
+                            },
+                            btn2: function (index, layero) {
+                                layer.msg("重置表单");
+                                //按钮【按钮二】的回调
+
+                                //return false 开启该代码可禁止点击该按钮关闭
+                            },
+                            cancel: function () {
+                                //右上角关闭回调
+                                //return false 开启该代码可禁止点击该按钮关闭
+                            }
+                        });
+
+                        //同步更新缓存对应的值
+                        obj.update({
+                            username: '123'
+                            ,title: 'xxx'
+                        });
+                    } else if(layEvent === 'showRelatedLeader'){ //查看相关领导
+                        //do something
+                        layer.open({
+                            type: 2,
+                            title: '查看相关领导',
+                            shadeClose: true,
+                            shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['600px', '600px'],
+                            content: "pages/service/personinfomation/_bindLeader.jsp",
                             anim:2,
                             resize:false,
                             btn:['提交','重置'],

@@ -41,6 +41,13 @@
                 </div>
 
                 <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">民族</label>
+                    <div class="layui-input-inline" style="width:400px" >
+                        <input type="text" class="layui-input" id="nation" lay-verify="required">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width:150px">本人籍贯</label>
                         <div class="layui-input-inline" style="width: 100px">
@@ -75,11 +82,23 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">工作单位</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <select name="quiz1" lay-verify="required">
+                        <select name="office" lay-verify="required">
                             <option value="">请选择</option>
                             <option value="浙江">浙江省</option>
                             <option value="你的工号">江西省</option>
                             <option value="你最喜欢的老师">福建省</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">所在类区</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <select name="area_class" lay-verify="required">
+                            <option value="">请选择</option>
+                            <option value="二类区">二类区</option>
+                            <option value="三类区">三类区</option>
+                            <option value="四类区">四类区</option>
                         </select>
                     </div>
                 </div>

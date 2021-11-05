@@ -175,29 +175,12 @@
                         </div>
 
 
+
                         <div class="layui-col-md4">
-
-                            <%--已累计在岗天数--%>
-                            <div class="layui-row">
-                                <div class="layui-bg-gray" style="padding: 10px;">
-                                    <div class="layui-row">
-                                        <div class="layui-col-md12">
-                                            <div class="layui-card">
-                                                <div class="layui-card-header layui-bg-blue">已累计在岗天数</div>
-                                                <div class="layui-card-body" style="height:100px;line-height:100px;text-align: center" >
-                                                    <p style="font-size: 50px;color: #333333" id="totalworkdays"></p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <fieldset class="layui-elem-field layui-field-title" ></fieldset>
 
                             <%--本年度请假信息统计表格--%>
                             <div class="layui-row">
-                                <div class="layui-bg-gray" <%--style="padding:20px 10px;"--%>>
+                                <div class="layui-bg-gray"  style="padding:20px 10px;">
                                     <div class="layui-row">
                                         <div class="layui-col-md12">
                                             <div class="layui-card">

@@ -18,6 +18,7 @@
 
 <script type="text/javascript" src="static/js/leave_ctf.js"></script>
 
-<title>【演示】仲巴县委组织部请销假管理系统</title>
+<%--<title>【演示】仲巴县委组织部请销假管理系统</title>--%>
+<title>仲巴县委组织部请销假管理系统</title>
 
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
