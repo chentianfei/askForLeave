@@ -2,7 +2,7 @@ package com.ctf.bean;
 
 import com.ctf.dao.PersonDao;
 
-import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -63,14 +63,15 @@ public class Person {
         this.leader = leader;
     }
 
+
     @Override
     public String toString() {
         return "Person{" +
-                "person_id='" + person_id + '\'' +
+                "person_id=" + person_id + '\'' +
                 ", name='" + name + '\'' +
                 ", sex='" + sex + '\'' +
                 ", nation='" + nation + '\'' +
-                ", birthDate=" + birthDate +
+                ", birthDate='" + birthDate + '\'' +
                 ", nativePlace='" + nativePlace + '\'' +
                 ", office='" + office + '\'' +
                 ", post='" + post + '\'' +

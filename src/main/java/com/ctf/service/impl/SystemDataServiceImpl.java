@@ -1,5 +1,7 @@
 package com.ctf.service.impl;
 
+import com.ctf.bean.Level;
+import com.ctf.bean.Office;
 import com.ctf.dao.SystemDataDao;
 import com.ctf.service.SystemDataService;
 
@@ -10,8 +12,12 @@ public class SystemDataServiceImpl implements SystemDataService {
     SystemDataDao systemDataDao = new SystemDataDao();
 
     @Override
-    public List<String> querySelectData(String dataName) {
+    public List<Office> queryOffice() {
+        return systemDataDao.queryOffice();
+    }
 
-        return null;
+    @Override
+    public List<Level> queryLevel(){
+        return systemDataDao.queryLevel();
     }
 }

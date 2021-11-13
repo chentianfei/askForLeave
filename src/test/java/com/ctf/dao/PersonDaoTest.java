@@ -1,8 +1,14 @@
 package com.ctf.dao;
 
 import com.ctf.bean.Person;
+import com.ctf.utils.JDBCUtils;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -30,6 +36,20 @@ public class PersonDaoTest {
         for(Person leader:leaderList){
             System.out.println(leader);
         }
+
+    }
+
+    @Test
+    public void querySomePerson() {
+
+        Person person = new Person(
+                null,"测试","",
+                "",null,"",
+                "","","四类区","",
+                "",null,null
+        );
+        System.out.println(personDao.querySomePerson(person,1,2));
+
 
     }
 }

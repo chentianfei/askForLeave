@@ -1,16 +1,18 @@
 package com.ctf.web;
 
+import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 import com.ctf.service.impl.PersonServiceImpl;
-import com.ctf.utils.DateUtils;
+import com.ctf.utils.WebUtils;
 import com.google.gson.Gson;
+import org.apache.commons.beanutils.BeanUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -23,6 +25,42 @@ import java.util.*;
 public class PersonServlet extends BaseServlet{
 
     PersonServiceImpl personService = new PersonServiceImpl();
+
+    //根据条件查询人员信息
+    public void querySomePersons(HttpServletRequest request,HttpServletResponse response) throws IOException, InvocationTargetException, IllegalAccessException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //获取当前页码
+        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        System.out.println(pageNo);
+        //获取每页显示数量
+        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        System.out.println(pageSize);
+
+        //获取前端传来的查询参数
+        Map<String, String[]> map = request.getParameterMap();
+        //通过BeanUtils封装成Person类对象
+        Person person = WebUtils.fillBean(map, Person.class);
+
+        List<Person> peoples = personService.querySomePersonLimit(person,pageNo,pageSize);
+
+        Integer count = personService.querySomePerson(person).size();
+
+        System.out.println(peoples);
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> result = new HashMap<>();
+        result.put("code",0);
+        result.put("msg","哈哈");
+        result.put("count",count);
+        result.put("data",peoples);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(result);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+
+    }
 
     //查询所有人员信息
     public void queryAllPerson(HttpServletRequest req,HttpServletResponse resp) throws IOException {
@@ -88,7 +126,6 @@ public class PersonServlet extends BaseServlet{
     public void addOnePerson(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("调用了PersonServlet的addOnePerson");
     }
-
 
 
     //判断是否重名
