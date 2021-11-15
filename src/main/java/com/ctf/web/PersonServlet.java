@@ -26,6 +26,54 @@ public class PersonServlet extends BaseServlet{
 
     PersonServiceImpl personService = new PersonServiceImpl();
 
+    public void isPhoneExists(HttpServletRequest request,HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //获取电话号码
+        String phone = request.getParameter("phone");
+
+        int existCode;
+        //返回1表示电话不存在，不存在重复录入的情况;
+        //返回0表示电话已存在，不允许重复录入;
+        if(personService.queryPhone(phone) < 1){
+            existCode = 1;
+        }else {
+            existCode = 0;
+        }
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> result = new HashMap<>();
+        result.put("existCode",existCode);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(result);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //添加一个人的信息
+    public void addAPerson(HttpServletRequest request,HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        System.out.println("调用了PersonServlet的addAPerson方法");
+
+
+        //获取前端传来的参数
+        Map<String, String[]> personInfo = request.getParameterMap();
+        Person person = WebUtils.fillBean(personInfo, Person.class);
+        System.out.println("调用了PersonServlet的addAPerson方法："+person);
+
+        //调用personService的addAPerson往数据库新增数据
+        Integer code = personService.addAPerson(person);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
     //根据条件查询人员信息
     public void querySomePersons(HttpServletRequest request,HttpServletResponse response) throws IOException, InvocationTargetException, IllegalAccessException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -33,21 +81,20 @@ public class PersonServlet extends BaseServlet{
 
         //获取当前页码
         Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        System.out.println(pageNo);
         //获取每页显示数量
         Integer pageSize = Integer.valueOf(request.getParameter("nums"));
-        System.out.println(pageSize);
 
         //获取前端传来的查询参数
         Map<String, String[]> map = request.getParameterMap();
         //通过BeanUtils封装成Person类对象
         Person person = WebUtils.fillBean(map, Person.class);
 
+        //本次查询在进行分页后返回的数据
         List<Person> peoples = personService.querySomePersonLimit(person,pageNo,pageSize);
 
+        //本次查询条件的全部数据数量
         Integer count = personService.querySomePerson(person).size();
 
-        System.out.println(peoples);
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
         result.put("code",0);
@@ -121,12 +168,6 @@ public class PersonServlet extends BaseServlet{
     public void deleteThePerson(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("调用了PersonServlet的deleteThePerson");
     }
-
-    //增加单个人员
-    public void addOnePerson(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("调用了PersonServlet的addOnePerson");
-    }
-
 
     //判断是否重名
     public void isMultipleName(HttpServletRequest request,HttpServletResponse response){

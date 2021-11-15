@@ -52,4 +52,9 @@ public class PersonDaoTest {
 
 
     }
+
+    @Test
+    public void queryPhone() {
+        System.out.println(personDao.queryPhone("18089922014"));
+    }
 }

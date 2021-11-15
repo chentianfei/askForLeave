@@ -1,6 +1,7 @@
 package com.ctf.service;
 
 import com.ctf.bean.Level;
+import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
 
 import java.util.List;
@@ -10,4 +11,8 @@ public interface SystemDataService {
     List<Office> queryOffice();
     //查询level 职级名单
     List<Level> queryLevel();
+    //查询level 职级名单
+    List<Nation> queryNaiton();
+
+
 }

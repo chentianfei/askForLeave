@@ -297,4 +297,46 @@ public class PersonDao extends BaseDao{
 
     }
 
+    //判断手机号是否存在
+    public Long queryPhone(String phoneNumber){
+        String sql = "select count(*) from person_info where phone = ?";
+        return (Long) queryForSingleValue(sql,phoneNumber);
+    }
+
+    //新增人员
+    public Integer addAPerson(Person person) {
+        System.out.println("调用了persondao的addAPerson方法："+person);
+        //给出sql模板,为了便于后面添加sql语句
+        String sql ="insert into person_info(person_id," +
+                "NAME,nation,sex,birthdate,nativeplace,office," +
+                "post,level,phone,allow_leave_days,area_class) " +
+                "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        String sql2 ="insert into person_info_copy(person_id," +
+                "NAME,nation,sex,birthdate,nativeplace,office," +
+                "post,level,phone,allow_leave_days,area_class) " +
+                "values(?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+
+        parmas.add(person.getPerson_id());
+        parmas.add(person.getName());
+        parmas.add(person.getNation());
+        parmas.add(person.getSex());
+        parmas.add(person.getBirthDate());
+        parmas.add(person.getNativePlace());
+        parmas.add(person.getOffice());
+        parmas.add(person.getPost());
+        parmas.add(person.getLevel());
+        parmas.add(person.getPhone());
+        parmas.add(person.getAllow_Leave_Days());
+        parmas.add(person.getArea_class());
+
+        int insertCount = update(sql,parmas.toArray());
+        int insertCopyCount = update(sql2,parmas.toArray());
+
+        return insertCount;
+    }
+
 }

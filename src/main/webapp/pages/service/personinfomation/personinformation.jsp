@@ -52,7 +52,7 @@
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">性别</label>
                                                     <div class="layui-input-inline" style="width: 150px" >
-                                                        <select name="sex" lay-filter="" lay-search>
+                                                        <select name="sex" lay-search>
                                                             <option value=""></option>
                                                             <%--mysql中为enum枚举类型，从1开始--%>
                                                             <option value="1">男</option>
@@ -71,9 +71,10 @@
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">民族</label>
-                                                    <div class="layui-input-inline"  style="width: 150px">
-                                                        <input type="tel" name="nation"
-                                                               placeholder="请输入" autocomplete="off" class="layui-input">
+                                                    <div class="layui-input-inline"  style="width: 150px" >
+                                                        <select id="nation" name="nation" lay-search>
+                                                            <option value=""></option>
+                                                        </select>
                                                     </div>
                                                 </div>
 
@@ -86,8 +87,8 @@
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">工作单位</label>
-                                                    <div class="layui-input-inline"  style="width: 150px" lay-search>
-                                                        <select id="office" name="office" lay-search="">
+                                                    <div class="layui-input-inline"  style="width: 150px">
+                                                        <select id="office" name="office" lay-search>
                                                             <option value=""></option>
                                                         </select>
                                                     </div>
@@ -100,7 +101,7 @@
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">现任职务</label>
-                                                    <div class="layui-input-inline"  style="width: 150px" lay-search>
+                                                    <div class="layui-input-inline"  style="width: 150px">
                                                         <input type="text" name="post" placeholder="请输入"
                                                                class="layui-input">
                                                     </div>
@@ -108,16 +109,16 @@
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">职级</label>
-                                                    <div class="layui-input-inline"  style="width: 150px" lay-search>
-                                                        <select id="level" name="level" lay-search="">
+                                                    <div class="layui-input-inline"  style="width: 150px">
+                                                        <select id="level" name="level" lay-search>
                                                         </select>
                                                     </div>
                                                 </div>
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width:100px">所在类区</label>
-                                                    <div class="layui-input-inline" style="width:150px" lay-search>
-                                                        <select name="area_class">
+                                                    <div class="layui-input-inline" style="width:150px">
+                                                        <select name="area_class" lay-search>
                                                             <option value="">请选择</option>
                                                             <option value="二类区">二类区</option>
                                                             <option value="三类区">三类区</option>
@@ -233,14 +234,8 @@
 
         <script>
 
-            layui.config({
-                base: 'static/js/' //存放拓展模块的根目录
-            }).extend({ //设定模块别名
-                common: 'common' //如果 common.js 是在根目录，也可以不用设定别名
-            });
-
             layui.use(['table','upload','laydate','element','form',
-                'layer', 'util','common'], function(){
+                'layer', 'util'], function(){
                 var element = layui.element;
                 var layer = layui.layer;
                 var util = layui.util;
@@ -248,20 +243,10 @@
                 var table = layui.table;
                 var form = layui.form;
                 var laydate = layui.laydate;
-                var common = layui.common;
 
-                //三级地址联动
-                common.showCity('province', 'city', 'district');
-
-                //全局取消回车默认事件
-                document.onkeydown = function(e){
-                    if(e.keyCode==13){e.preventDefault();//禁用回车的默认事件
-                    }
-                }
-
-                layer.config({
-                    skin:'layui-layer-molv'
-                })
+                bindLevelSelectData();
+                bindNationSelectData();
+                bindOfficeSelectData();
 
                 //表格数据读取参数
                 table.render({
@@ -320,7 +305,7 @@
                                 yes:function (index, layero) {
                                     var body = layer.getChildFrame('body', index);
                                     // 找到隐藏的提交按钮模拟点击提交
-                                    body.find('#submitbtn').click();
+                                    body.find('#addPersonSubmit').click();
                                     //return false;
                                     //按钮【按钮一】的回调
                                 },
@@ -509,66 +494,6 @@
                     }
                 });
 
-                //为民族下拉框select绑定数据
-                $.ajax({
-                    url: 'systemDataServlet?action=bindOfficeSelectData',
-                    dataType: 'json',
-                    type: 'post',
-                    success: function(data) {
-                        if (data!== null) {
-                            $("#office").empty();
-                            $("#office").append("<option value=''>请选择</option>");
-                            $.each(data, function(index, item) {
-                                $('#office').append(new Option(item.office_name));
-                            });
-                        } else {
-                            $("#office").append(new Option("暂无数据", ""));
-                        }
-                        //重新渲染
-                        form.render("select");
-                    }
-                });
-
-                //为工作单位下拉框select绑定后台数据
-                $.ajax({
-                    url: 'systemDataServlet?action=bindOfficeSelectData',
-                    dataType: 'json',
-                    type: 'post',
-                    success: function(data) {
-                        if (data!== null) {
-                            $("#office").empty();
-                            $("#office").append("<option value=''>请选择</option>");
-                            $.each(data, function(index, item) {
-                                $('#office').append(new Option(item.office_name));
-                            });
-                        } else {
-                            $("#office").append(new Option("暂无数据", ""));
-                        }
-                        //重新渲染
-                        form.render("select");
-                    }
-                });
-
-                //为职级下拉框select绑定后台数据
-                $.ajax({
-                    url: 'systemDataServlet?action=bindLevelSelectData',
-                    dataType: 'json',
-                    type: 'post',
-                    success: function(data) {
-                        if (data!== null) {
-                            $("#level").empty();
-                            $("#level").append("<option value=''>请选择</option>");
-                            $.each(data, function(index, item) {
-                                $('#level').append(new Option(item.level_name));
-                            });
-                        } else {
-                            $("#level").append(new Option("暂无数据", ""));
-                        }
-                        //重新渲染
-                        form.render("select");
-                    }
-                });
-
                 laydate.render({
                     elem: '#birthDate'//指定元素
                     ,type:'date'
@@ -589,19 +514,8 @@
                     const post = sourceData.post;
 
                     //解析解析框中的地址内容
-                    const city = sourceData.city;
-                    const district = sourceData.district;
-                    const province = sourceData.province;
-                    // 通过地址code码获取地址名称
-                    var address = common.getCity({
-                        province,
-                        city,
-                        district
-                    });
-                    var provinceName = address.provinceName;
-                    var cityName = address.cityName;
-                    var districtName = address.districtName;
-                    var nativePlace = provinceName+''+cityName+''+districtName;
+                    const nativePlace = getNativePlace(sourceData);
+
                     //重载表格
                     table.reload('personinformation', {
                         url: 'personServlet?action=querySomePersons'

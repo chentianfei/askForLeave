@@ -4,6 +4,7 @@ import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 import com.ctf.dao.PersonDao;
 import com.ctf.service.PersonService;
+import com.ctf.utils.WebUtils;
 
 import java.util.List;
 
@@ -17,8 +18,29 @@ import java.util.List;
 public class PersonServiceImpl implements PersonService {
     PersonDao personDao = new PersonDao();
 
+
+    @Override
+    public Long queryPhone(String phoneNum) {
+        return personDao.queryPhone(phoneNum);
+    }
+
+    @Override
+    /*
+     * @Description ：
+     * @Param person 新增的人员信息
+     * @Return ：Integer 数据库操作的数据量
+     * @Author: CTF
+     * @Date ：2021/11/14 17:33
+     */
+    public Integer addAPerson(Person person) {
+        System.out.println("调用了PersonServiceImpl的addAPerson方法："+person);
+        person.setPerson_id(WebUtils.generateAPersonId(person));
+        return personDao.addAPerson(person);
+    }
+
     @Override
     public List<Person> queryAllPersonLimit(int pageNo,int pageSize) {
+
         return personDao.queryAllPersonLimit(pageNo,pageSize);
     }
 
@@ -72,4 +94,6 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> querySomePersonByConditions(String sql_condition) {
         return null;
     }
+
+
 }

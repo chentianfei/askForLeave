@@ -13,6 +13,10 @@ import java.util.List;
  * @Date 2021/8/29 11:52
  **/
 public interface PersonService {
+    //查询指定电话在数据库中的数量
+    Long queryPhone(String phoneNum);
+    //新增一个人员信息
+    Integer addAPerson(Person person);
     //分页查询库中所有人员信息
     List<Person> queryAllPersonLimit(int pageNo,int pageSize);
     //查询库中所有人员信息

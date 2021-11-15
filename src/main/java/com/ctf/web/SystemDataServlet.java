@@ -1,6 +1,7 @@
 package com.ctf.web;
 
 import com.ctf.bean.Level;
+import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
 import com.ctf.service.SystemDataService;
 import com.ctf.service.impl.SystemDataServiceImpl;
@@ -45,7 +46,7 @@ public class SystemDataServlet extends BaseServlet{
     }
 
     public void bindLevelSelectData(HttpServletRequest request,HttpServletResponse response){
-        //通过SystemDataService中的queryOffice()获取数据
+        //通过SystemDataService中的queryLevel获取数据
         List<Level> levels = systemDataService.queryLevel();
         try {
             //以json格式返回给前端
@@ -58,12 +59,11 @@ public class SystemDataServlet extends BaseServlet{
     }
 
     public void bindNationSelectData(HttpServletRequest request,HttpServletResponse response){
-        //通过SystemDataService中的queryOffice()获取数据
-        List<Level> levels = systemDataService.queryLevel();
+        //通过SystemDataService中的queryLevel获取数据
+        List<Nation> nations = systemDataService.queryNaiton();
         try {
-
             //以json格式返回给前端
-            String result_json = "" ;
+            String result_json =new Gson().toJson(nations);
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().write(result_json);
         } catch (IOException e) {

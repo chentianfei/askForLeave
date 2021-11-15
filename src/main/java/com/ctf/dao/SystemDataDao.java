@@ -1,6 +1,7 @@
 package com.ctf.dao;
 
 import com.ctf.bean.Level;
+import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
 
 import java.util.List;
@@ -29,4 +30,9 @@ public class SystemDataDao extends BaseDao{
         return offices;
     }
 
+    public List<Nation> queryNation() {
+        String sql = "select * from nation_info";
+        List<Nation> nations = queryForList(Nation.class, sql);
+        return nations;
+    }
 }

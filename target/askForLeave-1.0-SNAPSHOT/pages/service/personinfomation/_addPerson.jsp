@@ -20,7 +20,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">姓名</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="text" name="username" placeholder="请输入" lay-verify="required" id="username"
+                        <input type="text" name="name" placeholder="请输入" lay-verify="required" id="username"
                                class="layui-input">
                     </div>
                 </div>
@@ -36,32 +36,36 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">出生日期</label>
                     <div class="layui-input-inline" style="width:400px" >
-                        <input type="text" class="layui-input" id="birthDate" lay-verify="required">
+                        <input type="text" class="layui-input" placeholder="请点击"
+                               id="birthDate" name="birthDate"  lay-verify="required">
                     </div>
                 </div>
 
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">民族</label>
-                    <div class="layui-input-inline" style="width:400px" >
-                        <input type="text" class="layui-input" id="nation" lay-verify="required">
+                    <div class="layui-input-inline" style="width:400px">
+                        <select id="nation" name="nation" lay-verify="required" lay-search>
+                            <option value=""></option>
+                        </select>
                     </div>
                 </div>
+
 
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width: 150px">本人籍贯</label>
                         <div class="layui-input-inline" style="width: 120px">
-                            <select name="province" data-area="西藏自治区" lay-filter="province">
+                            <select name="province" data-area="西藏自治区" lay-filter="province" lay-search>
                                 <option value="">选择省</option>
                             </select>
                         </div>
                         <div class="layui-input-inline" style="width: 120px">
-                            <select name="city" data-area="日喀则市" lay-filter="city">
+                            <select name="city" data-area="日喀则市" lay-filter="city" lay-search>
                                 <option value="">选择市</option>
                             </select>
                         </div>
                         <div class="layui-input-inline" style="width: 120px">
-                            <select name="district" data-area="仲巴县" lay-filter="district">
+                            <select name="district" lay-filter="district" lay-search>
                                 <option value="">选择区</option>
                             </select>
                         </div>
@@ -70,10 +74,10 @@
 
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label" style="width:150px">工作单位</label>
+                          <label class="layui-form-label" style="width:150px">工作单位</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <select id="office" name="office" lay-verify="required">
-                            <option value="">请选择</option>
+                        <select id="office" name="office" lay-verify="required" lay-search>
+                            <option value=""></option>
                         </select>
                     </div>
                 </div>
@@ -81,7 +85,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">所在类区</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <select name="area_class" lay-verify="required">
+                        <select name="area_class" lay-verify="required" lay-search>
                             <option value="">请选择</option>
                             <option value="二类区">二类区</option>
                             <option value="三类区">三类区</option>
@@ -93,7 +97,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">现任职务</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="text" name="zhiwu" placeholder="请输入" lay-verify="required"
+                        <input type="text" name="post" placeholder="请输入" lay-verify="required"
                                class="layui-input">
                     </div>
                 </div>
@@ -101,7 +105,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">职级</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <select id="level" name="quiz1" lay-verify="required">
+                        <select id="level" name="level" lay-verify="required" lay-search>
                             <option value="">请选择</option>
                         </select>
                     </div>
@@ -110,7 +114,9 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">联系电话</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="tel" name="phone" lay-verify="required|phone"
+                        <input type="tel" id="phone" name="phone" placeholder="请输入"
+                               lay-verify="required|phone"
+                               onblur="isPhoneExists()"
                                autocomplete="off" class="layui-input">
                     </div>
                 </div>
@@ -118,12 +124,13 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">允许休假天数</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="tel" name="phone" lay-verify="required|number"
+                        <input type="text" name="allow_Leave_Days" placeholder="请输入" lay-verify="required|number"
                                autocomplete="off" class="layui-input">
                     </div>
                 </div>
 
-                <button type="submit" class="layui-btn" style="display:none" id="submitbtn" lay-submit lay-filter="demo1">立即提交</button>
+                <button type="submit" class="layui-btn" style="display:none"
+                        id="addPersonSubmit" lay-submit lay-filter="addPersonSubmit"></button>
                <%-- <div class="layui-form-item" >
                     <div class="layui-input-block" style="padding-left: 50%">
                         <button type="submit" class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
@@ -136,79 +143,72 @@
 
         <script type="text/javascript">
 
-            layui.config({
-                base: 'static/js/' //存放拓展模块的根目录
-            }).extend({ //设定模块别名
-                common: 'common' //如果 common.js 是在根目录，也可以不用设定别名
-            });
 
-
-            layui.use(['laydate','form','common'], function() {
+            layui.use(['laydate','form','common','table'], function() {
                 var laydate = layui.laydate;
                 var form = layui.form;
                 var $ = layui.jquery;
                 var index = parent.layer.getFrameIndex(window.name);
                 var common = layui.common;
-
-                //三级地址联动
-                common.showCity('province', 'city', 'district');
+                var table = layui.table;
+                //日期框
                 laydate.render({
                     elem: '#birthDate'//指定元素
-                    ,type: 'date'
-                });
-
-                //为工作单位下拉框select绑定后台数据
-                $.ajax({
-                    url: 'systemDataServlet?action=bindOfficeSelectData',
-                    dataType: 'json',
-                    type: 'post',
-                    success: function(data) {
-                        if (data!== null) {
-                            $("#office").empty();
-                            $("#office").append(new Option("请选择", "0"));
-                            $.each(data, function(index, item) {
-                                $('#office').append(new Option(item.office_name));
-                            });
-                        } else {
-                            $("#office").append(new Option("暂无数据", ""));
-                        }
-                        //重新渲染
-                        form.render("select");
-                    }
-                });
-
-                //为职级下拉框select绑定后台数据
-                $.ajax({
-                    url: 'systemDataServlet?action=bindLevelSelectData',
-                    dataType: 'json',
-                    type: 'post',
-                    success: function(data) {
-                        if (data!== null) {
-                            $("#level").empty();
-                            $("#level").append(new Option("请选择", "0"));
-                            $.each(data, function(index, item) {
-                                $('#level').append(new Option(item.level_name));
-                            });
-                        } else {
-                            $("#level").append(new Option("暂无数据", ""));
-                        }
-                        //重新渲染
-                        form.render("select");
-                    }
+                    , type: 'date'
                 });
 
                 form.render();
-                form.on('submit(demo1)', function(data){
+                bindLevelSelectData();
+                bindNationSelectData();
+                bindOfficeSelectData();
+
+                form.on('submit(addPersonSubmit)', function(data){
+                    const sourceData = data.field;
+
+                    const area_class = sourceData.area_class;
+                    const birthDate = sourceData.birthDate;
+                    const level = sourceData.level;
+                    const name = sourceData.name;
+                    const nation = sourceData.nation;
+                    const office = sourceData.office;
+                    const phone = sourceData.phone;
+                    const sex = sourceData.sex;
+                    const post = sourceData.post;
+                    const allow_Leave_Days = sourceData.allow_Leave_Days;
+
+                    //解析解析框中的地址内容
+                    const city = sourceData.city;
+                    const district = sourceData.district;
+                    const province = sourceData.province;
+                    // 通过地址code码获取地址名称
+                    var address = common.getCity({
+                        province,
+                        city,
+                        district
+                    });
+                    let provinceName = address.provinceName;
+                    let cityName = address.cityName;
+                    let districtName = address.districtName;
+
+                    //解析解析框中的地址内容
+                    const nativePlace = provinceName + '' + cityName + '' + districtName;
+                    console.log(nativePlace);
+
                     $.ajax({
                         type : 'POST',
-                        url : 'createResource.do',
+                        url : 'personServlet?action=addAPerson',
                         data : {
-                            name : $('#name').val(),
-                            url : $('#url').val(),
-                            type : $('input[name]:checked').val(),
-                            parentId : $('#parentId').val(),
-                            permission : $('#permission').val(),
-                            available : $('#available').is(':checked') === true ? 1 : 0
+                            name : name,
+                            sex : sex,
+                            nation : nation,
+                            birthDate : birthDate,
+                            nativePlace:nativePlace,
+                            office : office,
+                            post : post,
+                            area_class : area_class,
+                            level : level,
+                            phone : phone,
+                            allow_Leave_Days:allow_Leave_Days
                         },
                         dataType : 'json',
                         success : function(data) {
@@ -216,10 +216,21 @@
                             parent.layer.msg('添加成功', {
                                 icon : 6,
                             });
+
+                            //重载表格
+                            parent.layui.table.reload('personinformation', {
+                                url: 'personServlet?action=queryAllPerson'
+                                ,page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                                ,request: {
+                                    pageName: 'curr' //页码的参数名称，默认：page
+                                    ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                }
+                            });
+
                             //关闭此页面
                             parent.layer.close(index);
-                            //关闭弹框
-                            //parent.layer.closeAll('iframe');
                         },
                         error : function(data) {
                             // 异常提示
@@ -234,8 +245,7 @@
                     });
                     return false;
                 });
-            })
-
+            });
         </script>
     </body>
 </html>

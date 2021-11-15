@@ -52,4 +52,12 @@ public class WebUtilsTest {
         BeanUtils.populate(Person.class, map);
         System.out.println(person);
     }
+
+    @Test
+    public void generateAPersonId() {
+        Person person = new Person();
+        person.setName("夏雨婷");
+        person.setPhone("18089922104");
+        System.out.println(WebUtils.generateAPersonId(person));
+    }
 }

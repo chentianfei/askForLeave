@@ -1,5 +1,6 @@
 package com.ctf.dao;
 
+import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
 import org.junit.Test;
 
@@ -13,5 +14,11 @@ public class SystemDataDaoTest {
     public void queryOffice() {
         List<Office> offices = systemDataDao.queryOffice();
         System.out.println(offices);
+    }
+
+    @Test
+    public void queryNation() {
+        List<Nation> nations = systemDataDao.queryNation();
+        System.out.println(nations);
     }
 }
