@@ -32,10 +32,10 @@ public class PersonDaoTest {
     @Test
     public void queryRelatedLeader() {
 
-        List<Person> leaderList = personDao.queryRelatedLeader("cs003");
+     /*   List<Person> leaderList = personDao.queryRelatedLeader("cs003");
         for(Person leader:leaderList){
             System.out.println(leader);
-        }
+        }*/
 
     }
 
@@ -48,7 +48,7 @@ public class PersonDaoTest {
                 "","","四类区","",
                 "",null,null
         );
-        System.out.println(personDao.querySomePerson(person,1,2));
+        System.out.println(personDao.querySomePersonLimit(person,1,2));
 
 
     }
@@ -57,4 +57,18 @@ public class PersonDaoTest {
     public void queryPhone() {
         System.out.println(personDao.queryPhone("18089922014"));
     }
+
+    @Test
+    public void testQueryAllPersonLimit() {
+    }
+
+    @Test
+    public void queryIdByPhone() {
+
+        System.out.println(personDao.queryIdByPhone("18089922014"));
+
+
+    }
+
+
 }

@@ -40,4 +40,11 @@ public class BaseDaoTest {
     @Test
     public void queryForSingleValue() {
     }
+
+    @Test
+    public void queryForANumber() {
+        System.out.println(baseDao.queryForANumber(
+                "select person_id from person_info where phone = ?",
+                "18089922014")[0]);
+    }
 }

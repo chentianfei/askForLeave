@@ -59,7 +59,6 @@ public class PersonServlet extends BaseServlet{
 
         System.out.println("调用了PersonServlet的addAPerson方法");
 
-
         //获取前端传来的参数
         Map<String, String[]> personInfo = request.getParameterMap();
         Person person = WebUtils.fillBean(personInfo, Person.class);
@@ -81,6 +80,7 @@ public class PersonServlet extends BaseServlet{
 
         //获取当前页码
         Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+
         //获取每页显示数量
         Integer pageSize = Integer.valueOf(request.getParameter("nums"));
 

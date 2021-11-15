@@ -1,7 +1,7 @@
 package com.ctf.dao;
-import com.alibaba.druid.util.JdbcUtils;
 import com.ctf.utils.JDBCUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayHandler;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
@@ -32,7 +32,7 @@ public abstract class BaseDao {
         return -1;
     }
 
-    /**
+   /**
      * 查询返回一个javaBean的sql语句
      *
      * @param type 返回的对象类型
@@ -52,6 +52,20 @@ public abstract class BaseDao {
         }
         return null;
     }
+
+    //用于查询某一行的某一个数据
+    public Object[] queryForANumber(String sql, Object... args) {
+        Connection con =JDBCUtils.getConnection();
+        try {
+            return queryRunner.query(con, sql, new ArrayHandler(), args);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close(con);
+        }
+        return null;
+    }
+
 
     /**
      * 查询返回多个javaBean的sql语句

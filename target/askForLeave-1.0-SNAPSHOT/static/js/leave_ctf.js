@@ -15,6 +15,20 @@ layer.config({
     skin:'layui-layer-molv'
 })
 
+//时间戳的处理
+layui.laytpl.toDateString = function(d, format){
+    var date = new Date(d || new Date())
+        ,ymd = [
+        this.digit(date.getFullYear(), 4)
+        ,this.digit(date.getMonth() + 1)
+        ,this.digit(date.getDate())
+    ]
+        ,hms = [
+        this.digit(date.getHours())
+        ,this.digit(date.getMinutes())
+        ,this.digit(date.getSeconds())
+    ];
+}
 
 //全局取消回车默认事件
 document.onkeydown = function(e){
@@ -78,7 +92,7 @@ function bindNationSelectData(){
                     $("#nation").empty();
                     $("#nation").append("<option value=''>请选择</option>");
                     $.each(data, function (index, item) {
-                        $('#nation').append(new Option(item.nation_name));
+                        $('#nation').append(new Option(item.nation_name,item.nation_name));
                     });
                 } else {
                     $("#nation").append(new Option("暂无数据", ""));
@@ -105,7 +119,7 @@ function bindOfficeSelectData(){
                     $("#office").empty();
                     $("#office").append("<option value=''>请选择</option>");
                     $.each(data, function(index, item) {
-                        $('#office').append(new Option(item.office_name));
+                        $('#office').append(new Option(item.office_name,item.office_name));
                     });
                 } else {
                     $("#office").append(new Option("暂无数据", ""));
@@ -131,7 +145,7 @@ function bindLevelSelectData() {
                     $("#level").empty();
                     $("#level").append("<option value=''>请选择</option>");
                     $.each(data, function (index, item) {
-                        $('#level').append(new Option(item.level_name));
+                        $('#level').append(new Option(item.level_name,item.level_name));
                     });
                 } else {
                     $("#level").append(new Option("暂无数据", ""));

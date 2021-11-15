@@ -234,8 +234,9 @@
 
         <script>
 
-            layui.use(['table','upload','laydate','element','form',
-                'layer', 'util'], function(){
+            layui.use(['table','upload','laydate','common','element','form',
+                'layer', 'util','laypage'], function(){
+                var common = layui.common;
                 var element = layui.element;
                 var layer = layui.layer;
                 var util = layui.util;
@@ -243,6 +244,7 @@
                 var table = layui.table;
                 var form = layui.form;
                 var laydate = layui.laydate;
+                var laypage = layui.laypage;
 
                 bindLevelSelectData();
                 bindNationSelectData();
@@ -261,17 +263,22 @@
                     ,limit:5
                     ,limits:[5,10,15]
                     ,cols: [[
-                        {field:'person_id', title:'人员编号',width: 120}
-                        ,{field:'name', title:'姓名',width: 100}
+                        /*{field:'person_id', title:'人员编号',width: 120}*/
+                        {field:'name', title:'姓名',width: 100}
                         ,{field:'sex', title:'性别',width: 60}
-                        ,{field:'birthDate', title:'出生年月',width: 120}
-                        ,{field:'area_class', title:'所在类区',width: 100}
-                        ,{field:'nation', title:'民族',width: 100}
-                        ,{field:'nativePlace', title:'本人籍贯'}
+                        ,{field:'birthDate',
+                            title:'出生日期',
+                            width: 140,
+                            templet:
+                                '<div>{{ layui.util.toDateString(new Date(d.birthDate).getTime(), "yyyy年MM月dd日") }}</div>'
+                        }
+                        ,{field:'area_class', title:'所在类区',width: 85}
+                        ,{field:'nation', title:'民族',width: 80}
+                        ,{field:'nativePlace', title:'本人籍贯',width: 240}
                         ,{field:'office', title:'工作单位'}
-                        ,{field:'post', title:'现任职务'}
-                        ,{field:'level', title:'职级',width: 150}
-                        ,{field:'phone', title:'联系电话',width: 150}
+                        ,{field:'post', title:'现任职务',width: 160}
+                        ,{field:'level', title:'职级',width: 120}
+                        ,{field:'phone', title:'联系电话',width: 125}
                         ,{field:'allow_Leave_Days', title:'允许休假天数',width: 120}
                         ,{field:'leader', title:'相关领导',hide:true,width: 120}
                         ,{fixed: 'right', title:'操作', toolbar: '#baseInfo',width:220}
@@ -279,6 +286,7 @@
                     ,page: true
                 });
 
+                /*设定表格工具事件*/
                 table.on('toolbar(personinformation)', function(obj){
                     var checkStatus = table.checkStatus(obj.config.id);
 
@@ -303,17 +311,17 @@
                                 id:'LAY_layuipro',
                                 btn:['提交','重置'],
                                 yes:function (index, layero) {
+                                    //提交按钮的回调
                                     var body = layer.getChildFrame('body', index);
                                     // 找到隐藏的提交按钮模拟点击提交
                                     body.find('#addPersonSubmit').click();
-                                    //return false;
-                                    //按钮【按钮一】的回调
                                 },
                                 btn2: function (index, layero) {
-                                    layer.msg("重置表单");
-                                    //按钮【按钮二】的回调
-
-                                    //return false 开启该代码可禁止点击该按钮关闭
+                                    //重置按钮的回调
+                                    var body = layer.getChildFrame('body', index);
+                                    // 找到隐藏的提交按钮模拟点击提交
+                                    body.find('#addPersonReset').click();
+                                    return false;// 开启该代码可禁止点击该按钮关闭
                                 },
                                 cancel: function () {
                                     //右上角关闭回调
@@ -338,6 +346,8 @@
                 /*设定行工具事件*/
                 table.on('tool(personinformation)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
                     var data = obj.data; //获得当前行数据
+                    //解析当前行数据
+
                     var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
                     var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
                     var deleteLayer;
@@ -358,21 +368,118 @@
                             anim:2,
                             id:'LAY_layuipro',
                             resize:false,
-                            btn:['提交','重置'],
+                            end:function(){
+                                table.reload('demo',{  });
+                            },
+                            btn:['更新','取消'],
+                            success: function (layero, index) {
+                                var body = layer.getChildFrame('body', index);
+                                //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                                var iframeWin = window[layero.find('iframe')[0]['name']];
+                                //console.log(body.html()) //得到iframe页的body内容
+
+                                //初始化表单数据的值
+                                body.find("input[name=sex][value=男]").attr("checked", data.sex == "男" ? true : false);
+                                body.find("input[name=sex][value=女]").attr("checked", data.sex == "女" ? true : false);
+                                body.find("#name").val(data.name);
+                                body.find("#birthDate").val(
+                                    layui.util.toDateString(new Date(data.birthDate).getTime(), 'yyyy-MM-dd')
+                                );
+                                body.find("#post").val(data.post);
+                                body.find("#phone").val(data.phone);
+                                body.find("#allow_Leave_Days").val(data.allow_Leave_Days);
+                                //为工作类区绑定下拉框
+                                body.find("#area_class option[value='" + data.area_class+"']")
+                                    .attr("selected", "selected");
+
+                                //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
+                                $.ajax({
+                                    url: 'systemDataServlet?action=bindLevelSelectData',
+                                    type : 'POST',
+                                    dataType : 'json',
+                                    contentType : "text/html;charset=utf-8",
+                                    success: function (SourceData) {
+
+                                        $.each(SourceData, function (index, item) {
+                                            if (data.level == item.level_name) {
+                                                body.find('[id=level]').append(
+                                                    "<option selected>"+item.level_name+"</option>>"
+                                                );
+                                            } else {
+                                                body.find('[id=level]').append($("<option>").attr("value", item.level_name).text(item.level_name));
+                                            }
+                                        });
+
+                                        //重新渲染，特别重要，不然写的不起作用
+                                        iframeWin.layui.form.render("select");
+
+                                    }
+                                })
+
+                                //通过ajax为弹框页面工作单位下拉框拉取当前页面数据并绑定数据库中其他数据
+                                $.ajax({
+                                    url: 'systemDataServlet?action=bindOfficeSelectData',
+                                    type : 'POST',
+                                    dataType : 'json',
+                                    contentType : "text/html;charset=utf-8",
+                                    success: function (SourceData) {
+
+                                        $.each(SourceData, function (index, item) {
+                                            if (data.office == item.office_name) {
+                                                body.find('[id=office]').append(
+                                                    "<option selected>"+item.office_name+"</option>>"
+                                                );
+                                            } else {
+                                                body.find('[id=office]').append($("<option>").attr("value", item.office_name).text(item.office_name));
+                                            }
+                                        });
+
+                                        //重新渲染，特别重要，不然写的不起作用
+                                        iframeWin.layui.form.render("select");
+
+                                    }
+                                })
+
+                                //通过ajax为弹框页面民族下拉框拉取当前页面数据并绑定数据库中其他数据
+                                $.ajax({
+                                    url: 'systemDataServlet?action=bindNationSelectData',
+                                    type : 'POST',
+                                    dataType : 'json',
+                                    contentType : "text/html;charset=utf-8",
+                                    success: function (SourceData) {
+
+                                        $.each(SourceData, function (index, item) {
+                                            if (data.nation == item.nation_name) {
+                                                body.find('[id=nation]').append(
+                                                    "<option selected>"+item.nation_name+"</option>>"
+                                                );
+                                            } else {
+                                                body.find('[id=nation]').append($("<option>").attr("value", item.nation_name).text(item.nation_name));
+                                            }
+                                        });
+
+                                        //重新渲染，特别重要，不然写的不起作用
+                                        iframeWin.layui.form.render("select");
+
+                                    }
+                                })
+
+
+                            },
                             yes:function (index, layero) {
+                                //更新按钮的回调
                                 var body = layer.getChildFrame('body', index);
                                 // 找到隐藏的提交按钮模拟点击提交
-                                body.find('#submitbtn').click();
-                                return false;
-                                //按钮【按钮一】的回调
+                                body.find('#updatePersonSubmit').click();
+                                //return false 开启该代码可禁止点击该按钮关闭
                             },
                             btn2: function (index, layero) {
-                                layer.msg("重置表单");
-                                //按钮【按钮二】的回调
-
+                                //取消按钮的回调
+                                layer.close(updateLayer);
                                 //return false 开启该代码可禁止点击该按钮关闭
                             },
                             cancel: function () {
+                                layer.close(updateLayer);
                                 //右上角关闭回调
                                 //return false 开启该代码可禁止点击该按钮关闭
                             }
@@ -503,6 +610,7 @@
                 //监听查询模块提交事件
                 form.on('submit(person_info_query)', function(data){
                     const sourceData = data.field;
+
                     const area_class = sourceData.area_class;
                     const birthDate = sourceData.birthDate;
                     const level = sourceData.level;
@@ -514,7 +622,21 @@
                     const post = sourceData.post;
 
                     //解析解析框中的地址内容
-                    const nativePlace = getNativePlace(sourceData);
+                    const city = sourceData.city;
+                    const district = sourceData.district;
+                    const province = sourceData.province;
+                    // 通过地址code码获取地址名称
+                    var address = common.getCity({
+                        province,
+                        city,
+                        district
+                    });
+                    let provinceName = address.provinceName;
+                    let cityName = address.cityName;
+                    let districtName = address.districtName;
+
+                    //解析解析框中的地址内容
+                    const nativePlace = provinceName + '' + cityName + '' + districtName;
 
                     //重载表格
                     table.reload('personinformation', {
@@ -532,19 +654,33 @@
                             level : level,
                             phone : phone
                         }
-                        ,page: {
-                            curr: 1 //重新从第 1 页开始
-                        }
+                        ,page:true
                         ,request: {
                             pageName: 'curr' //页码的参数名称，默认：page
                             ,limitName: 'nums' //每页数据量的参数名，默认：limit
                         }
+                        ,page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
                     });
-
                     return false;
                 });
 
-                //监听查询模块充值
+/*                laypage.render({
+                    elem: 'test1'
+                    ,count: 70 //数据总数，从服务端得到
+                    ,jump: function(obj, first){
+                        //obj包含了当前分页的所有参数，比如：
+                        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                        console.log(obj.limit); //得到每页显示的条数
+
+                        //首次不执行
+                        if(!first){
+                            //do something
+                        }
+                    }
+                });*/
+
 
             });
         </script>

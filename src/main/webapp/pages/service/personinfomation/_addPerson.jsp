@@ -15,7 +15,7 @@
     <body>
         <div style="padding: 10px">
 
-            <form class="layui-form layui-form-pane" action="#" method="post">
+            <form class="layui-form layui-form-pane">
 
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">姓名</label>
@@ -131,18 +131,13 @@
 
                 <button type="submit" class="layui-btn" style="display:none"
                         id="addPersonSubmit" lay-submit lay-filter="addPersonSubmit"></button>
-               <%-- <div class="layui-form-item" >
-                    <div class="layui-input-block" style="padding-left: 50%">
-                        <button type="submit" class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
-                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
-                    </div>
-                </div>--%>
+                <button type="reset" class="layui-btn" style="display:none"
+                        id="addPersonReset" lay-submit lay-filter="addPersonReset"></button>
 
             </form>
         </div>
 
         <script type="text/javascript">
-
 
             layui.use(['laydate','form','common','table'], function() {
                 var laydate = layui.laydate;
@@ -191,8 +186,7 @@
                     let districtName = address.districtName;
 
                     //解析解析框中的地址内容
-                    const nativePlace = provinceName + '' + cityName + '' + districtName;
-                    console.log(nativePlace);
+                    const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
 
                     $.ajax({
                         type : 'POST',
@@ -228,7 +222,6 @@
                                     ,limitName: 'nums' //每页数据量的参数名，默认：limit
                                 }
                             });
-
                             //关闭此页面
                             parent.layer.close(index);
                         },

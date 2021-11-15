@@ -13,6 +13,8 @@ import java.util.List;
  * @Date 2021/8/29 11:52
  **/
 public interface PersonService {
+    //根据手机号删除人员信息
+
     //查询指定电话在数据库中的数量
     Long queryPhone(String phoneNum);
     //新增一个人员信息

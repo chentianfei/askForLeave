@@ -15,7 +15,7 @@ import java.util.List;
 */
 public class Person {
     //人员编号
-    private String person_id;
+    private Integer person_id;
     //姓名
     private String name;
     //性别
@@ -44,10 +44,11 @@ public class Person {
     public Person() {
     }
 
-    public Person(String person_id, String name, String sex, String nation,
-                  Date birthDate, String nativePlace, String office,
-                  String post, String area_class, String level, String phone,
-                  Integer allow_Leave_Days, List<Person> leader) {
+    public Person(Integer person_id, String name, String sex,
+                  String nation, Date birthDate, String nativePlace,
+                  String office, String post, String area_class,
+                  String level, String phone, Integer allow_Leave_Days,
+                  List<Person> leader) {
         this.person_id = person_id;
         this.name = name;
         this.sex = sex;
@@ -62,7 +63,6 @@ public class Person {
         this.allow_Leave_Days = allow_Leave_Days;
         this.leader = leader;
     }
-
 
     @Override
     public String toString() {
@@ -80,14 +80,14 @@ public class Person {
                 ", phone='" + phone + '\'' +
                 ", allow_Leave_Days=" + allow_Leave_Days +
                 ", leader='" + leader + '\'' +
-                '}';
+                '}' + "\n";
     }
 
-    public String getPerson_id() {
+    public Integer getPerson_id() {
         return person_id;
     }
 
-    public void setPerson_id(String person_id) {
+    public void setPerson_id(Integer person_id) {
         this.person_id = person_id;
     }
 

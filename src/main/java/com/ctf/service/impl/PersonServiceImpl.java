@@ -33,14 +33,11 @@ public class PersonServiceImpl implements PersonService {
      * @Date ：2021/11/14 17:33
      */
     public Integer addAPerson(Person person) {
-        System.out.println("调用了PersonServiceImpl的addAPerson方法："+person);
-        person.setPerson_id(WebUtils.generateAPersonId(person));
         return personDao.addAPerson(person);
     }
 
     @Override
     public List<Person> queryAllPersonLimit(int pageNo,int pageSize) {
-
         return personDao.queryAllPersonLimit(pageNo,pageSize);
     }
 
@@ -51,27 +48,12 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> querySomePerson(Person person) {
-        List<Person> personList = personDao.querySomePerson(person);
-
-        String person_id;
-        for (Person p:personList){
-            person_id = p.getPerson_id();
-            List<Person> leaderList = personDao.queryRelatedLeader(person_id);
-            p.setLeader(leaderList);
-        }
-        return personList;
+        return personDao.querySomePerson(person);
     }
 
     @Override
     public List<Person> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize) {
-        List<Person> personList = personDao.querySomePerson(person,pageNo,pageSize);
-        String person_id;
-        for (Person p:personList){
-            person_id = p.getPerson_id();
-            List<Person> leaderList = personDao.queryRelatedLeader(person_id);
-            p.setLeader(leaderList);
-        }
-        return personList;
+         return personDao.querySomePersonLimit(person,pageNo,pageSize);
     }
 
 
