@@ -234,6 +234,8 @@
         </script>
 
         <script>
+
+
             layui.use(['table','upload','laydate','common','element','form',
                 'layer', 'util','laypage'], function(){
                 var common = layui.common;

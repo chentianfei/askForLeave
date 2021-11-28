@@ -1,9 +1,0 @@
-.btn:disabled {
-    background-color: grey;
-}
-select#city {
-    display: none;
-}
-select#country {
-    display: none;
-}

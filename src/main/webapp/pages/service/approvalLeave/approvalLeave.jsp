@@ -267,9 +267,11 @@
                 var form = layui.form;
                 var laydate = layui.laydate;
 
-                layer.config({
-                    skin:'layui-layer-molv'
-                })
+                bindLevelSelectData();
+                bindNationSelectData();
+                bindOfficeSelectData();
+                //初始化请假种类下拉框
+                bindLeaveTypeSelectData();
 
                 //初始化请假开始时间
                 laydate.render({
