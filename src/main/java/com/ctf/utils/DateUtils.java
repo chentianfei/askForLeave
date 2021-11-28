@@ -30,6 +30,15 @@ public class DateUtils {
         return cal;
     }
 
+    //date类的加减法
+    public static Date addAndSubtractDays(Date date,int days){
+        Calendar cal=Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE,days);
+        date = cal.getTime();
+        return date;
+    }
+
     //精确计算相隔天数
     public static Integer getDaysBetween(Calendar d1, Calendar d2) {
         if (d1.after(d2)) {

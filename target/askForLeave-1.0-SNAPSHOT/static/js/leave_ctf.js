@@ -36,6 +36,52 @@ document.onkeydown = function(e){
     }
 }
 
+/*
+ * 表格分页参照
+ * parseData:function(res){ //res 即为原始返回的数据
+    console.log(res);
+    var current_pages;
+    //第一次显示的时候this.page=true，把这种情况单独列出
+    if(this.page===true)current_pages=1;
+    else current_pages=this.page.curr;
+    //根据分页要求选出需要显示的数据
+    var data= res.data.slice(this.limit*(current_pages-1),this.limit*current_pages);
+    return {
+        "code": res.code,
+        "msg":res.msg,
+        "count": res.data.length,
+        "data": data
+    }*/
+
+//根据人员编号person_id查询请假具体信息与统计数据，并重载表格
+function queryLeaveInfoAndReloadTable(){
+
+
+
+    //处理本年度请假信息统计显示功能
+    table_LeaveInfoCount.reload({
+        where: {
+            person_name: person_name
+            , phoneNum: phoneNum
+        }
+    });
+
+    //处理本年度请假详细信息显示功能
+    table_LeaveInfo.reload({
+        where: {
+            person_name: person_name
+            ,phoneNum: phoneNum
+        }
+    });
+
+}
+
+//点击查看详情按钮
+function openPersonDetailPage(person_id){
+    console.log(person_id);
+    layer.msg("person_id:"+person_id);
+}
+
 /*手机号码：唯一，手机框失去焦点后ajax到后台判断是否存在*/
 function isPhoneExists() {
     layui.use(['layer'], function () {
@@ -157,6 +203,31 @@ function bindLevelSelectData() {
     });
 }
 
+//为请假种类下拉框select绑定后台数据
+function bindLeaveTypeSelectData() {
+    layui.use(['laydate','form','common'], function() {
+        var form = layui.form;
+        var $ = layui.jquery;
+        $.ajax({
+            url: 'systemDataServlet?action=bindLeaveTypeSelectData',
+            dataType: 'json',
+            type: 'post',
+            success: function (data) {
+                if (data !== null) {
+                    $("#leave_type").empty();
+                    $("#leave_type").append("<option value=''>请选择</option>");
+                    $.each(data, function (index, item) {
+                        $('#leave_type').append(new Option(item.leave_type,item.leave_type));
+                    });
+                } else {
+                    $("#leave_type").append(new Option("暂无数据", ""));
+                }
+                //重新渲染
+                form.render("select");
+            }
+        });
+    });
+}
 
 //遍历选中行数据数组对象，根据str的值返回对应参数
 function queryAndBindInfo_array(data_array,str){

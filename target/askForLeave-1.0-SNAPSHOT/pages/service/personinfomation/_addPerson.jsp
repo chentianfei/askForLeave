@@ -20,7 +20,9 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">姓名</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="text" name="name" placeholder="请输入" lay-verify="required" id="username"
+                        <input type="text" name="name" placeholder="请输入"
+                               autocomplete=“off”
+                               lay-verify="required" id="username"
                                class="layui-input">
                     </div>
                 </div>
@@ -37,6 +39,7 @@
                     <label class="layui-form-label" style="width:150px">出生日期</label>
                     <div class="layui-input-inline" style="width:400px" >
                         <input type="text" class="layui-input" placeholder="请点击"
+                               autocomplete=“off”
                                id="birthDate" name="birthDate"  lay-verify="required">
                     </div>
                 </div>
@@ -97,7 +100,9 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">现任职务</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="text" name="post" placeholder="请输入" lay-verify="required"
+                        <input type="text" name="post" placeholder="请输入"
+                               autocomplete=“off”
+                               lay-verify="required"
                                class="layui-input">
                     </div>
                 </div>
@@ -115,6 +120,7 @@
                     <label class="layui-form-label" style="width:150px">联系电话</label>
                     <div class="layui-input-inline" style="width:400px">
                         <input type="tel" id="phone" name="phone" placeholder="请输入"
+                               autocomplete=“off”
                                lay-verify="required|phone"
                                onblur="isPhoneExists()"
                                autocomplete="off" class="layui-input">

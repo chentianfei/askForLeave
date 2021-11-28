@@ -333,7 +333,7 @@
                                             shade: [0.5, '#393D49'],
                                             area: ["1000px", "400px"],
                                             fixed: true,
-                                            content: "pages/service/askForLeave/_multipleName.jsp",
+                                            content: "pages/service/askForLeave/_personInfoDetail.jsp",
                                             anim: 2,
                                             btn:["确认","返回"],
                                             yes: function(index, layero){

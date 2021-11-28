@@ -1,5 +1,6 @@
 package com.ctf.web;
 
+import com.ctf.bean.LeaveType;
 import com.ctf.bean.Level;
 import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
@@ -38,6 +39,20 @@ public class SystemDataServlet extends BaseServlet{
         try {
             //以json格式返回给前端
             String result_json = new Gson().toJson(offices);
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().write(result_json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //绑定请假种类下拉框数据
+    public void bindLeaveTypeSelectData(HttpServletRequest request,HttpServletResponse response){
+        //通过SystemDataService中的queryLeaveType获取数据
+        List<LeaveType> leaveTypes = systemDataService.queryLeaveType();
+        try {
+            //以json格式返回给前端
+            String result_json = new Gson().toJson(leaveTypes);
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().write(result_json);
         } catch (IOException e) {

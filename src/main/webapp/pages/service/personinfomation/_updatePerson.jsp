@@ -21,8 +21,7 @@
             <label class="layui-form-label" style="width:150px">姓名</label>
             <div class="layui-input-inline" style="width:400px">
                 <input type="text" name="name" id="name" placeholder="请输入" lay-verify="required" id="username"
-                       class="layui-input"
-                       readonly="readonly">
+                       class="layui-input">
             </div>
         </div>
 
@@ -134,10 +133,22 @@
             </div>
         </div>
 
+        <!-- 数据域 -->
+        <div class="layui-form-item" style="display:none">
+            <label class="layui-form-label" style="width:150px">人员编号</label>
+            <div class="layui-input-inline" style="width:400px">
+                <input name="person_id"
+                       id="person_id"
+                       placeholder="请输入" lay-verify="required|number"
+                       autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <!-- 数据域 -->
         <button type="submit" class="layui-btn" style="display:none"
                 id="updatePersonSubmit" lay-submit lay-filter="updatePersonSubmit"></button>
         <button type="reset" class="layui-btn" style="display:none"
-                id="addPersonReset" lay-submit lay-filter="addPersonReset"></button>
+                id="addPersonReset" lay-submit lay-filter="updatePersonReset"></button>
 
     </form>
 </div>
@@ -151,6 +162,7 @@
         var index = parent.layer.getFrameIndex(window.name);
         var common = layui.common;
         var table = layui.table;
+
         //日期框
         laydate.render({
             elem: '#birthDate'//指定元素
@@ -158,14 +170,10 @@
         });
 
         form.render();
-        //父页面已经赋值
-        //bindLevelSelectData();
-        //bindNationSelectData();
-        //bindOfficeSelectData();
 
-        form.on('submit(addPersonSubmit)', function(data){
+        form.on('submit(updatePersonSubmit)', function(data){
             const sourceData = data.field;
-
+            const person_id = sourceData.person_id;
             const area_class = sourceData.area_class;
             const birthDate = sourceData.birthDate;
             const level = sourceData.level;
@@ -192,12 +200,13 @@
             let districtName = address.districtName;
 
             //解析解析框中的地址内容
-            const nativePlace = provinceName + '' + cityName + '' + districtName;
+            const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
 
             $.ajax({
                 type : 'POST',
-                url : 'personServlet?action=addAPerson',
+                url : 'personServlet?action=updatePersonInfo',
                 data : {
+                    person_id : person_id,
                     name : name,
                     sex : sex,
                     nation : nation,
@@ -213,7 +222,7 @@
                 dataType : 'json',
                 success : function(data) {
                     // 成功提示框
-                    parent.layer.msg('添加成功', {
+                    parent.layer.msg('更新成功', {
                         icon : 6,
                     });
 
@@ -228,6 +237,7 @@
                             ,limitName: 'nums' //每页数据量的参数名，默认：limit
                         }
                     });
+
                     //关闭此页面
                     parent.layer.close(index);
                 },

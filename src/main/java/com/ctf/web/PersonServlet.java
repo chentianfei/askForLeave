@@ -25,7 +25,7 @@ import java.util.*;
 public class PersonServlet extends BaseServlet{
 
     PersonServiceImpl personService = new PersonServiceImpl();
-
+    //判断手机号是否存在
     public void isPhoneExists(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -52,17 +52,14 @@ public class PersonServlet extends BaseServlet{
         response.getWriter().write(result_json);
     }
 
-    //添加一个人的信息
+    //添加一个人的信息（新增人员）
     public void addAPerson(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
-        System.out.println("调用了PersonServlet的addAPerson方法");
-
         //获取前端传来的参数
         Map<String, String[]> personInfo = request.getParameterMap();
         Person person = WebUtils.fillBean(personInfo, Person.class);
-        System.out.println("调用了PersonServlet的addAPerson方法："+person);
 
         //调用personService的addAPerson往数据库新增数据
         Integer code = personService.addAPerson(person);
@@ -73,7 +70,7 @@ public class PersonServlet extends BaseServlet{
         response.getWriter().write(result_json);
     }
 
-    //根据条件查询人员信息
+    //根据条件查询人员信息(查询框)
     public void querySomePersons(HttpServletRequest request,HttpServletResponse response) throws IOException, InvocationTargetException, IllegalAccessException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -86,6 +83,7 @@ public class PersonServlet extends BaseServlet{
 
         //获取前端传来的查询参数
         Map<String, String[]> map = request.getParameterMap();
+
         //通过BeanUtils封装成Person类对象
         Person person = WebUtils.fillBean(map, Person.class);
 
@@ -106,10 +104,9 @@ public class PersonServlet extends BaseServlet{
         String result_json = new Gson().toJson(result);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
-
     }
 
-    //查询所有人员信息
+    //查询所有人员信息（初始化刷新）
     public void queryAllPerson(HttpServletRequest req,HttpServletResponse resp) throws IOException {
         //获取当前页码
         Integer pageNo =Integer.valueOf(req.getParameter("curr"));
@@ -132,41 +129,161 @@ public class PersonServlet extends BaseServlet{
     }
 
     //查询人员基本信息
-    public void queryPersonDetail(HttpServletRequest request,HttpServletResponse response) throws IOException {
-        System.out.println("查询人员基本信息:调用了PersonServlet的queryPersonDetail方法");
-        String person_name = request.getParameter("person_name");
-        String phoneNum = request.getParameter("phoneNum");
-        System.out.println("[person_name]="+person_name+"、[phoneNum]="+phoneNum);
+    public void queryPersonInfoById(HttpServletRequest request,HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        Integer person_id = Integer.parseInt( request.getParameter("person_id"));
 
+        //本次查询在进行分页后返回的数据
+        Person people = personService.queryPersonInfoById(person_id);
+        List<Person> peopleList = new ArrayList<>();
+        peopleList.add(people);
 
-        Person person1 = new Person();
-        Person person2 = new Person();
-        Person person3 = new Person();
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> result = new HashMap<>();
+        result.put("code",0);
+        result.put("msg","哈哈");
+        result.put("count",peopleList.size());
+        result.put("data",peopleList);
 
-        String result_json = new Gson().toJson(person1);
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(result);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
 
     }
 
     //绑定相关领导
-    public void bindRelatedLeader(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void bindRelatedLeader(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
 
-        req.setAttribute("leaveKind","username");
-        req.setAttribute("totalCount","totalCount");
-        req.setAttribute("totalDays","totalDays");
+        int code = 0;
+        if(request.getParameter("leader_id") == ""  || request.getParameter("leader_id") == null){
+            code = -1;
+        }else {
+            //获取参数
+            Integer leader_id = Integer.parseInt( request.getParameter("leader_id"));
+            Integer subordinate_id = Integer.parseInt( request.getParameter("subordinate_id"));
+            if(personService.queryRelatedLeader(subordinate_id).size() != 0){
+                //遍历领导信息，确保该领导没有被添加过
+                for(Person leader : personService.queryRelatedLeader(subordinate_id)){
+                    if(leader.getPerson_id() == leader_id){
+                        //需要添加的领导信息已经存在，不能重复添加
+                        code = -2;
+                    }else {
+                        code = personService.bindRelatedLeader(leader_id,subordinate_id);
+                    }
+                }
+            }else {
+                code = personService.bindRelatedLeader(leader_id,subordinate_id);
+            }
 
-        System.out.println("调用了PersonServlet的bindRelatedLeader");
+        }
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //查询相关领导
+    public void queryRelatedLeader(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //获取参数
+        Integer subordinate_id = Integer.parseInt(request.getParameter("subordinate_id"));
+
+        List<Person> leaderList = personService.queryRelatedLeader(subordinate_id);
+
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","哈哈");
+        //map.put("count",leaderList.size());
+        map.put("count",leaderList.size());
+        map.put("data",leaderList);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //删除相关领导
+    public void deleteTheLeader(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取参数
+        Integer leader_id = Integer.parseInt( request.getParameter("leader_id"));
+        Integer subordinate_id = Integer.parseInt( request.getParameter("subordinate_id"));
+
+        Integer code = personService.deleteTheLeader(leader_id,subordinate_id);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
     }
 
     //更新人员信息
-    public void updatePersonInfo(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void updatePersonInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("调用了PersonServlet的updatePersonInfo");
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        Map<String, String[]> personInfo = request.getParameterMap();
+        Person person = WebUtils.fillBean(personInfo, Person.class);
+        System.out.println("调用了PersonServlet的addAPerson方法："+person);
+
+        Integer code = personService.updatePersonInfo(person);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+
+    //根据人员姓名查询人员信息（用于查询重名信息）
+    public void queryPersonInfoByName(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        String person_name = request.getParameter("person_name");
+        System.out.println("person_name:  "+person_name);
+
+        //本次查询在进行分页后返回的数据
+        List<Person> peoples = personService.queryPersonInfoByName(person_name);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> result = new HashMap<>();
+        result.put("code",0);
+        result.put("msg","哈哈");
+        result.put("count",peoples.size());
+        result.put("data",peoples);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(result);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
     }
 
     //删除人员信息
-    public void deleteThePerson(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void deleteThePerson(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("调用了PersonServlet的deleteThePerson");
+        request.setCharacterEncoding("utf-8");
+        Integer person_id = Integer.parseInt(request.getParameter("person_id"));
+
+        Integer code = personService.deletePersonInfoByID(person_id);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
     }
 
     //判断是否重名

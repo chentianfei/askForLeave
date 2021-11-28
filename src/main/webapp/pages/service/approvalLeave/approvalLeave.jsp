@@ -31,115 +31,178 @@
                                     <div class="layui-card-header layui-bg-blue">待审批信息查询</div>
                                     <div class="layui-card-body">
                                         <%--查询表单开始--%>
-                                        <form class="layui-form layui-form-pane" action="#" method="post">
+                                            <form class="layui-form layui-form-pane">
 
-                                            <div class="layui-form-item">
-                                                <%--姓名--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label" style="width: 100px">姓名</label>
-                                                    <div class="layui-input-inline" style="width: 150px">
-                                                        <input type="text" name="username" placeholder="请输入"
-                                                               class="layui-input">
+                                                <div class="layui-form-item">
+                                                    <%--姓名--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">姓名</label>
+                                                        <div class="layui-input-inline"  style="width: 150px">
+                                                            <input type="text" name="name"
+                                                                   id="name"
+                                                                   placeholder="请输入"
+                                                                   class="layui-input" autocomplete=“off”>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <%--工作单位--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label" style="width: 100px">工作单位</label>
-                                                    <div class="layui-input-inline" style="width: 150px">
-                                                        <select name="modules" lay-search="">
-                                                            <option value=""></option>
-                                                            <option value="1">layer</option>
-                                                            <option value="2">form</option>
-                                                        </select>
+                                                    <%--工作单位--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">工作单位</label>
+                                                        <div class="layui-input-inline"  style="width: 150px" >
+                                                            <select id="office" name="office" lay-search>
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <%--联系方式--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label" style="width: 100px">联系方式</label>
-                                                    <div class="layui-input-inline" style="width: 150px">
-                                                        <input type="tel" name="phone" lay-verify="phone"
-                                                               placeholder="请输入" autocomplete="off" class="layui-input">
+                                                    <%--职级--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">职级</label>
+                                                        <div class="layui-input-inline"  style="width: 150px">
+                                                            <select id="level" name="level" lay-search >
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
+                                                    <%--所在类区--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width:100px">所在类区</label>
+                                                        <div class="layui-input-inline" style="width:150px">
+                                                            <select name="area_class" id="area_class" lay-search >
+                                                                <option value="">请选择</option>
+                                                                <option value="二类区">二类区</option>
+                                                                <option value="三类区">三类区</option>
+                                                                <option value="四类区">四类区</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <%--联系方式--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">联系电话</label>
+                                                        <div class="layui-input-inline"  style="width: 150px">
+                                                            <input type="tel" name="phone" id="phone"
+                                                                   placeholder="请输入" autocomplete="off" class="layui-input">
+                                                        </div>
+                                                    </div>
 
-                                            <div class="layui-form-item">
-                                                <%--起始地--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label" style="width: 100px">起始地</label>
-                                                    <div class="layui-input-inline" style="width: 150px">
-                                                        <input type="text" name="username" placeholder="请输入"
-                                                               class="layui-input">
+                                                </div>
+
+                                                <div class="layui-form-item">
+                                                    <%--本人籍贯--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">本人籍贯</label>
+                                                        <div class="layui-input-inline" style="width: 135px">
+                                                            <select name="province" <%--data-area="西藏自治区"--%> lay-filter="province">
+                                                                <option value="">选择省</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="layui-input-inline" style="width: 135px">
+                                                            <select name="city" <%--data-area="日喀则市"--%> lay-filter="city">
+                                                                <option value="">选择市</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="layui-input-inline" style="width: 135px">
+                                                            <select name="district" <%--data-area="仲巴县" --%>lay-filter="district">
+                                                                <option value="">选择区</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <%--出发地--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">出发地</label>
+                                                        <div class="layui-input-inline" style="width: 150px">
+                                                            <input type="text" name="depart_location"
+                                                                   id="depart_location"
+                                                                   placeholder=""
+                                                                   class="layui-input">
+                                                        </div>
+                                                    </div>
+
+                                                    <%--到达地--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label" style="width: 100px">到达地</label>
+                                                        <div class="layui-input-inline" style="width: 150px">
+                                                            <input type="text" name="arrive_location"
+                                                                   id="arrive_location"
+                                                                   placeholder=""
+                                                                   class="layui-input">
+                                                        </div>
+                                                    </div>
+
+                                                    <%--假期类型--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label"
+                                                               style="width: 100px">请假种类</label>
+                                                        <div class="layui-input-inline" style="width: 150px">
+                                                            <select id="leave_type" name="leave_type"  lay-search="">
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <%--批准人--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label"
+                                                               style="width: 100px">批准人</label>
+                                                        <div class="layui-input-inline" style="width: 150px">
+                                                            <input type="text" name="approver"
+                                                                   autocomplete="off" 
+                                                                   id="approver" placeholder=""
+                                                                   class="layui-input">
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <%--带范围的选择区域--%>
+                                                <div class="layui-form-item">
+
+                                                    <%--开始时间 start_date--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label"
+                                                               style="width: 145px">请假开始时间</label>
+                                                        <div class="layui-inline"  id="start_date">
+                                                            <div class="layui-input-inline" style="width: 170px">
+                                                                <input type="text" autocomplete="off" id="start_date_min"
+                                                                       name="start_date_min"
+                                                                       class="layui-input" placeholder="开始日期">
+                                                            </div>
+                                                            <div class="layui-form-mid">至</div>
+                                                            <div class="layui-input-inline" style="width: 170px">
+                                                                <input type="text" autocomplete="off" id="start_date_max"
+                                                                       name="start_date_max"
+                                                                       class="layui-input" placeholder="结束日期">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <%--预计到岗时间 end_date_maybe--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label"
+                                                               style="width: 145px">预计到岗时间</label>
+                                                        <div class="layui-inline"  id="end_date_maybe">
+                                                            <div class="layui-input-inline" style="width: 170px">
+                                                                <input type="text" autocomplete="off" id="end_date_maybe_min"
+                                                                       name="end_date_maybe_min"
+                                                                       class="layui-input" placeholder="开始日期">
+                                                            </div>
+                                                            <div class="layui-form-mid">至</div>
+                                                            <div class="layui-input-inline" style="width: 170px">
+                                                                <input type="text" autocomplete="off" id="end_date_maybe_max"
+                                                                       name="end_date_maybe_max"
+                                                                       class="layui-input" placeholder="结束日期">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="layui-form-item" style="padding-left: 70%">
+                                                    <div class="layui-input-block">
+                                                        <button type="submit" class="layui-btn" lay-submit lay-filter="leave_info_query">查询</button>
+                                                        <button type="reset" class="layui-btn layui-btn-normal" >重置</button>
                                                     </div>
                                                 </div>
 
-                                                <%--到达点--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label" style="width: 100px">到达点</label>
-                                                    <div class="layui-input-inline" style="width: 150px">
-                                                        <input type="text" name="username" placeholder="请输入"
-                                                               class="layui-input">
-                                                    </div>
-                                                </div>
-
-                                                <%--预计开始时间--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label"
-                                                           style="width: 100px;">预计开始时间</label>
-                                                    <div class="layui-input-inline" style="width: 150px;">
-                                                        <input type="text" class="layui-input" id="startDate">
-                                                    </div>
-                                                </div>
-                                                <%--预计到岗时间--%>
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label"
-                                                           style="width: 100px;">预计到岗时间</label>
-                                                    <div class="layui-input-inline" style="width: 150px;">
-                                                        <input type="text" class="layui-input" id="endDate">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <%--本人籍贯--%>
-                                            <div class="layui-form-item">
-                                                <div class="layui-inline">
-                                                    <label class="layui-form-label" style="width: 100px">本人籍贯</label>
-                                                    <div class="layui-input-inline" style="width: 100px">
-                                                        <select name="quiz1">
-                                                            <option value="">请选择省</option>
-                                                            <option value="浙江">浙江省</option>
-                                                            <option value="你的工号">江西省</option>
-                                                            <option value="你最喜欢的老师">福建省</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="layui-input-inline" style="width: 100px">
-                                                        <select name="quiz2">
-                                                            <option value="">请选择市</option>
-                                                            <option value="杭州">杭州</option>
-                                                            <option value="宁波">宁波</option>
-                                                            <option value="温州">温州</option>
-                                                            <option value="温州">台州</option>
-                                                            <option value="温州">绍兴</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="layui-input-inline" style="width: 130px">
-                                                        <select name="quiz3">
-                                                            <option value="">请选择县/区</option>
-                                                            <option value="西湖区">西湖区</option>
-                                                            <option value="余杭区">余杭区</option>
-                                                            <option value="拱墅区">临安市</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <%--按钮区域--%>
-                                            <div class="layui-form-item" style="padding-left: 70%">
-                                                <div class="layui-input-block">
-                                                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
-                                                    <button type="reset" class="layui-btn layui-btn-normal" >重置</button>
-                                                </div>
-                                            </div>
-                                        </form>
+                                            </form>
                                         <%--查询表单结束--%>
                                     </div>
                                 </div>
@@ -159,7 +222,7 @@
                                         <div class="layui-card-body">
 
                                             <%--数据展示--%>
-                                            <table class="layui-hide" id="auditInfo" lay-filter="auditInfo"></table>
+                                            <table class="layui-hide" id="approval" lay-filter="approval"></table>
 
                                         </div>
                                     </div>
@@ -168,6 +231,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <%--底部信息--%>
@@ -176,6 +240,15 @@
             </div>
 
         </div>
+
+        <%--表格上方工具栏--%>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增单个人员</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
+                <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
+            </div>
+        </script>
 
         <%--表格内部工具栏--%>
         <script type="text/html" id="audit">
@@ -186,9 +259,9 @@
 
         <script>
             layui.use(['table','upload','laydate','element','form', 'layer', 'util'], function(){
-                var element = layui.element
-                var layer = layui.layer
-                var util = layui.util
+                var element = layui.element;
+                var layer = layui.layer;
+                var util = layui.util;
                 var $ = layui.jquery;
                 var table = layui.table;
                 var form = layui.form;
@@ -198,47 +271,50 @@
                     skin:'layui-layer-molv'
                 })
 
+                //初始化请假开始时间
                 laydate.render({
-                    elem: '#startDate'//指定元素
-                    ,type:'date'
+                    elem: '#start_date'
+                    ,range: ['#start_date_min', '#start_date_max']
                 });
 
+                //初始化预计到岗时间
                 laydate.render({
-                    elem: '#endDate'//指定元素
-                    ,type:'date'
+                    elem: '#end_date_maybe'
+                    ,range: ['#end_date_maybe_min', '#end_date_maybe_max']
                 });
 
                 table.render({
-                    elem: '#auditInfo'
-                    ,url:'infoServlet?action=queryAuditInfo'
-                    ,page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
-                        layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'] //自定义分页布局
-                        ,curr: 5 //设定初始在第 5 页
-                        ,groups: 5 //只显示 1 个连续页码
-                        ,first: "首页" //不显示首页
-                        ,last: "末页" //不显示尾页
+                    elem: '#approval'
+                    ,url:'askForLeaveServlet?action=queryAllLeaveInfo'
+                    ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+                    ,title: '待审核信息表'
+                    ,request: {
+                        pageName: 'curr' //页码的参数名称，默认：page
+                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
                     }
+                    ,limit:5
+                    ,limits:[5,10,15]
                     ,cols: [[
                         {type: 'checkbox'}
-                        , {field: 'info_id', title: '流水号', width: 100}
-                        ,{field:'person_name', title:'姓名',width:"8%"}
-                        ,{field:'office', title:'工作单位',width:"15%"}
-                        ,{field:'job', title:'现任职务',width:"10%"}
-                        ,{field:'leaveType', title:'请假类型',width:"8%"}
-                        ,{field:'reason', title:'请假事由',width:"8%"}
-                        ,{field:'startDate', title:'开始日期',width:"12%"}
-                        ,{field:'days', title:'请假天数',width:"8%"}
-                        ,{field:'permitPerson', title:'批准人',width:"8%"}
-                        ,{field:'startLocation', title:'出发地',width:"10%"}
-                        ,{field:'endLocation', title:'到达地',width:"10%"}
-                        ,{field:'endDate', title:'预计到岗日期',width:"12%" }
-                        ,{field:'phoneNum', title:'联系电话',width:"15%"}
-                        ,{field:'leaveComment', title:'请假备注',width:"10%"}
-                        ,{fixed: 'right', title:'操作', toolbar: '#audit',width: "18%"}
+                        ,{field: 'info_id', title: '流水号', align:'center', width: 100}
+                        ,{field:'person_name', title:'姓名', align:'center',width:"8%"}
+                        ,{field:'office', title:'工作单位', align:'center',width:"15%"}
+                        ,{field:'job', title:'现任职务', align:'center',width:"10%"}
+                        ,{field:'leaveType', title:'请假类型', align:'center',width:"8%"}
+                        ,{field:'reason', title:'请假事由', align:'center',width:"8%"}
+                        ,{field:'startDate', title:'开始日期', align:'center',width:"12%"}
+                        ,{field:'days', title:'请假天数', align:'center',width:"8%"}
+                        ,{field:'permitPerson', title:'批准人', align:'center',width:"8%"}
+                        ,{field:'startLocation', title:'出发地', align:'center',width:"10%"}
+                        ,{field:'endLocation', title:'到达地', align:'center',width:"10%"}
+                        ,{field:'endDate', title:'预计到岗日期', align:'center',width:"12%" }
+                        ,{field:'phoneNum', title:'联系电话', align:'center',width:"15%"}
+                        ,{field:'leaveComment', title:'请假备注', align:'center',width:"10%"}
+                        ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: "18%"}
                     ]]
                 });
 
-                table.on('tool(auditInfo)', function(obj){
+                table.on('tool(approval)', function(obj){
                     var data = obj.data;
 
                     var person_name;//用于保存人员姓名
@@ -453,8 +529,13 @@
                     }
                 });
 
+                //监听查询区域的提交按钮事件
+                form.on('submit(leave_info_query)',function (data) {
+                    console.log(data.field);
+                    return false;
+                });
+                
             });
-
         </script>
 
     </body>

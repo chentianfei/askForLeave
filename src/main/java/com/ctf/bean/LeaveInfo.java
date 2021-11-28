@@ -13,47 +13,237 @@ import java.util.Date;
  * @Date 2021/8/26 02:35
  * @Version v1.0
  */
-public class LeaveInfo {
+public class  LeaveInfo {
 
-    private Person person;//请假者基本信息
-    private String person_name;//请假者姓名
-    private String office;//现在工作单位
-    private String job;//现任职务
-    private String phoneNum;//联系电话
+    private Integer serialnumber;//流水号
+    private String name;//请假者姓名
+    private Integer person_id;//人员编号
+    private String leave_type;//请假种类
+    private Date start_date;//开始日期
+    private Integer leave_days_projected;//预计请假天数
+    private String work_leader;//不在岗期间主持工作领导
+    private String leave_reason;//请假事由
+    private String approver;//批准人
+    private String depart_location;//出发地
+    private String arrive_location;//到达地
+    private String start_leave_remark;//请假备注
+    private Date end_date_maybe;//预计到岗日期
+    private String start_leave_operator;//请假操作员
+    private String approvalstatus;//审批状态
+    private Date end_date;//销假日期（实际到岗日期）
+    private String end_leave_remark;//销假备注
+    private String end_leave_operator;//销假操作员
+    private Integer leave_days_actual;//请假天数（实际请假天数）
 
-    private String info_id;//流水号
-    private String leaveType;//请假类型
-    private Integer days;//预计请假天数
-    private Integer actualDays;//预计请假天数
-    private Date startDate;//开始日期
-    private Date endDate;//预计到岗日期
-    private Date actualEndDate;//实际到岗日期
-    private String workLeader;//不在岗期间主持工作领导
-    private String reason;//请假事由
-    private String permitPerson;//批准人
-    private String startLocation;//出发地
-    private String endLocation;//到达地
-    private String leaveRemark;//请假备注
 
-    private boolean approveStatus;//审批状态
+    public LeaveInfo() {
+    }
 
-    private String removeComment;//销假备注
+    public LeaveInfo(Integer serialnumber, String name,
+                     Integer person_id, String leave_type,
+                     Date start_date,
+                     Integer leave_days_projected, String work_leader,
+                     String leave_reason, String approver,
+                     String depart_location, String arrive_location,
+                     String start_leave_remark, Date end_date_maybe,
+                     String start_leave_operator, String approvalstatus,
+                     Date end_date, String end_leave_remark,
+                     String end_leave_operator, Integer leave_days_actual) {
+        this.serialnumber = serialnumber;
+        this.name = name;
+        this.person_id = person_id;
+        this.leave_type = leave_type;
+        this.start_date = start_date;
+        this.leave_days_projected = leave_days_projected;
+        this.work_leader = work_leader;
+        this.leave_reason = leave_reason;
+        this.approver = approver;
+        this.depart_location = depart_location;
+        this.arrive_location = arrive_location;
+        this.start_leave_remark = start_leave_remark;
+        this.end_date_maybe = end_date_maybe;
+        this.start_leave_operator = start_leave_operator;
+        this.approvalstatus = approvalstatus;
+        this.end_date = end_date;
+        this.end_leave_remark = end_leave_remark;
+        this.end_leave_operator = end_leave_operator;
+        this.leave_days_actual = leave_days_actual;
+    }
 
-    private Integer thisYearRestDays;//本年度剩余可请假天数
-    private Integer shijiaDays;//已请事假天数
-    private Integer xiujiaDays;//已请休假天数
-    private Integer bingjiaDays;//已请病假天数
-    private Integer hunjiaDays;//已请婚假天数
-    private Integer sangjiaDays;//已请丧假天数
-    private Integer peichanjiaDays;//已请陪产假天数
-    private Integer chanjiaDays;//已请产假天数
-    private Integer chuchaiDays;//已请出差天数
-    private Integer peixunDays;//已请培训天数
-    private Integer hanshouDays;//已请函授天数
-    private Integer nextYearRestDays;//下年度剩余可请假天数
+    @Override
+    public String toString() {
+        return "LeaveInfo{" +
+                "serialnumber=" + serialnumber +
+                ", name='" + name + '\'' +
+                ", person_id=" + person_id +
+                ", leave_type='" + leave_type + '\'' +
+                ", start_date=" + start_date +
+                ", leave_days_projected=" + leave_days_projected +
+                ", work_leader='" + work_leader + '\'' +
+                ", leave_reason='" + leave_reason + '\'' +
+                ", approver='" + approver + '\'' +
+                ", depart_location='" + depart_location + '\'' +
+                ", arrive_location='" + arrive_location + '\'' +
+                ", start_leave_remark='" + start_leave_remark + '\'' +
+                ", end_date_maybe=" + end_date_maybe +
+                ", start_leave_operator='" + start_leave_operator + '\'' +
+                ", approvalstatus='" + approvalstatus + '\'' +
+                ", end_date=" + end_date +
+                ", end_leave_remark='" + end_leave_remark + '\'' +
+                ", end_leave_operator='" + end_leave_operator + '\'' +
+                ", leave_days_actual=" + leave_days_actual +
+                '}';
+    }
 
-    private boolean isThisYearLeave;//本年度是否允许休假
-    private boolean isNextYearLeave;//下一年度是否允许休假
+    public String getApprovalstatus() {
+        return approvalstatus;
+    }
 
-    private Date thisYear;//记录服务器当前时间，用于判断是否跨年
+    public void setApprovalstatus(String approvalstatus) {
+        this.approvalstatus = approvalstatus;
+    }
+
+    public Date getEnd_date() {
+        return end_date;
+    }
+
+    public void setEnd_date(Date end_date) {
+        this.end_date = end_date;
+    }
+
+    public String getEnd_leave_remark() {
+        return end_leave_remark;
+    }
+
+    public void setEnd_leave_remark(String end_leave_remark) {
+        this.end_leave_remark = end_leave_remark;
+    }
+
+    public String getEnd_leave_operator() {
+        return end_leave_operator;
+    }
+
+    public void setEnd_leave_operator(String end_leave_operator) {
+        this.end_leave_operator = end_leave_operator;
+    }
+
+    public Integer getLeave_days_actual() {
+        return leave_days_actual;
+    }
+
+    public void setLeave_days_actual(Integer leave_days_actual) {
+        this.leave_days_actual = leave_days_actual;
+    }
+
+    public Integer getSerialnumber() {
+        return serialnumber;
+    }
+
+    public void setSerialnumber(Integer serialnumber) {
+        this.serialnumber = serialnumber;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getPerson_id() {
+        return person_id;
+    }
+
+    public void setPerson_id(Integer person_id) {
+        this.person_id = person_id;
+    }
+
+    public String getLeave_type() {
+        return leave_type;
+    }
+
+    public void setLeave_type(String leave_type) {
+        this.leave_type = leave_type;
+    }
+
+    public Date getStart_date() {
+        return start_date;
+    }
+
+    public void setStart_date(Date start_date) {
+        this.start_date = start_date;
+    }
+
+    public Integer getLeave_days_projected() {
+        return leave_days_projected;
+    }
+
+    public void setLeave_days_projected(Integer leave_days_projected) {
+        this.leave_days_projected = leave_days_projected;
+    }
+
+    public String getWork_leader() {
+        return work_leader;
+    }
+
+    public void setWork_leader(String work_leader) {
+        this.work_leader = work_leader;
+    }
+
+    public String getLeave_reason() {
+        return leave_reason;
+    }
+
+    public void setLeave_reason(String leave_reason) {
+        this.leave_reason = leave_reason;
+    }
+
+    public String getApprover() {
+        return approver;
+    }
+
+    public void setApprover(String approver) {
+        this.approver = approver;
+    }
+
+    public String getDepart_location() {
+        return depart_location;
+    }
+
+    public void setDepart_location(String depart_location) {
+        this.depart_location = depart_location;
+    }
+
+    public String getArrive_location() {
+        return arrive_location;
+    }
+
+    public void setArrive_location(String arrive_location) {
+        this.arrive_location = arrive_location;
+    }
+
+    public String getStart_leave_remark() {
+        return start_leave_remark;
+    }
+
+    public void setStart_leave_remark(String start_leave_remark) {
+        this.start_leave_remark = start_leave_remark;
+    }
+
+    public Date getEnd_date_maybe() {
+        return end_date_maybe;
+    }
+
+    public void setEnd_date_maybe(Date end_date_maybe) {
+        this.end_date_maybe = end_date_maybe;
+    }
+
+    public String getStart_leave_operator() {
+        return start_leave_operator;
+    }
+
+    public void setStart_leave_operator(String start_leave_operator) {
+        this.start_leave_operator = start_leave_operator;
+    }
 }

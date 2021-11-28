@@ -23,12 +23,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>InfoServlet</servlet-name>
-        <servlet-class>com.ctf.web.InfoServlet</servlet-class>
+        <servlet-name>AskForLeaveServlet</servlet-name>
+        <servlet-class>com.ctf.web.AskForLeaveServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>InfoServlet</servlet-name>
-        <url-pattern>/infoServlet</url-pattern>
+        <servlet-name>AskForLeaveServlet</servlet-name>
+        <url-pattern>/askForLeaveServlet</url-pattern>
     </servlet-mapping>
     
     <servlet>

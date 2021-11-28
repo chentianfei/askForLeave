@@ -1,5 +1,6 @@
 package com.ctf.service.impl;
 
+import com.ctf.bean.LeaveType;
 import com.ctf.bean.Level;
 import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
@@ -11,6 +12,11 @@ import java.util.List;
 public class SystemDataServiceImpl implements SystemDataService {
 
     SystemDataDao systemDataDao = new SystemDataDao();
+
+    @Override
+    public List<LeaveType> queryLeaveType() {
+        return systemDataDao.queryLeaveType();
+    }
 
     @Override
     public List<Office> queryOffice() {

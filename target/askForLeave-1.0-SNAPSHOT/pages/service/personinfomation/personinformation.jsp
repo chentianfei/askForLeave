@@ -45,14 +45,14 @@
                                                     <label class="layui-form-label" style="width: 100px">姓名</label>
                                                     <div class="layui-input-inline"  style="width: 150px">
                                                         <input type="text" name="name" placeholder="请输入"
-                                                               class="layui-input">
+                                                               class="layui-input" autocomplete=“off”>
                                                     </div>
                                                 </div>
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">性别</label>
                                                     <div class="layui-input-inline" style="width: 150px" >
-                                                        <select name="sex" lay-search>
+                                                        <select name="sex" lay-search autocomplete=“off”>
                                                             <option value=""></option>
                                                             <%--mysql中为enum枚举类型，从1开始--%>
                                                             <option value="1">男</option>
@@ -72,7 +72,7 @@
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">民族</label>
                                                     <div class="layui-input-inline"  style="width: 150px" >
-                                                        <select id="nation" name="nation" lay-search>
+                                                        <select id="nation" name="nation" lay-search >
                                                             <option value=""></option>
                                                         </select>
                                                     </div>
@@ -80,14 +80,15 @@
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px;">出生日期</label>
-                                                    <div class="layui-input-inline" style="width: 150px;">
-                                                        <input type="text" name="birthDate" class="layui-input" id="birthDate">
+                                                    <div class="layui-input-inline" style="width: 150px;" >
+                                                        <input type="text" name="birthDate" autocomplete=“off”
+                                                               class="layui-input" id="birthDate">
                                                     </div>
                                                 </div>
 
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">工作单位</label>
-                                                    <div class="layui-input-inline"  style="width: 150px">
+                                                    <div class="layui-input-inline"  style="width: 150px" >
                                                         <select id="office" name="office" lay-search>
                                                             <option value=""></option>
                                                         </select>
@@ -102,7 +103,7 @@
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">现任职务</label>
                                                     <div class="layui-input-inline"  style="width: 150px">
-                                                        <input type="text" name="post" placeholder="请输入"
+                                                        <input type="text" name="post" placeholder="请输入" autocomplete=“off”
                                                                class="layui-input">
                                                     </div>
                                                 </div>
@@ -110,7 +111,7 @@
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width: 100px">职级</label>
                                                     <div class="layui-input-inline"  style="width: 150px">
-                                                        <select id="level" name="level" lay-search>
+                                                        <select id="level" name="level" lay-search >
                                                         </select>
                                                     </div>
                                                 </div>
@@ -118,11 +119,10 @@
                                                 <div class="layui-inline">
                                                     <label class="layui-form-label" style="width:100px">所在类区</label>
                                                     <div class="layui-input-inline" style="width:150px">
-                                                        <select name="area_class" lay-search>
+                                                        <select name="area_class" lay-search >
                                                             <option value="">请选择</option>
                                                             <option value="二类区">二类区</option>
                                                             <option value="三类区">三类区</option>
-                                                            <%--<option value="四类区" selected>四类区</option>--%>
                                                             <option value="四类区">四类区</option>
                                                         </select>
                                                     </div>
@@ -164,7 +164,7 @@
                     </div>
                 </div>
 
-                <%--信息管理--%>
+                <%--表格展示--%>
                 <div class="layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-bg-gray" style="padding: 10px;">
@@ -191,6 +191,12 @@
                 <%@include file="/pages/common/footer.jsp" %>
             </div>
 
+            <%--接受person_id的值，以便子页面获取--%>
+            <input  type="hidden" class="layui-input"
+                    name="person_id"
+                    style="display:none"
+                    id="person_id"  />
+
         </div>
 
         <%--表格上方工具栏--%>
@@ -202,7 +208,7 @@
             </div>
         </script>
 
-        <%--表格内部工具栏1--%>
+        <%--表格内部工具栏--%>
         <script type="text/html" id="baseInfo">
             <a class="layui-btn layui-btn-xs" lay-event="update" >修改</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
@@ -211,29 +217,23 @@
             <a type="button"
                class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
                lay-event="bindLeader">
-                绑定相关领导
+                暂未绑定领导
             </a>
             <%--<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unPass">未审批</a>--%>
             {{#  } }}
 
             {{#  if(d.leader.length >0 ){ }}
             <a type="button"
-               class="layui-btn  layui-btn-xs layui-btn-primary layui-btn-radius"
+               class="layui-btn  layui-btn-xs layui-btn-primary layui-border-green  layui-btn-radius"
                lay-event="showRelatedLeader">
-                查看相关领导
+                已绑定{{ d.leader.length }}位领导
             </a>
             <%--<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pass">已审批</a>--%>
             {{#  } }}
 
         </script>
-        <%--表格内部工具栏2--%>
-        <%--<script type="text/html" id="relatedLeader">
-
-            &lt;%&ndash;<a layui-btn-normal layui-btn-radius lay-event="edit">绑定相关领导</a>&ndash;%&gt;
-        </script>--%>
 
         <script>
-
             layui.use(['table','upload','laydate','common','element','form',
                 'layer', 'util','laypage'], function(){
                 var common = layui.common;
@@ -264,24 +264,25 @@
                     ,limits:[5,10,15]
                     ,cols: [[
                         /*{field:'person_id', title:'人员编号',width: 120}*/
-                        {field:'name', title:'姓名',width: 100}
-                        ,{field:'sex', title:'性别',width: 60}
+                        {field:'name', title:'姓名',align:"center",width: 100}
+                        ,{field:'sex', title:'性别',align:"center",width: 60}
                         ,{field:'birthDate',
                             title:'出生日期',
                             width: 140,
+                            align:"center",
                             templet:
                                 '<div>{{ layui.util.toDateString(new Date(d.birthDate).getTime(), "yyyy年MM月dd日") }}</div>'
                         }
-                        ,{field:'area_class', title:'所在类区',width: 85}
-                        ,{field:'nation', title:'民族',width: 80}
-                        ,{field:'nativePlace', title:'本人籍贯',width: 240}
-                        ,{field:'office', title:'工作单位'}
-                        ,{field:'post', title:'现任职务',width: 160}
-                        ,{field:'level', title:'职级',width: 120}
-                        ,{field:'phone', title:'联系电话',width: 125}
-                        ,{field:'allow_Leave_Days', title:'允许休假天数',width: 120}
-                        ,{field:'leader', title:'相关领导',hide:true,width: 120}
-                        ,{fixed: 'right', title:'操作', toolbar: '#baseInfo',width:220}
+                        ,{field:'area_class', title:'所在类区',align:"center",width: 85}
+                        ,{field:'nation', title:'民族',align:"center",width: 80}
+                        ,{field:'nativePlace', title:'本人籍贯',align:"center",width: 240}
+                        ,{field:'office', title:'工作单位',align:"center"}
+                        ,{field:'post', title:'现任职务',align:"center",width: 160}
+                        ,{field:'level', title:'职级',align:"center",width: 120}
+                        ,{field:'phone', title:'联系电话',align:"center",width: 125}
+                        ,{field:'allow_Leave_Days', title:'允许休假天数',align:"center",width: 120}
+                        ,{field:'leader', title:'相关领导',hide:true,align:"center",width: 120}
+                        ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:220}
                     ]]
                     ,page: true
                 });
@@ -336,10 +337,6 @@
                         case 'uploadBtn':
                             break;
 
-                       /* //自定义头工具栏右侧图标 - 提示
-                        case 'LAYTABLE_TIPS':
-                            layer.alert('这是工具栏右侧自定义的一个图标按钮');
-                            break;*/
                     };
                 });
 
@@ -355,8 +352,11 @@
                     var bindLeaderLayer;
                     var showRelatedLeaderLayer;
 
+                    var person_id = data.person_id;
+                    $("#person_id").val(person_id);
+
+                    //更新人员信息
                     if(layEvent === 'update'){
-                        //更新人员信息
                         updateLayer = layer.open({
                             type: 2,
                             title: '更新人员信息',
@@ -368,9 +368,6 @@
                             anim:2,
                             id:'LAY_layuipro',
                             resize:false,
-                            end:function(){
-                                table.reload('demo',{  });
-                            },
                             btn:['更新','取消'],
                             success: function (layero, index) {
                                 var body = layer.getChildFrame('body', index);
@@ -391,6 +388,7 @@
                                 //为工作类区绑定下拉框
                                 body.find("#area_class option[value='" + data.area_class+"']")
                                     .attr("selected", "selected");
+                                body.find("#person_id").val(data.person_id)
 
                                 //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
                                 $.ajax({
@@ -464,7 +462,6 @@
                                     }
                                 })
 
-
                             },
                             yes:function (index, layero) {
                                 //更新按钮的回调
@@ -484,96 +481,119 @@
                                 //return false 开启该代码可禁止点击该按钮关闭
                             }
                         });
-                    }else if(layEvent === 'delete'){
-                        //删除数据
-                        // alert("[obj.tr]:" + obj.tr);
-                        // alert("[obj.data]:" + obj.data);
-                        // alert("[obj.event]:" + obj.event);
+                    }
+                    //删除人员
+                    else if(layEvent === 'delete'){
                        deleteLayer = layer.confirm('真的删除行么', function(index){
                             obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                             layer.close(index);
-
                             //向服务端发送删除指令
-                            /*layer.alert(JSON.stringify(data), {
-                                title: '当前行数据：'
-                            });*/
-
+                           $.ajax({
+                               type : 'POST',
+                               url : 'personServlet?action=deleteThePerson',
+                               data : {
+                                   person_id : data.person_id,
+                               },
+                               dataType : 'json',
+                               success : function(data) {
+                                   // 成功提示框
+                                   parent.layer.msg('已删除', {
+                                       icon : 6,
+                                   });
+                                   //重载表格
+                                   parent.layui.table.reload('personinformation', {
+                                       url: 'personServlet?action=queryAllPerson'
+                                       ,page: {
+                                           curr: 1 //重新从第 1 页开始
+                                       }
+                                       ,request: {
+                                           pageName: 'curr' //页码的参数名称，默认：page
+                                           ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                       }
+                                   });
+                                   //关闭此页面
+                                   parent.layer.close(deleteLayer);
+                               },
+                               error : function(data) {
+                                   // 异常提示
+                                   parent.layer.msg('出现网络故障', {
+                                       icon : 5
+                                   });
+                               }
+                           });
                         });
-                    } else if(layEvent === 'bindLeader'){ //绑定相关领导
-                        //do something
+                    }
+                    //绑定相关领导
+                    else if(layEvent === 'bindLeader'){
                         bindLeaderLayer = layer.open({
                             type: 2,
                             title: '绑定相关领导',
                             shadeClose: true,
                             shade: false,
                             maxmin: true, //开启最大化最小化按钮
-                            area: ['600px', '600px'],
+                            area: ['600px', '400px'],
                             content: "pages/service/personinfomation/_bindLeader.jsp",
                             anim:2,
                             id:'LAY_layuipro',
                             resize:false,
-                            btn:['提交','重置'],
+                            btn:['提交'],
+                            success: function (layero, index) {
+                                var body = layer.getChildFrame('body', index);
+                                //给隐藏域传值
+                                body.find("#subordinate_id").val(person_id);
+                            },
                             yes:function (index, layero) {
                                 var body = layer.getChildFrame('body', index);
                                 // 找到隐藏的提交按钮模拟点击提交
-                                body.find('#submitbtn').click();
-                                return false;
-                                //按钮【按钮一】的回调
-                            },
-                            btn2: function (index, layero) {
-                                layer.msg("重置表单");
-                                //按钮【按钮二】的回调
-
-                                //return false 开启该代码可禁止点击该按钮关闭
+                                body.find('#bindLeaderSubmit').click();
+                                //重载表格
+                                table.reload('personinformation', {
+                                    url: 'personServlet?action=queryAllPerson'
+                                    ,page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                    ,request: {
+                                        pageName: 'curr' //页码的参数名称，默认：page
+                                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                    }
+                                });
+                                //关闭此页面
+                                layer.close(bindLeaderLayer);
                             },
                             cancel: function () {
+                                //关闭此页面
+                                parent.layer.close(bindLeaderLayer);
                                 //右上角关闭回调
                                 //return false 开启该代码可禁止点击该按钮关闭
                             }
                         });
 
-                        //同步更新缓存对应的值
-                        obj.update({
-                            username: '123'
-                            ,title: 'xxx'
-                        });
-                    } else if(layEvent === 'showRelatedLeader'){ //查看相关领导
+                    }
+                    //查看相关领导
+                    else if(layEvent === 'showRelatedLeader'){
                         //do something
                         showRelatedLeaderLayer = layer.open({
                             type: 2,
                             title: '查看相关领导',
-                            shadeClose: true,
-                            shade: false,
+                            fixed: true,
                             maxmin: true, //开启最大化最小化按钮
-                            area: ['600px', '600px'],
-                            id:'LAY_layuipro',
-                            content: "pages/service/personinfomation/_bindLeader.jsp",
+                            area: ['1200px', '600px'],
+                            id: "LAY_layuipro",
+                            content: "pages/service/personinfomation/_showRelatedLeader.jsp",
                             anim:2,
                             resize:false,
-                            btn:['提交','重置'],
-                            yes:function (index, layero) {
-                                var body = layer.getChildFrame('body', index);
-                                // 找到隐藏的提交按钮模拟点击提交
-                                body.find('#submitbtn').click();
-                                return false;
-                                //按钮【按钮一】的回调
-                            },
-                            btn2: function (index, layero) {
-                                layer.msg("重置表单");
-                                //按钮【按钮二】的回调
-
-                                //return false 开启该代码可禁止点击该按钮关闭
+                            success: function (layero, index) {
+                                /*不要用body.find("#subordinate_id").val(subordinate_id)获取下属id值
+                                  会出现父页面将值赋给子页面有延迟，子页面获取值时，父页面还没赋值完，导致获取到空值
+                                  这里直接采用获取父页面隐藏域的值的方式，父页面的值随时都有，子页面难以读取就能读取出来
+                                  */
                             },
                             cancel: function () {
+                                //关闭此页面
+                                parent.layer.close(showRelatedLeaderLayer);
                                 //右上角关闭回调
                                 //return false 开启该代码可禁止点击该按钮关闭
                             }
-                        });
-
-                        //同步更新缓存对应的值
-                        obj.update({
-                            username: '123'
-                            ,title: 'xxx'
                         });
                     }
                 });
@@ -665,21 +685,6 @@
                     });
                     return false;
                 });
-
-/*                laypage.render({
-                    elem: 'test1'
-                    ,count: 70 //数据总数，从服务端得到
-                    ,jump: function(obj, first){
-                        //obj包含了当前分页的所有参数，比如：
-                        console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
-                        console.log(obj.limit); //得到每页显示的条数
-
-                        //首次不执行
-                        if(!first){
-                            //do something
-                        }
-                    }
-                });*/
 
 
             });

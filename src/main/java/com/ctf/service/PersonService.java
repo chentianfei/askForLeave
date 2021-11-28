@@ -13,8 +13,11 @@ import java.util.List;
  * @Date 2021/8/29 11:52
  **/
 public interface PersonService {
+    //根据人员id删除人员信息
+    Integer deletePersonInfoByID(Integer person_id);
+    //更新人员信息
+    Integer updatePersonInfo(Person person);
     //根据手机号删除人员信息
-
     //查询指定电话在数据库中的数量
     Long queryPhone(String phoneNum);
     //新增一个人员信息
@@ -28,11 +31,19 @@ public interface PersonService {
     //根据不定条件查询人员信息_不分页
     List<Person> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize);
     //根据人员编号查询单个人员信息
-    Person queryOnePersonById(Integer person_id);
+    Person queryPersonInfoById(Integer person_id);
     //根据人员姓名、人员电话查询人员全部信息
     Person queryOnePersonByNameAndPhone(String person_name,String person_phoneNum);
     //根据人员姓名查询人员信息
     List<Person> querySomePersonByName(String person_name);
     //根据其他查询条件查询人员信息
     List<Person> querySomePersonByConditions(String sql_condition);
+    //根据人员姓名查询人员信息（用于查询重名信息）
+    List<Person> queryPersonInfoByName(String person_name);
+    //绑定相关领导
+    Integer bindRelatedLeader(Integer leader_id, Integer subordinate_id);
+    //查询相关领导
+    List<Person> queryRelatedLeader(Integer subordinate_id);
+    //删除相关领导
+    Integer deleteTheLeader(Integer leader_id, Integer subordinate_id);
 }

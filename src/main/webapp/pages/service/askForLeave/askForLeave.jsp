@@ -26,88 +26,75 @@
                                         <div class="layui-card">
                                             <div class="layui-card-header  layui-bg-blue">请假信息登记</div>
                                             <div class="layui-card-body">
+
                                                 <form class="layui-form layui-form-pane">
 
                                                     <div class="layui-form-item">
-                                                        <label class="layui-form-label" style="width: 100px">姓名</label>
-                                                        <div class="layui-input-inline" style="width: 300px">
-                                                            <input type="text" name="person_name" placeholder="输入后请敲回车，若有重名，将会选择正确信息"
-                                                                   class="layui-input" id="person_name">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="layui-form-item">
-                                                        <%--人员基本信息展示--%>
-                                                        <table class="layui-table">
-                                                            <colgroup>
-                                                                <col width="8%">
-                                                                <col width="8%">
-                                                                <col width="15%">
-                                                                <col width="">
-                                                                <col width="">
-                                                                <col width="15%">
-                                                                <col width="15%">
-                                                            </colgroup>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th style="text-align: center">性别</th>
-                                                                    <th style="text-align: center">民族</th>
-                                                                    <th style="text-align: center">出生年月</th>
-                                                                    <th style="text-align: center">本人籍贯</th>
-                                                                    <th style="text-align: center">工作单位</th>
-                                                                    <th style="text-align: center">现任职务</th>
-                                                                    <th style="text-align: center">联系电话</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="text-align: center" id="td_sex" name="td_sex">-</td>
-                                                                    <td style="text-align: center" id="td_nationality" name="td_nationality'">-</td>
-                                                                    <td style="text-align: center" id="td_birthDate" name="td_birthDate">-</td>
-                                                                    <td style="text-align: center" id="td_nativePlace" name="td_nativePlace">-</td>
-                                                                    <td style="text-align: center" id="td_office" name="td_office">-</td>
-                                                                    <td style="text-align: center" id="td_job" name="td_job">-</td>
-                                                                    <td style="text-align: center" id="td_phoneNum" name="td_phoneNum">-</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-
-                                                    <div class="layui-form-item">
                                                         <div class="layui-inline">
-                                                            <label class="layui-form-label"
-                                                                   style="width: 100px">请假种类</label>
-                                                            <div class="layui-input-inline" style="width: 100px">
-                                                                <select name="leaveType" lay-search="">
-                                                                    <option value=""></option>
-                                                                    <option value="1">事假</option>
-                                                                    <option value="2">休假</option>
+                                                            <label class="layui-form-label" style="width: 100px">姓名</label>
+                                                            <div class="layui-input-inline" style="width: 300px">
+                                                                <input type="text" name="nameInput" placeholder=""
+                                                                       autocomplete="off" lay-verify="required"
+                                                                       class="layui-input" id="nameInput">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="layui-inline">
+                                                            <div class="layui-input-inline" style="width:350px">
+                                                                <select name="person_info" id="person_info"
+                                                                        lay-filter="person_info"
+                                                                        lay-verify="required">
+                                                                    <option value="">请先输入请假者姓名</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="layui-inline">
+
+                                                        <div class="layui-inline" id="showPersonDetailDiv"> </div>
+
+                                                    </div>
+
+
+                                                    <div class="layui-form-item">
+                                                            <label class="layui-form-label"
+                                                                   style="width: 100px">请假种类</label>
+                                                            <div class="layui-input-inline" style="width: 400px">
+                                                                <select id="leave_type" name="leave_type" lay-verify="required" lay-search="">
+                                                                    <option value=""></option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    <div class="layui-form-item">
                                                             <label class="layui-form-label"
                                                                    style="width: 100px;">开始日期</label>
-                                                            <div class="layui-input-inline" style="width: 150px;">
-                                                                <input type="text" class="layui-input" name="startDate"
-                                                                       id="startDate">
+                                                            <div class="layui-input-inline" style="width: 400px">
+                                                                <input type="text" class="layui-input"
+                                                                       autocomplete="off" lay-verify="required"
+                                                                       name="start_date"
+                                                                       id="start_date">
                                                             </div>
                                                         </div>
-                                                        <div class="layui-inline">
+
+                                                    <div class="layui-form-item">
                                                             <label class="layui-form-label"
                                                                    style="width: 100px">请假天数</label>
-                                                            <div class="layui-input-inline" style="width: 100px">
-                                                                <input type="text" name="leaveDays" placeholder="请输入"
+                                                            <div class="layui-input-inline" style="width: 400px">
+                                                                <input type="text" name="leave_days_projected"
+                                                                       id="leave_days_projected"
+                                                                       lay-verify="number||required"
+                                                                       autocomplete="off"
                                                                        class="layui-input">
                                                             </div>
-                                                        </div>
                                                     </div>
+
 
                                                     <div class="layui-form-item">
                                                         <label class="layui-form-label"
                                                                style="width: 200px">不在岗期间主持工作领导</label>
                                                         <div class="layui-input-inline" style="width: 300px">
-                                                            <input type="text" name="workLeader" placeholder="请输入"
+                                                            <input type="text" name="work_leader"
+                                                                   autocomplete="off" lay-verify="required"
+                                                                   id="work_leader" placeholder=""
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -116,7 +103,9 @@
                                                         <label class="layui-form-label"
                                                                style="width: 100px">请假事由</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <input type="text" name="reason" placeholder="请输入"
+                                                            <input type="text" name="leave_reason"
+                                                                   autocomplete="off" lay-verify="required"
+                                                                   id="leave_reason" placeholder=""
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -125,7 +114,9 @@
                                                         <label class="layui-form-label"
                                                                style="width: 100px">批准人</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <input type="text" name="permmitPerson" placeholder="请输入"
+                                                            <input type="text" name="approver"
+                                                                   autocomplete="off" lay-verify="required"
+                                                                   id="approver" placeholder=""
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -133,7 +124,9 @@
                                                     <div class="layui-form-item">
                                                         <label class="layui-form-label" style="width: 100px">出发地</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <input type="text" name="startLocation" placeholder="请输入"
+                                                            <input type="text" name="depart_location"
+                                                                   autocomplete="off" lay-verify="required"
+                                                                   id="depart_location" placeholder=""
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -142,7 +135,9 @@
                                                         <label class="layui-form-label"
                                                                style="width: 100px">到达地</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <input type="text" name="endLocation" placeholder="请输入"
+                                                            <input type="text" name="arrive_location"
+                                                                   autocomplete="off" lay-verify="required"
+                                                                   id="arrive_location" placeholder=""
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -150,7 +145,9 @@
                                                     <div class="layui-form-item">
                                                         <label class="layui-form-label" style="width: 100px">备注</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <textarea placeholder="请输入内容" name="leaveRemark"
+                                                            <textarea placeholder="" name="start_leave_remark"
+                                                                      id="start_leave_remark"
+                                                                      autocomplete="off"
                                                                       class="layui-textarea"></textarea>
                                                         </div>
                                                     </div>
@@ -160,11 +157,21 @@
                                                             <button type="submit" class="layui-btn" lay-submit
                                                                     lay-filter="submit">提交
                                                             </button>
-                                                            <button type="button" class="layui-btn layui-btn-normal">
-                                                                取消
+                                                            <button type="reset" id="resetBtn" class="layui-btn layui-btn-normal" >
+                                                                重置
                                                             </button>
+
                                                         </div>
                                                     </div>
+
+                                                    <%--人员编号数据域
+                                                    <div class="layui-form-item">
+                                                        <div class="layui-input-inline" style="display: none ">
+                                                            <input type="text" name="person_id" placeholder=""
+                                                                   class="layui-input" id="person_id">
+                                                        </div>
+                                                    </div>
+                                                    --%>
                                                 </form>
 
                                             </div>
@@ -173,8 +180,6 @@
                                 </div>
                             </div>
                         </div>
-
-
 
                         <div class="layui-col-md4">
 
@@ -205,7 +210,7 @@
                                             <div class="layui-card">
                                                 <div class="layui-card-header layui-bg-blue">本年度请假信息详情</div>
                                                 <div class="layui-card-body">
-                                                    <table class="layui-hide" id="LeaveInfo"></table>
+                                                    <table class="layui-hide" id="LeaveInfoDetail"></table>
                                                 </div>
                                             </div>
                                         </div>
@@ -214,10 +219,34 @@
                             </div>
                         </div>
 
+
                     </div>
 
                 </div>
             </div>
+
+                <script id="showPersonDetailScript" type="text/html">
+                    {{#  if(d.person_id_value == ""){ }}
+                    {{#  } }}
+                    {{#  if(d.person_id_value == null){ }}
+                    {{#  } }}
+                    {{#  if(d.person_id_value != ""){ }}
+                    <button type="button"
+                            id="showPersonDetail"
+                    <%--onclick="openPersonDetailPage($('#nameInput').val())"--%>
+                            onclick="openPersonDetailPage(person_id_value)"
+                            class="layui-btn layui-btn-primary layui-border-blue">
+                        查看详情
+                    </button>
+                    {{#  } }}
+                    <%-- {{#  } else { }}
+                         <button type="button"
+                                 id="showPersonDetail"
+                                 class="layui-btn layui-btn-primary layui-border-blue">
+                             查看详情
+                         </button>
+                     {{#  } }}--%>
+                </script>
 
                 <%--底部信息--%>
             <div class="layui-footer">
@@ -228,6 +257,12 @@
 
 
         <script>
+
+            $(function () {
+                //全局使用的人员编号
+                var person_id_value;
+            })
+
             //全局取消回车默认事件
             document.onkeydown = function (e) {
                 if (e.keyCode == 13) {
@@ -235,7 +270,7 @@
                 }
             }
 
-            layui.use(['laydate', 'element', 'layer', 'util', 'table',"form"], function () {
+            layui.use(['laytpl','laydate', 'element', 'layer', 'util', 'table',"form"], function () {
                 var element = layui.element;
                 var layer = layui.layer;
                 var util = layui.util;
@@ -244,24 +279,90 @@
                 var form = layui.form;
                 //日期选择框
                 var laydate = layui.laydate;
+                var laytpl=layui.laytpl;
 
                 //定义变量用于补充表单提交时时无法自动获取的参数
                 var person_name;//人员姓名
                 var startDate;//开始日期
-                var phoneNum;//联系电话
+
+                //laytpl模板内容
+                var getTemplate = $('#showPersonDetailScript').html();
 
                 //初始化日期框，并获取选中的值
                 laydate.render({
-                    elem: '#startDate' //指定元素
+                    elem: '#start_date' //指定元素
                     ,done: function(value, date){
                         startDate = value;
                     }
                 });
 
+                //请假者名字输入框完成输入后敲回车后发起数据查询——开始 person_info nameInput
+                $("#nameInput").keydown(function (e) {
+                    switch (e.keyCode) {
+                        case 13:
+                            $.ajax({
+                                url: 'personServlet?action=queryPersonInfoByName',
+                                dataType: 'json',
+                                data:{
+                                    person_name : $("#nameInput").val()
+                                },
+                                type: 'post',
+                                success: function (result) {
+                                    if (result.data.length > 0) {
+                                        $("#person_info").empty();
+                                        $("#person_info").append("<option value=''>已查询出人员信息，请选择</option>");
+                                        $.each(result, function (key, value) {
+                                            if(key == "data"){
+                                                $.each(result.data,function (infoIndex,personInfo) {
+                                                    var person = personInfo.name+":"
+                                                        +personInfo.office+"-"
+                                                        +personInfo.post+"-"
+                                                        +personInfo.phone;
+                                                    var person_id_result = personInfo.person_id;
+                                                    //加入和本人id不同的领导信息
+                                                    $('#person_info').append(new Option(person,person_id_result));
+                                                })
+                                            }
+                                        });
+                                    } else {
+                                        $("#person_info").empty();
+                                        $("#person_info").append("<option value=''>无该人员信息，请核实输入是否正确</option>");
+                                        //将laytpl的person_id置空，使得按钮消失
+                                        var data = {
+                                            person_id_value : ""
+                                        }
+                                        //初始化“查看详情”按钮
+                                        laytpl(getTemplate).render(data, function (html) {
+                                            $('#showPersonDetailDiv').html(html);
+                                        });
+                                    }
+                                    //重新渲染
+                                    form.render("select");
+                                }
+                            });
+                            break;
+                    }
+                });
+                //名字输入框onblur后发起数据查询——结束
+
+                //下拉框选中后给person_id和其他基本信息表格赋值
+                form.on('select(person_info)', function(data){
+                    //给person_id赋值
+                    person_id_value = data.value;
+                    //初始化“查看详情”按钮
+                    laytpl(getTemplate).render(person_id_value, function (html) {
+                        $('#showPersonDetailDiv').html(html);
+                    });
+
+                });
+
+                //初始化请假种类下拉框
+                bindLeaveTypeSelectData();
+
                 //本年度请假信息详情表格数据初始化
                 var table_LeaveInfo = table.render({
-                    elem: '#LeaveInfo'
-                    , url: "infoServlet?action=queryThisYearLeaveInfo"
+                    elem: '#LeaveInfoDetail'
+                    , url: "askForLeaveServlet?action=queryThisYearLeaveInfo"
                     , cellMinWidth: 80
                     , cols: [[
                         {field: 'type', width: '25%', title: '假期类型'}
@@ -278,13 +379,18 @@
                         ,last: false //不显示尾页
                     }
                     ,parseData:function(res){ //res 即为原始返回的数据
-                        console.log(res);
+                        //console.log(res);
                         var current_pages;
                         //第一次显示的时候this.page=true，把这种情况单独列出
-                        if(this.page===true)current_pages=1;
-                        else current_pages=this.page.curr;
+                        if(this.page===true){
+                            current_pages=1;
+                        } else {
+                            current_pages=this.page.curr;
+                        }
                         //根据分页要求选出需要显示的数据
-                        var data= res.data.slice(this.limit*(current_pages-1),this.limit*current_pages);
+                        var data= res.data.slice(
+                            this.limit*(current_pages-1), this.limit*current_pages
+                        );
                         return {
                             "code": res.code,
                             "msg":res.msg,
@@ -297,10 +403,10 @@
                 //本年度请假信息统计表格数据初始化
                 var table_LeaveInfoCount = table.render({
                     elem: '#LeaveInfoCount'
-                    , url: "infoServlet?action=queryThisYearLeaveInfoCount"
+                    , url: "askForLeaveServlet?action=queryThisYearLeaveInfoCount"
                     , cellMinWidth: 80
                     , cols: [[
-                        {field: 'type', width: '40%', title: '假期类型'}
+                        {field: 'leave_type', width: '40%', title: '假期类型'}
                         , {field: 'time', width: '30%', title: '累计次数'}
                         , {field: 'totalDays', width: '30%', title: '累计天数'}
                     ]]
@@ -313,7 +419,7 @@
                         ,last: false //不显示尾页
                     }
                     ,parseData:function(res){ //res 即为原始返回的数据
-                        console.log(res);
+                        //console.log(res);
                         var current_pages;
                         //第一次显示的时候this.page=true，把这种情况单独列出
                         if(this.page===true)current_pages=1;
@@ -329,144 +435,61 @@
                     }
                 });
 
-                //名字输入框onblur后发起数据查询——开始
-                $("#person_name").keydown(function (e) {
-                    switch (e.keyCode) {
-                        case 13:
-                            person_name = $("#person_name").val();
-                            //发起ajax请求后台数据查询
-                            $.ajax({
-                                type: "get",
-                                contentType: "application/json;charset=UTF-8",
-                                url: "personServlet?action=queryMultipleName",
-                                dataType: "JSON",
-                                data: {"person_name": person_name},
-                                //请求成功
-                                success: function (result) {
-                                    //判断结果集是否有多人
-                                    //结果集记录数>1：弹窗，显示具体信息
-                                    //结果集记录数=1，直接显示表格
-                                    if (result.data.length > 1) {
-                                        layer.open({
-                                            type: 2,
-                                            title: '请选择正确人员信息',
-                                            shadeClose: false,
-                                            shade: [0.5, '#393D49'],
-                                            area: ["1000px", "400px"],
-                                            fixed: true,
-                                            content: "pages/service/askForLeave/_multipleName.jsp",
-                                            anim: 2,
-                                            btn:["确认","返回"],
-                                            yes: function(index, layero){
-                                                //获取弹窗里表格的数据
-                                                var ifameWin = parent["layui-layer-iframe"+index];
-                                                var data = ifameWin.layui.table.checkStatus("multipleName").data;
-                                                //遍历弹窗里的选中行的数据，为本页面的表格赋值
-                                                for (var key in data) {
-                                                    //data本身就是个json对象，是行数据对象，相当于java里的list
-                                                    //一行表示data里有一条数据，多行多个，故如果要取得每一个里面的数据
-                                                    //需要进行两次遍历，先取得行数据，在取得该行里的人员信息的对应信息
-                                                    for (var key_in in data[key]) {
-                                                        // console.log("key_in=" + key_in);
-                                                        // console.log("data[key][key_in]=" + data[key][key_in]);
-                                                        if (key_in === "sex") {
-                                                            $("#td_sex").html(data[key][key_in]);
-                                                        } else if (key_in === "nationality") {
-                                                            $("#td_nationality").html(data[key][key_in]);
-                                                        } else if (key_in === "birthDate") {
-                                                            $("#td_birthDate").html(data[key][key_in]);
-                                                        } else if (key_in === "nativePlace") {
-                                                            $("#td_nativePlace").html(data[key][key_in]);
-                                                        } else if (key_in === "office") {
-                                                            $("#td_office").html(data[key][key_in]);
-                                                        } else if (key_in === "job") {
-                                                            $("#td_job").html(data[key][key_in]);
-                                                        } else if (key_in === "phoneNum") {
-                                                            $("#td_phoneNum").html(data[key][key_in]);
-                                                            phoneNum = data[key][key_in];
-                                                        }
-                                                    }
-                                                }
-
-                                                //根据选择好的人员，通过table.reload（人员姓名、联系电话）进行表格分别查询本年度请假统计信息、本年度请假信息详情并作回显
-                                                //查询当前已经累计在岗天数：计算当前日期与上次系统记录日起的时间差,并作回显
-                                                $.ajax({
-                                                    url:"infoServlet?action=queryTotalWorkDays",
-                                                    method:"post",
-                                                    data:{
-                                                        "person_name": person_name,
-                                                        "phoneNum":phoneNum
-                                                    },
-                                                    dataType: "json",
-                                                    success:function () {
-                                                        $("#totalworkdays").html("28天")
-
-                                                    },
-                                                    error:function(){
-                                                        $("#totalworkdays").html("28天");
-                                                        // $("#totalworkdays").html("查询失败")
-                                                    }
-
-                                                })
-
-
-                                                //处理本年度请假信息统计显示功能
-                                                table_LeaveInfoCount.reload({
-                                                    where: {
-                                                        person_name: person_name
-                                                        , phoneNum: phoneNum
-                                                    }
-                                                });
-                                                //处理本年度请假详细信息显示功能
-                                                table_LeaveInfo.reload({
-                                                    where: {
-                                                        person_name: person_name
-                                                        ,phoneNum: phoneNum
-                                                    }
-                                                });
-
-                                                //关闭弹窗
-                                                layer.close(index);
-                                            },
-                                            cancel: function () {
-
-                                            }
-                                        });
-                                    } else if (result.data.length == 1) {
-                                        alert("result.length == 1");
-                                    }
-                                },
-                                error: function (e) {
-                                    console.log(e.status);
-                                    console.log(e.responseText);
-                                }
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                });
-                //名字输入框onblur后发起数据查询——结束
-
                 //表单提交事件
                 form.on('submit(submit)', function(data){
+                    const sourceData = data.field;
+
+                    console.log("person_id: " + person_id_value);
+
                     $.ajax({
-                        // url:"infoServlet?action=askForLeave&startDate="+startDate+"&phoneNum="+phoneNum,
-                        url:"infoServlet?action=askForLeave&phoneNum="+phoneNum,
-                        method:"post",
-                        data:data.field,
-                        dataType: "json",
-                        success:function () {
-                            layer.msg('操作成功',{icon: 1});
-                            //window.location.href = "pages/service/approvalLeave/approvalLeave.jsp"
+                        url: 'askForLeaveServlet?action=addLeaveInfo',
+                        dataType: 'json',
+                        data: {
+                            name:sourceData.nameInput,
+                            person_id:person_id_value,
+                            leave_type:sourceData.leave_type,
+                            start_date:sourceData.start_date,
+                            leave_days_projected:sourceData.leave_days_projected,
+                            work_leader:sourceData.work_leader,
+                            leave_reason:sourceData.leave_reason,
+                            approver:sourceData.approver,
+                            depart_location:sourceData.depart_location,
+                            arrive_location:sourceData.arrive_location,
+                            start_leave_remark:sourceData.start_leave_remark,
+                            end_date_maybe:sourceData.end_date_maybe,
+                            start_leave_operator:sourceData.start_leave_operator
+                        },
+                        type: 'post',
+                        success: function (data) {
+                            layer.msg('操作成功!是否前往审核页面？', {
+                                icon: 1
+                                ,time: 0 //不自动关闭
+                                ,btn: ['前往审核', '继续添加']
+                                ,yes: function(index){
+                                    //点击了前往审核
+                                    //关闭消息提示
+                                    layer.close(index);
+                                    //点击重置按钮实现重置
+                                    $("#resetBtn").click();
+                                    //跳转到审核页面
+                                    window.location.href = "pages/service/approvalLeave/approvalLeave.jsp"
+                                }
+                                ,btn2:function(index){
+                                    //点击了继续添加
+                                    //关闭消息提示
+                                    layer.close(index);
+                                    //点击重置按钮实现重置
+                                    $("#resetBtn").click();
+                                }
+                            });
                         },
                         error:function(){
                             //window.location.href = "pages/service/approvalLeave/approvalLeave.jsp"
                             layer.msg('操作成功???',{icon: 1});
                             //layer.msg('操作失败',{icon: 2});
                         }
+                    });
 
-                    })
                     return false;
                 });
 

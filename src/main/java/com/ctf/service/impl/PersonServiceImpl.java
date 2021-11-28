@@ -18,6 +18,36 @@ import java.util.List;
 public class PersonServiceImpl implements PersonService {
     PersonDao personDao = new PersonDao();
 
+    @Override
+    public Integer deleteTheLeader(Integer leader_id, Integer subordinate_id) {
+        return personDao.deleteTheLeaderDao(leader_id,subordinate_id);
+    }
+
+    @Override
+    public List<Person> queryRelatedLeader(Integer subordinate_id) {
+        return personDao.queryRelatedLeader(subordinate_id);
+    }
+
+    @Override
+    public Integer bindRelatedLeader(Integer leader_id, Integer subordinate_id) {
+        return personDao.bindRelatedLeaderDao(leader_id,subordinate_id);
+    }
+
+    @Override
+    public List<Person> queryPersonInfoByName(String person_name) {
+        return personDao.queryPersonInfoByName(person_name);
+    }
+
+    @Override
+    public Integer deletePersonInfoByID(Integer person_id) {
+        return personDao.deletePersonInfoByID(person_id);
+    }
+
+    @Override
+    public Integer updatePersonInfo(Person person) {
+
+        return personDao.updatePersonInfo(person);
+    }
 
     @Override
     public Long queryPhone(String phoneNum) {
@@ -56,10 +86,9 @@ public class PersonServiceImpl implements PersonService {
          return personDao.querySomePersonLimit(person,pageNo,pageSize);
     }
 
-
     @Override
-    public Person queryOnePersonById(Integer person_id) {
-        return null;
+    public Person queryPersonInfoById(Integer person_id) {
+        return personDao.queryPersonInfoByID(person_id);
     }
 
     @Override

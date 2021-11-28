@@ -62,19 +62,9 @@ public class PersonDao extends BaseDao{
         //用于保存可变参数
         List<Object> parmas = new ArrayList<Object>();
 
-
         //String类型的数据，若前端有数据填写处，但是用户可能没填写数据，则该数据在trim后isEmpty == true，或该数据==""
         //String类型的数据，若前端没有数据填写处，则该数据== null
         //非String类型的数据，无论前端有无数据填写处，只要没有数据传过来，都是==null
-
-        /*
-        person_id=null, name=, sex=, nation=,
-         birthDate=null, nativePlace=西藏自治区日喀则市仲巴县&&,
-         office=, post=, area_class=四类区,
-         level=, phone=, allow_Leave_Days=null,
-         leader=null，
-         */
-
 
         //姓名
         String name = person.getName();
@@ -332,12 +322,72 @@ public class PersonDao extends BaseDao{
         return id.intValue();
     }
 
+    //更新人员信息
+    public Integer updatePersonInfo(Person newPersonInfo){
+         String updatePerson_InfoSQL = "update person_info set " +
+                 "`NAME`=?," +
+                 "nation=?," +
+                 "sex=?," +
+                 "birthdate=?," +
+                 "nativeplace=?," +
+                 "office=?," +
+                 "post=?," +
+                 "`level`=?," +
+                 "phone=?," +
+                 "allow_leave_days=?," +
+                 "area_class=? "+
+                 "where person_id=?";
+        String updatePerson_Info_CopySQL = "update person_info_copy set " +
+                "`NAME`=?," +
+                "nation=?," +
+                "sex=?," +
+                "birthdate=?," +
+                "nativeplace=?," +
+                "office=?," +
+                "post=?," +
+                "`level`=?," +
+                "phone=?," +
+                "allow_leave_days=?," +
+                "area_class=? "+
+                "where person_id=?";
+
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        parmas.add(newPersonInfo.getName());
+        parmas.add(newPersonInfo.getNation());
+        parmas.add(newPersonInfo.getSex());
+        parmas.add(newPersonInfo.getBirthDate());
+        parmas.add(newPersonInfo.getNativePlace());
+        parmas.add(newPersonInfo.getOffice());
+        parmas.add(newPersonInfo.getPost());
+        parmas.add(newPersonInfo.getLevel());
+        parmas.add(newPersonInfo.getPhone());
+        parmas.add(newPersonInfo.getAllow_Leave_Days());
+        parmas.add(newPersonInfo.getArea_class());
+        parmas.add(newPersonInfo.getPerson_id());
+
+        int updateCount = update(updatePerson_InfoSQL,parmas.toArray());
+        int updateCopyCount = update(updatePerson_Info_CopySQL,parmas.toArray());
+
+        return updateCount;
+    }
+
+    //根据人员编号person_id查找一个人的信息
+    public Person queryPersonInfoByID(Integer person_id){
+        String sql = "select * from person_info where person_id = ?";
+        return queryForOne(Person.class, sql,person_id);
+    }
+
+    //根据人员id删除人员信息
+    public Integer deletePersonInfoByID(Integer person_id){
+        String sql = "delete from person_info where person_id = ?";
+        return update(sql,person_id);
+    }
 
     //将数据库获取的原始数据重新定义格式
     public List<Person> getNormalResult(List<Person> personList) {
         Integer person_id;
         for (Person p:personList){
-
             //绑定相关领导
             person_id = queryIdByPhone(p.getPhone());
             List<Person> leaderList = queryRelatedLeader(person_id);
@@ -345,5 +395,23 @@ public class PersonDao extends BaseDao{
         }
         return personList;
     }
+    //根据人员姓名查询人员信息（用于查询重名信息）
+    public List<Person> queryPersonInfoByName(String person_name) {
+        String sql = "select person_id,`NAME`,phone,office,post from person_info where `NAME`=?";
+        return queryForList(Person.class, sql,person_name);
+    }
+
+    //绑定相关领导
+    public Integer bindRelatedLeaderDao(Integer leader_id, Integer subordinate_id) {
+        String sql = "insert into leader_subordinate(leader_id,subordinate_id) values(?,?)";
+        return update(sql, leader_id, subordinate_id);
+    }
+
+    //删除相关领导
+    public Integer deleteTheLeaderDao(Integer leader_id, Integer subordinate_id) {
+        String sql = "delete from leader_subordinate where leader_id = ? and subordinate_id = ?";
+        return update(sql, leader_id, subordinate_id);
+    }
+
 
 }

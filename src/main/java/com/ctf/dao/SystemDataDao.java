@@ -1,5 +1,6 @@
 package com.ctf.dao;
 
+import com.ctf.bean.LeaveType;
 import com.ctf.bean.Level;
 import com.ctf.bean.Nation;
 import com.ctf.bean.Office;
@@ -22,6 +23,12 @@ public class SystemDataDao extends BaseDao{
         List<Level> levels = queryForList(Level.class, sql);
         return levels;
     };
+
+    //查询请假种类名单（常用于下拉框）
+    public List<LeaveType> queryLeaveType(){
+        String sql = "select * from leave_type";
+        return queryForList(LeaveType.class, sql);
+    }
 
     //查询工作单位内容（常用于下拉框）
     public List<Office> queryOffice(){
