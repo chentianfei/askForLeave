@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,24 +47,56 @@ public class AskForLeaveServlet extends BaseServlet{
     }
 
     //根据条件查询待审批的请假数据
-    public void query(){
-        Map<String, String[]> map = new HashMap<>();
-        for (Map.Entry<String, String[]> entry : map.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue()[0]);
+    public void querySomeLeaveInfos(HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException, ParseException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //获取当前页码
+        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        System.out.println("pageNo:"+pageNo);
+        //获取每页显示数量
+        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+
+        //获取前端传来的查询参数
+        Map<String, String[]> map = request.getParameterMap();
+        for(Map.Entry<String,String[]> m: map.entrySet()){
+            System.out.println("key:"+m.getKey()+";value:"+m.getValue()[0]);
         }
+
+        askForLeaveService.querySomeLeaveInfos(map);
+        /*
+        *根据人员基本信息查询出符合条件的person_id
+        * 在approval表中查询符合这些person_id的leave_info
+        * 在这些已查询出来的leave_info中根据请假信息过滤有用信息并作分页显示
+        * */
+
+
     }
 
     //查询所有待审批的请假数据
-    public void queryAllLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException {
+    public void queryAllLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
-        System.out.println("调用了AskForLeaveServlet的queryAllLeaveInfo方法");
 
-        List<Map<String,Object>> mapList = new ArrayList<>();
-        HashMap<String,Object> hashMap = new HashMap<>();
-        hashMap.put("name","陈天飞");
-        mapList.add(hashMap);
+        //获取当前页码
+        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        //获取每页显示数量
+        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
 
+        List<HashMap<String, Object>> hashMaps = askForLeaveService.queryAllLeaveInfoLimit(pageNo,pageSize);
+
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","哈哈");
+        map.put("count",askForLeaveService.queryAllLeaveInfo().size());
+        map.put("data",hashMaps);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
     }
 
     //待审核_同意功能

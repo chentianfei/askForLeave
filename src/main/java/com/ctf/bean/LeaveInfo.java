@@ -29,7 +29,7 @@ public class  LeaveInfo {
     private String start_leave_remark;//请假备注
     private Date end_date_maybe;//预计到岗日期
     private String start_leave_operator;//请假操作员
-    private String approvalstatus;//审批状态
+    private String approval_status;//审批状态
     private Date end_date;//销假日期（实际到岗日期）
     private String end_leave_remark;//销假备注
     private String end_leave_operator;//销假操作员
@@ -46,7 +46,7 @@ public class  LeaveInfo {
                      String leave_reason, String approver,
                      String depart_location, String arrive_location,
                      String start_leave_remark, Date end_date_maybe,
-                     String start_leave_operator, String approvalstatus,
+                     String start_leave_operator, String approval_status,
                      Date end_date, String end_leave_remark,
                      String end_leave_operator, Integer leave_days_actual) {
         this.serialnumber = serialnumber;
@@ -63,7 +63,7 @@ public class  LeaveInfo {
         this.start_leave_remark = start_leave_remark;
         this.end_date_maybe = end_date_maybe;
         this.start_leave_operator = start_leave_operator;
-        this.approvalstatus = approvalstatus;
+        this.approval_status = approval_status;
         this.end_date = end_date;
         this.end_leave_remark = end_leave_remark;
         this.end_leave_operator = end_leave_operator;
@@ -87,7 +87,7 @@ public class  LeaveInfo {
                 ", start_leave_remark='" + start_leave_remark + '\'' +
                 ", end_date_maybe=" + end_date_maybe +
                 ", start_leave_operator='" + start_leave_operator + '\'' +
-                ", approvalstatus='" + approvalstatus + '\'' +
+                ", approval_status='" + approval_status + '\'' +
                 ", end_date=" + end_date +
                 ", end_leave_remark='" + end_leave_remark + '\'' +
                 ", end_leave_operator='" + end_leave_operator + '\'' +
@@ -95,12 +95,12 @@ public class  LeaveInfo {
                 '}';
     }
 
-    public String getApprovalstatus() {
-        return approvalstatus;
+    public String getApproval_status() {
+        return approval_status;
     }
 
-    public void setApprovalstatus(String approvalstatus) {
-        this.approvalstatus = approvalstatus;
+    public void setApproval_status(String approval_status) {
+        this.approval_status = approval_status;
     }
 
     public Date getEnd_date() {

@@ -11,6 +11,13 @@
     <head>
         <%--基础引入--%>
         <%@include file="/pages/common/baseinfo.jsp"%>
+
+            <style>
+                .layui-table th{
+                    font-size: 5px;
+                }
+            </style>
+
     </head>
     <body>
         <div class="layui-layout layui-layout-admin">
@@ -105,6 +112,15 @@
                                                         </div>
                                                     </div>
 
+                                                    <%--请假种类--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label">请假种类</label>
+                                                        <div class="layui-input-block" id="leave_type" ></div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="layui-form-item">
                                                     <%--出发地--%>
                                                     <div class="layui-inline">
                                                         <label class="layui-form-label" style="width: 100px">出发地</label>
@@ -128,7 +144,7 @@
                                                     </div>
 
                                                     <%--假期类型--%>
-                                                    <div class="layui-inline">
+                                                   <%-- <div class="layui-inline">
                                                         <label class="layui-form-label"
                                                                style="width: 100px">请假种类</label>
                                                         <div class="layui-input-inline" style="width: 150px">
@@ -136,7 +152,8 @@
                                                                 <option value=""></option>
                                                             </select>
                                                         </div>
-                                                    </div>
+                                                    </div>--%>
+
 
                                                     <%--批准人--%>
                                                     <div class="layui-inline">
@@ -244,9 +261,8 @@
         <%--表格上方工具栏--%>
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增单个人员</button>
-                <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
-                <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
+                <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">批量同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量不同意</button>
             </div>
         </script>
 
@@ -258,8 +274,10 @@
         </script>
 
         <script>
-            layui.use(['table','upload','laydate','element','form', 'layer', 'util'], function(){
+            layui.use(['table','upload','laydate','element','common'
+                ,'form', 'layer', 'util'], function(){
                 var element = layui.element;
+                var common = layui.common;
                 var layer = layui.layer;
                 var util = layui.util;
                 var $ = layui.jquery;
@@ -271,7 +289,9 @@
                 bindNationSelectData();
                 bindOfficeSelectData();
                 //初始化请假种类下拉框
-                bindLeaveTypeSelectData();
+                //bindLeaveTypeSelectData();
+                // 初始化请假种类复选框数据
+                bindLeaveTypeCheckboxData();
 
                 //初始化请假开始时间
                 laydate.render({
@@ -297,23 +317,39 @@
                     ,limit:5
                     ,limits:[5,10,15]
                     ,cols: [[
-                        {type: 'checkbox'}
-                        ,{field: 'info_id', title: '流水号', align:'center', width: 100}
-                        ,{field:'person_name', title:'姓名', align:'center',width:"8%"}
-                        ,{field:'office', title:'工作单位', align:'center',width:"15%"}
-                        ,{field:'job', title:'现任职务', align:'center',width:"10%"}
-                        ,{field:'leaveType', title:'请假类型', align:'center',width:"8%"}
-                        ,{field:'reason', title:'请假事由', align:'center',width:"8%"}
-                        ,{field:'startDate', title:'开始日期', align:'center',width:"12%"}
-                        ,{field:'days', title:'请假天数', align:'center',width:"8%"}
-                        ,{field:'permitPerson', title:'批准人', align:'center',width:"8%"}
-                        ,{field:'startLocation', title:'出发地', align:'center',width:"10%"}
-                        ,{field:'endLocation', title:'到达地', align:'center',width:"10%"}
-                        ,{field:'endDate', title:'预计到岗日期', align:'center',width:"12%" }
-                        ,{field:'phoneNum', title:'联系电话', align:'center',width:"15%"}
-                        ,{field:'leaveComment', title:'请假备注', align:'center',width:"10%"}
+                        {fixed: 'left', type: 'checkbox'}
+                        ,{field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
+                        ,{field:'name', title:'姓名', align:'center',width:'7%'}
+                        ,{field:'office', title:'工作单位', align:'center',width:'14%'}
+                        ,{field:'post', title:'现任职务', align:'center',width:'14%'}
+                        ,{field:'phone', title:'联系电话', align:'center',width:'12%'}
+                        ,{field:'leave_type', title:'请假类型', align:'center',width:'8%'}
+                        ,{field:'start_date',
+                            title:'开始日期',
+                            width:'12%',
+                            align:"center",
+                            templet:
+                                '<div>{{ layui.util.toDateString(new Date(d.start_date).getTime(), "yyyy年MM月dd日") }}</div>'
+                        }
+                        ,{field:'leave_days_projected', title:'请假天数', align:'center',width:'8%'}
+                        ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:'15%'}
+                        ,{field:'leave_reason', title:'请假事由', align:'center',width:'15%'}
+                        ,{field:'approver', title:'批准人', align:'center',width:'7%'}
+                        ,{field:'depart_location', title:'出发地', align:'center',width:'10%'}
+                        ,{field:'arrive_location', title:'到达地', align:'center',width:'10%'}
+                        ,{field:'end_date_maybe',
+                            title:'预计到岗日期',
+                            width:'12%',
+                            align:"center",
+                            templet:
+                                '<div>{{ layui.util.toDateString(new Date(d.end_date_maybe).getTime(), "yyyy年MM月dd日") }}</div>'
+                        }
+                        ,{field:'start_leave_remark', title:'请假备注', align:'center',width:'15%'}
+                        ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:'12%'}
+                        ,{field:'approval_status', title:'审批状态', align:'center',width:'8%'}
                         ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: "18%"}
                     ]]
+                    ,page:true
                 });
 
                 table.on('tool(approval)', function(obj){
@@ -364,19 +400,7 @@
                                 if(count == 1){
                                     //传过来的result是String，需要转为json对象才可实现遍历
                                     //解析result数据并赋值变量
-                                    office = queryAndBindInfo_obj(JSON.parse(result),"office");
-                                    person_name = queryAndBindInfo_obj(JSON.parse(result),"person_name");
-                                    phoneNum = queryAndBindInfo_obj(JSON.parse(result),"phoneNum");
-                                    person_id = queryAndBindInfo_obj(JSON.parse(result),"person_id");
-                                    sex = queryAndBindInfo_obj(JSON.parse(result),"sex");
-                                    birthDate = queryAndBindInfo_obj(JSON.parse(result),"birthDate");
-                                    nativePlace = queryAndBindInfo_obj(JSON.parse(result),"nativePlace");
-                                    job = queryAndBindInfo_obj(JSON.parse(result),"job");
-                                    area = queryAndBindInfo_obj(JSON.parse(result),"area");
-                                    level = queryAndBindInfo_obj(JSON.parse(result),"level");
-                                    leaveDays = queryAndBindInfo_obj(JSON.parse(result),"leaveDays");
-                                    leaderID = queryAndBindInfo_obj(JSON.parse(result),"leaderID");
-                                    nationality = queryAndBindInfo_obj(JSON.parse(result),"nationality");
+                                   // office = queryAndBindInfo_obj(JSON.parse(result),"office");
 
 
                                     //查看详情弹窗
@@ -393,28 +417,8 @@
                                         btn:['返回'],
                                         success: function(layero, index){
                                             var body = layer.getChildFrame('body', index);
-                                            body.find('#person_name').val(person_name);
-                                            body.find('#office').val(office);
-                                            body.find('#phoneNum').val(phoneNum);
-                                            body.find('#person_id').val(person_id);
-                                            body.find('#sex').val(sex);
-                                            body.find('#birthDate').val(birthDate);
-                                            body.find('#nativePlace').val(nativePlace);
-                                            body.find('#job').val(job);
-                                            body.find('#area').val(area);
-                                            body.find('#level').val(level);
-                                            body.find('#leaveDays').val(leaveDays);
-                                            body.find('#leaderID').val(leaderID);
-                                            body.find('#nationality').val(nationality);
-                                            body.find('#leaveType').val(data.leaveType);
-                                            body.find('#reason').val(data.reason);
-                                            body.find('#startDate').val(data.startDate);
-                                            body.find('#days').val(data.days);
-                                            body.find('#permitPerson').val(data.permitPerson);
-                                            body.find('#startLocation').val(data.startLocation);
-                                            body.find('#endLocation').val(data.endLocation);
-                                            body.find('#endDate').val(data.endDate);
-                                            body.find('#leaveRemark').val(data.leaveRemark);
+                                            // body.find('#person_name').val(person_name);
+
                                         },
                                         yes:function (index, layero) {
                                             //关闭该弹窗
@@ -533,7 +537,84 @@
 
                 //监听查询区域的提交按钮事件
                 form.on('submit(leave_info_query)',function (data) {
-                    console.log(data.field);
+                    //获取数据
+                    const sourceData = data.field;
+                    console.log(sourceData);
+                    //人员基本信息
+                    const name = sourceData.name;
+                    const level = sourceData.level;
+                    const office = sourceData.office;
+                    const phone = sourceData.phone;
+                    const area_class = sourceData.area_class;
+                    //解析解析框中的地址内容
+                    const city = sourceData.city;
+                    const district = sourceData.district;
+                    const province = sourceData.province;
+                    // 通过地址code码获取地址名称
+                    var address = common.getCity({
+                        province,
+                        city,
+                        district
+                    });
+                    let provinceName = address.provinceName;
+                    let cityName = address.cityName;
+                    let districtName = address.districtName;
+                    //解析解析框中的地址内容
+                    const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
+
+                    //请假信息
+                    const depart_location = sourceData.depart_location;
+                    const arrive_location = sourceData.arrive_location;
+                    const approver = sourceData.approver;
+                    //const leave_type = sourceData.leave_type;
+
+                    //处理请假类型复选框数据并封装
+                    var leave_typeSource = [];
+                    $("#leave_type>div.layui-form-checked").each(function(index,ele){
+                        leave_typeSource.push($(ele).find("span").html());
+                    })
+
+                    const end_date_maybe_max = sourceData.end_date_maybe_max;
+                    const end_date_maybe_min = sourceData.end_date_maybe_min;
+                    const start_date_max = sourceData.start_date_max;
+                    const start_date_min = sourceData.start_date_min;
+
+                    /*const birthDate = sourceData.birthDate;
+                    const nation = sourceData.nation;
+                    const sex = sourceData.sex;
+                    const post = sourceData.post;*/
+
+                    //使用layui直接重载表格（兼有数据查询）：
+                    table.reload('approval', {
+                        url: 'askForLeaveServlet?action=querySomeLeaveInfos'
+                        ,where: {
+                            //设定异步数据接口的额外参数
+                            //人员信息
+                            name : name,
+                            nativePlace:nativePlace,
+                            office : office,
+                            area_class : area_class,
+                            level : level,
+                            phone : phone,
+                            //请假信息
+                            depart_location : depart_location,
+                            arrive_location : arrive_location,
+                            approver : approver,
+                            leave_type : leave_typeSource.toLocaleString(),
+                            end_date_maybe_max : end_date_maybe_max,
+                            end_date_maybe_min : end_date_maybe_min,
+                            start_date_max : start_date_max,
+                            start_date_min : start_date_min
+                        }
+                        ,page:true
+                        ,request: {
+                            pageName: 'curr' //页码的参数名称，默认：page
+                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                        }
+                        ,page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    });
                     return false;
                 });
                 

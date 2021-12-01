@@ -16,10 +16,9 @@ public class IndexServlet extends BaseServlet{
 
     public void personList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("调用了IndexServlet的personList方法");
-        //正式版跳转
-        request.getRequestDispatcher("/pages/service/personinfomation/personinformation.jsp").forward(request,response);
+        //正式版跳转request.getRequestDispatcher("/pages/service/personinfomation/personinformation.jsp").forward(request,response);
         //演示系统跳转
-//        request.getRequestDispatcher("/pages/test/test.jsp").forward(request,response);
+        request.getRequestDispatcher("/pages/test/test.jsp").forward(request,response);
     }
 
 

@@ -1,8 +1,11 @@
 package com.ctf.dao;
 
 import com.ctf.bean.Person;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ColumnListHandler;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +42,8 @@ public class BaseDaoTest {
 
     @Test
     public void queryForSingleValue() {
+        String sql = "select person_id from person_info where 1=1 and sex=?";
+        System.out.println(baseDao.queryForSingleValue(sql,2));
     }
 
     @Test
@@ -46,5 +51,13 @@ public class BaseDaoTest {
         System.out.println(baseDao.queryForANumber(
                 "select person_id from person_info where phone = ?",
                 "18089922014")[0]);
+    }
+
+    @Test
+    public void queryForOneCol() throws SQLException {
+        QueryRunner queryRunner = new QueryRunner();
+        String sql = "select person_id from person_info where 1=1 and sex=?";
+        queryRunner.query(sql, new ColumnListHandler("person_id"),1);
+        System.out.println(baseDao.queryForOneCol(sql,1));
     }
 }

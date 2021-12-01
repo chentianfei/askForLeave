@@ -229,6 +229,31 @@ function bindLeaveTypeSelectData() {
     });
 }
 
+//为请假种类复选框checkbox绑定后台数据
+function bindLeaveTypeCheckboxData() {
+    layui.use(['laydate','form','common'], function() {
+        var form = layui.form;
+        var $ = layui.jquery;
+        $.ajax({
+            url: 'systemDataServlet?action=bindLeaveTypeSelectData',
+            dataType: 'json',
+            type: 'post',
+            success: function (data) {
+                if (data !== null) {
+                    $.each(data, function (index, item) {
+                        $("#leave_type").append("<input type='checkbox' lay-filter='leave_type' name='leave_type' value='"+item.leave_type+"' title='"+item.leave_type+"'>");
+                    });
+                } else {
+                    $("#leave_type").append("<span style='color: red'>网络错误，无数据</span>");
+                }
+                //重新渲染
+                form.render('checkbox');
+            }
+        });
+    });
+}
+
+
 //遍历选中行数据数组对象，根据str的值返回对应参数
 function queryAndBindInfo_array(data_array,str){
     var key,key_in;

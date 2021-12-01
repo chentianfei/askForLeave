@@ -26,9 +26,9 @@ public interface PersonService {
     List<Person> queryAllPersonLimit(int pageNo,int pageSize);
     //查询库中所有人员信息
     List<Person> queryAllPerson();
-    //根据不定条件查询人员信息_分页
-    List<Person> querySomePerson(Person person);
     //根据不定条件查询人员信息_不分页
+    List<Person> querySomePerson(Person person);
+    //根据不定条件查询人员信息_分页
     List<Person> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize);
     //根据人员编号查询单个人员信息
     Person queryPersonInfoById(Integer person_id);

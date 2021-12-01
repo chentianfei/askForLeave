@@ -112,6 +112,7 @@ public class PersonServlet extends BaseServlet{
         Integer pageNo =Integer.valueOf(req.getParameter("curr"));
         //获取每页显示数量
         Integer pageSize = Integer.valueOf(req.getParameter("nums"));
+
         //查询本人基本信息获取返回结果
         List<Person> personList = personService.queryAllPersonLimit(pageNo,pageSize);
 
@@ -246,7 +247,6 @@ public class PersonServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
-
 
     //根据人员姓名查询人员信息（用于查询重名信息）
     public void queryPersonInfoByName(HttpServletRequest request, HttpServletResponse response) throws IOException {

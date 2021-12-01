@@ -1,10 +1,7 @@
 package com.ctf.dao;
 import com.ctf.utils.JDBCUtils;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.ArrayHandler;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.commons.dbutils.handlers.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -108,5 +105,28 @@ public abstract class BaseDao {
         return null;
 
     }
+    
+    /*
+     * @Description :执行返回一列多行的sql语句
+     * @param: sql 执行的sql语句
+     * @param: args sql对应的参数值
+     * @return java.util.List<java.lang.Object>
+     * @Author tianfeichen
+     * @Date 2021/12/1 11:34
+     **/
+    public List<Object> queryForOneCol(String sql,Object... args){
 
+        Connection conn = JDBCUtils.getConnection();
+
+        try {
+            return queryRunner.query(sql, new ColumnListHandler("person_id"),args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.close(conn);
+        }
+        return null;
+
+    }
+    
 }
