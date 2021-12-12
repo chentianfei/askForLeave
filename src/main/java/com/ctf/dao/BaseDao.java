@@ -119,7 +119,7 @@ public abstract class BaseDao {
         Connection conn = JDBCUtils.getConnection();
 
         try {
-            return queryRunner.query(sql, new ColumnListHandler("person_id"),args);
+            return queryRunner.query(conn,sql, new ColumnListHandler("person_id"),args);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

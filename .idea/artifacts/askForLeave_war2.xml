@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="askForLeave:war2">
+    <output-path>$PROJECT_DIR$/out/artifacts/askForLeave_war2</output-path>
+    <root id="archive" name="askForLeave_war.war">
+      <element id="artifact" artifact-name="askForLeave:war exploded" />
+    </root>
+  </artifact>
+</component>

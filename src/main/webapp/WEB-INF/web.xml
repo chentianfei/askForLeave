@@ -5,40 +5,40 @@
          version="4.0">
 
 
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <!--定时器-->
     <servlet>
-        <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>com.ctf.web.IndexServlet</servlet-class>
+        <servlet-name>QuartzInitializer</servlet-name>
+        <servlet-class>org.quartz.ee.servlet.QuartzInitializerServlet</servlet-class>
+        <init-param>
+            <param-name>config-file</param-name>
+            <param-value>/quartz.properties</param-value>
+        </init-param>
+        <!-- shutdown-on-unload，表示是否在卸载应用时同时停止调度，该参数推荐true，否则你的tomcat进程可能停不下来 -->
+        <init-param>
+            <param-name>shutdown-on-unload</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!-- start-scheduler-on-load，表示应用加载时就启动调度器，如果为false，则quartz.properties中指定的调度器在用户访问这个Servlet之后才会加载，在此之前，如果你通过ServletContext查找SchedulerFactory是可以找到的，但是要得到具体的Scheduler，那么你一定会发现Jvm抛出了一个NullPointerExcetion。 -->
+        <init-param>
+            <param-name>start-scheduler-on-load</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <!--load-on-startup是指定QuartzServlet是否随应用启动，-1表示否，正数表示随应用启动，数值越小，则优先权越高  -->
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>IndexServlet</servlet-name>
-        <url-pattern>/indexServlet</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>PersonServlet</servlet-name>
-        <servlet-class>com.ctf.web.PersonServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>PersonServlet</servlet-name>
-        <url-pattern>/personServlet</url-pattern>
+        <servlet-name>QuartzInitializer</servlet-name>
+        <url-pattern>/quartzInitializer</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>AskForLeaveServlet</servlet-name>
-        <servlet-class>com.ctf.web.AskForLeaveServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AskForLeaveServlet</servlet-name>
-        <url-pattern>/askForLeaveServlet</url-pattern>
-    </servlet-mapping>
-    
-    <servlet>
-        <servlet-name>SystemDataServlet</servlet-name>
-        <servlet-class>com.ctf.web.SystemDataServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>SystemDataServlet</servlet-name>
-        <url-pattern>/systemDataServlet</url-pattern>
-    </servlet-mapping>
+
         
 </web-app>

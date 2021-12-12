@@ -57,7 +57,9 @@ public class BaseDaoTest {
     public void queryForOneCol() throws SQLException {
         QueryRunner queryRunner = new QueryRunner();
         String sql = "select person_id from person_info where 1=1 and sex=?";
-        queryRunner.query(sql, new ColumnListHandler("person_id"),1);
-        System.out.println(baseDao.queryForOneCol(sql,1));
+        List<Object> objects = baseDao.queryForOneCol(sql, 1);
+        for (Object ob:objects){
+            System.out.println(ob);
+        }
     }
 }

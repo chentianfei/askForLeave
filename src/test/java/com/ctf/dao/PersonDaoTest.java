@@ -18,10 +18,6 @@ public class PersonDaoTest {
 
     @Test
     public void queryAllPerson() {
-        List<Person> people = personDao.queryAllPersonLimit(1,5);
-        for(Person person:people){
-            System.out.println(person);
-        }
 
     }
 

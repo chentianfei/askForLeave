@@ -1,7 +1,9 @@
 package com.ctf.utils;
 
+import org.apache.commons.dbutils.DbUtils;
 import org.junit.Test;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -11,12 +13,16 @@ public class DateUtilsTest {
 
     @Test
     public void addAndSubtractDays() {
+    }
 
-        String date_str  = "2021-11-16";
-        Date date_date = DateUtils.StringToDate(date_str);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date newDate = DateUtils.addAndSubtractDays(date_date,-10);
-                System.out.println(simpleDateFormat.format(newDate));
+    @Test
+    public void getDaysBetween() throws ParseException {
+        Date start_date = new SimpleDateFormat("yyyy-MM-dd").parse("2021-8-25");
+        Date end_date = new SimpleDateFormat("yyyy-MM-dd").parse("2021-7-20");
+        System.out.println(DateUtils.getDaysBetweenPlusOne(start_date,end_date));
+    }
 
+    @Test
+    public void testGetDaysBetween() {
     }
 }

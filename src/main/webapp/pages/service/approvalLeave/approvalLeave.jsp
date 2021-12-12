@@ -128,6 +128,7 @@
                                                             <input type="text" name="depart_location"
                                                                    id="depart_location"
                                                                    placeholder=""
+                                                                   autocomplete="off"
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -139,6 +140,7 @@
                                                             <input type="text" name="arrive_location"
                                                                    id="arrive_location"
                                                                    placeholder=""
+                                                                   autocomplete="off"
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
@@ -261,21 +263,30 @@
         <%--表格上方工具栏--%>
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">批量同意</button>
-                <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量不同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>
             </div>
         </script>
 
         <%--表格内部工具栏--%>
         <script type="text/html" id="audit">
+            {{#  if(d.approval_status === "待审批"){ }}
             <a class="layui-btn layui-btn-xs" lay-event="detail">详细信息</a>
             <a class="layui-btn layui-btn-xs" lay-event="agree">同意</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="notagree">不同意</a>
+            {{#  } else { }}
+                {{#  if(d.approval_status === "同意"){ }}
+                    <a class="layui-btn layui-btn-xs" lay-event="toResumeWorkPage">已通过，点击前往销假页面</a>
+                {{#  } else { }}
+                    <a class="layui-btn layui-btn-danger layui-btn-xs">审核未通过</a>
+                {{#  } }}
+            {{#  } }}
+
         </script>
 
         <script>
             layui.use(['table','upload','laydate','element','common'
-                ,'form', 'layer', 'util'], function(){
+                ,'form', 'layer', 'util','laytpl'], function(){
                 var element = layui.element;
                 var common = layui.common;
                 var layer = layui.layer;
@@ -284,6 +295,7 @@
                 var table = layui.table;
                 var form = layui.form;
                 var laydate = layui.laydate;
+                var laytpl = layui.laytpl;
 
                 bindLevelSelectData();
                 bindNationSelectData();
@@ -308,7 +320,7 @@
                 table.render({
                     elem: '#approval'
                     ,url:'askForLeaveServlet?action=queryAllLeaveInfo'
-                    ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+                    //,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
                     ,title: '待审核信息表'
                     ,request: {
                         pageName: 'curr' //页码的参数名称，默认：page
@@ -317,222 +329,216 @@
                     ,limit:5
                     ,limits:[5,10,15]
                     ,cols: [[
-                        {fixed: 'left', type: 'checkbox'}
-                        ,{field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
-                        ,{field:'name', title:'姓名', align:'center',width:'7%'}
-                        ,{field:'office', title:'工作单位', align:'center',width:'14%'}
-                        ,{field:'post', title:'现任职务', align:'center',width:'14%'}
-                        ,{field:'phone', title:'联系电话', align:'center',width:'12%'}
-                        ,{field:'leave_type', title:'请假类型', align:'center',width:'8%'}
-                        ,{field:'start_date',
-                            title:'开始日期',
-                            width:'12%',
-                            align:"center",
-                            templet:
-                                '<div>{{ layui.util.toDateString(new Date(d.start_date).getTime(), "yyyy年MM月dd日") }}</div>'
-                        }
-                        ,{field:'leave_days_projected', title:'请假天数', align:'center',width:'8%'}
-                        ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:'15%'}
-                        ,{field:'leave_reason', title:'请假事由', align:'center',width:'15%'}
-                        ,{field:'approver', title:'批准人', align:'center',width:'7%'}
-                        ,{field:'depart_location', title:'出发地', align:'center',width:'10%'}
-                        ,{field:'arrive_location', title:'到达地', align:'center',width:'10%'}
-                        ,{field:'end_date_maybe',
-                            title:'预计到岗日期',
-                            width:'12%',
-                            align:"center",
-                            templet:
-                                '<div>{{ layui.util.toDateString(new Date(d.end_date_maybe).getTime(), "yyyy年MM月dd日") }}</div>'
-                        }
-                        ,{field:'start_leave_remark', title:'请假备注', align:'center',width:'15%'}
-                        ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:'12%'}
-                        ,{field:'approval_status', title:'审批状态', align:'center',width:'8%'}
-                        ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: "18%"}
+                        {field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
+                        ,{field:'name', title:'姓名', align:'center',width:110}
+                        ,{field:'office', title:'工作单位', align:'center',width:210}
+                        ,{field:'post', title:'现任职务', align:'center',width:210}
+                        ,{field:'phone', title:'联系电话', align:'center',width:130}
+                        ,{field:'leave_type', title:'请假类型', align:'center',width:110}
+                        ,{field:'start_date',title:'开始日期',align:"center",width:140}
+                        ,{field:'leave_days_projected', title:'请假天数', align:'center',width:90}
+                        ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:200}
+                        ,{field:'leave_reason', title:'请假事由', align:'center',width:160}
+                        ,{field:'approver', title:'批准人', align:'center',width:100}
+                        ,{field:'depart_location', title:'出发地', align:'center',width:130}
+                        ,{field:'arrive_location', title:'到达地', align:'center',width:130}
+                        ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
+                        ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
+                        ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
+                        ,{field:'approval_status', title:'审批状态', align:'center',width:110}
+                        ,{field:'approval_reason', title:'审批理由', align:'center',width:180}
+                        ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: 250}
                     ]]
                     ,page:true
                 });
 
+                //行工具栏事件
                 table.on('tool(approval)', function(obj){
                     var data = obj.data;
-
-                    var person_name;//用于保存人员姓名
-                    var phoneNum;//用于保存人员联系电话
-                    var person_id;//人员编号
-                    var sex; //性别
-                    var birthDate;//出生年月
-                    var nativePlace; //本人籍贯
-                    var office; //工作单位
-                    var job;//现任职务
-                    var area;//所在类区
-                    var level;//职级
-                    var leaveDays;//允许休假天数
-                    var leaderID; //相关领导
-                    var nationality;//民族
-                    var leaveType;//请假类型
-                    var reason;//请假事由
-                    var startDate;//开始日期
-                    var days;//请假天数
-                    var permitPerson;//批准人
-                    var startLocation;//出发地
-                    var endLocation;//到达地
-                    var endDate;//预计到岗日期
-                    var leaveRemark;//请假备注
-
                     if(obj.event === "detail"){
-
                         //发起查询人员详细基本信息的ajax请求
                         $.ajax({
-                            //请求方式
-                            type: "get",
-                            //请求的媒体类型
-                            contentType: "application/json;charset=UTF-8",
-                            //请求地址
-                            url: "personServlet?action=queryPersonDetail",
-                            //数据，json字符串
-                            //dataType:"JSON",
-                            data:{"person_name":data.person_name,"phoneNum":data.phoneNum},
-                            //请求成功
+                            type: "post",
+                            url: "askForLeaveServlet?action=queryPersonDetail",
+                            data:{
+                                serialnumber : data.serialnumber
+                            },
+                            dataType: 'json',
                             success: function (result) {
-                                //查到人员信息后再弹窗
+                                let sourceData = result[0];
                                 //result包含的person数量
-                                var count = result.split("person_name").length-1;
-                                //console.log(count);
-                                if(count == 1){
-                                    //传过来的result是String，需要转为json对象才可实现遍历
-                                    //解析result数据并赋值变量
-                                   // office = queryAndBindInfo_obj(JSON.parse(result),"office");
+                                layer.open({
+                                    type: 2,
+                                    title: '请假者具体信息',
+                                    maxmin: true,
+                                    area: ['600px', '600px'],
+                                    content: "pages/service/approvalLeave/_detail.jsp",
+                                    anim:2,
+                                    resize:false,
+                                    btn:['返回'],
+                                    success: function(layero, index){
+                                        var body = layer.getChildFrame('body', index);
+                                        body.find('#person_id').val(sourceData.person_id);
+                                        body.find('#name').val(sourceData.name);
+                                        body.find('#sex').val(sourceData.sex);
+                                        body.find('#birthDate').val(sourceData.birthDate);
+                                        body.find('#nation').val(sourceData.nation);
+                                        body.find('#nativePlace').val(sourceData.nativePlace);
+                                        body.find('#phone').val(sourceData.phone);
+                                        body.find('#office').val(sourceData.office);
+                                        body.find('#post').val(sourceData.post);
+                                        body.find('#level').val(sourceData.level);
+                                        body.find('#area_class').val(sourceData.area_class);
+                                        body.find('#allow_Leave_Days').val(sourceData.allow_Leave_Days);
+                                        //获取领导姓名
+                                        let leadersName = new Array();
+                                        $.each(sourceData.leader,function (index,ele) {
+                                            leadersName.push(ele.name);
+                                        })
+                                        if(leadersName.length <= 0){
+                                            body.find('#leader').val("暂未绑定领导");
+                                        }else {
+                                            body.find('#leader').val(leadersName);
+                                        }
 
-
-                                    //查看详情弹窗
-                                    layer.open({
-                                        type: 2,
-                                        title: '请假者具体信息',
-                                        shadeClose: true,
-                                        shade: false,
-                                        maxmin: true, //开启最大化最小化按钮
-                                        area: ['600px', '600px'],
-                                        content: "pages/service/approvalLeave/_detail.jsp",
-                                        anim:2,
-                                        resize:false,
-                                        btn:['返回'],
-                                        success: function(layero, index){
-                                            var body = layer.getChildFrame('body', index);
-                                            // body.find('#person_name').val(person_name);
-
-                                        },
-                                        yes:function (index, layero) {
-                                            //关闭该弹窗
-                                            layer.close(index);
-                                            // return false;
-                                        },
-                                        cancel: function () {
-                                            //右上角关闭回调
-                                            //return false 开启该代码可禁止点击该按钮关闭
+                                    },
+                                    yes:function (index, layero) {
+                                        //关闭该弹窗
+                                        layer.close(index);
+                                        // return false;
+                                    },
+                                    cancel: function (index, layero) {
+                                        //右上角关闭回调
+                                        //关闭该弹窗
+                                        layer.close(index);
+                                        //return false 开启该代码可禁止点击该按钮关闭
+                                    }
+                                });
+                            },
+                            //请求失败，包含具体的错误信息
+                            error: function (e) {
+                                // 异常提示
+                                parent.layer.msg('网络故障', {
+                                    icon : 5
+                                });
+                            }
+                        });
+                    }
+                    else if(obj.event === "agree"){
+                        //获取当前页码
+                        var currentPage = $(".layui-laypage-skip .layui-input").val();
+                        /*ajax开始*/
+                        $.ajax({
+                            type: "post",
+                            url: "askForLeaveServlet?action=agreeLeave",
+                            data:{
+                                serialnumber : data.serialnumber
+                            },
+                            dataType: 'json',
+                            success: function (result) {
+                                if(result == 1){
+                                    //重载表格
+                                   table.reload('approval', {
+                                        url: 'askForLeaveServlet?action=queryAllLeaveInfo'
+                                        ,page: {
+                                            curr: currentPage//重新从第 1 页开始
+                                        }
+                                        ,request: {
+                                            pageName: 'curr' //页码的参数名称，默认：page
+                                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
                                         }
                                     });
-
-                                }else if(count<1){
-                                    layer.msg("查无此人");
-                                }else if (count>1){
-                                    layer.msg("此人信息出现重复，请核实人员信息库");
+                                }else {
+                                    layer.msg('业务提交失败', {
+                                        icon : 5
+                                    });
                                 }
-
-
                             },
-                            //请求失败，包含具体的错误信息
                             error: function (e) {
-                                console.log(e.status);
-                                console.log(e.responseText);
-                            }
-                        });
-
-
-                    }else if(obj.event === "agree"){
-                        //点击同意按钮
-                        /*
-                        * 1.获取姓名和电话信息
-                        * 2.向后台发送ajax请求，
-                        *       后台处理内容：
-                        *           （1）改变审批状态
-                        *           （2）向请假待审批表备份表中插入该记录，保存操作时间
-                        *           （3）向待销假表中插入该记录，保存操作时间
-                        *           （4）删除请假待审批表中该记录
-                        *           （5）向请假者与请假者相关领导发送信息
-                        *           （6）记录请假者提醒短信触发日期，供定时任务调用
-                        * 3.根据返回结果
-                        *       0：操作成功
-                        *           备份与删除成功，调用obj.del()方法删除此行数据，调用table.render（）刷新表格数据
-                        *       -1:操作失败
-                        *           备份与删除失败，调用layer.msg（）提示错误信息*/
-
-                        //获取传值参数信息
-                        person_name = queryAndBindInfo_array(data,"person_name");
-                        phoneNum = queryAndBindInfo_array(data,"phoneNum");
-
-                        /*ajax开始*/
-                        $.ajax({
-                            //请求方式
-                            type: "get",
-                            //请求的媒体类型
-                            contentType: "application/json;charset=UTF-8",
-                            //请求地址
-                            url: "infoServlet?action=agreeLeave",
-                            //数据，json字符串
-                            //dataType:"JSON",
-                            data:{"person_name":person_name,"phoneNum":phoneNum},
-                            //请求成功
-                            success: function (result) {
-                                console.log("执行成功"+result);
-                            },
-                            //请求失败，包含具体的错误信息
-                            error: function (e) {
-                                console.log(e.status);
-                                console.log(e.responseText);
-                            }
-                        });
-                        /*ajax结束*/
-
-                    } else if(obj.event === "notagree"){
-                        //点击不同意按钮
-                        /*
-                        * 1.向后台发送ajax请求，
-                        *       后台处理内容：
-                        *           （1）改变审批状态
-                        *           （2）向请假待审批表备案表中插入该记录，保存操作时间
-                    *               （3）删除请假待审批表中该记录
-                        * 2.根据返回结果
-                        *       0：操作成功
-                        *           备份与删除成功，调用obj.del()方法删除此行数据，调用table.render（）刷新表格数据
-                        *       -1:操作失败
-                        *           备份与删除失败，调用layer.msg（）提示错误信息*/
-
-                        //获取传值参数信息
-                        person_name = queryAndBindInfo_array(data,"person_name");
-                        phoneNum = queryAndBindInfo_array(data,"phoneNum");
-
-                        /*ajax开始*/
-                        $.ajax({
-                            //请求方式
-                            type: "get",
-                            //请求的媒体类型
-                            contentType: "application/json;charset=UTF-8",
-                            //请求地址
-                            url: "infoServlet?action=notAgreeLeave",
-                            //数据，json字符串
-                            //dataType:"JSON",
-                            data:{"person_name":person_name,"phoneNum":phoneNum},
-                            //请求成功
-                            success: function (result) {
-                                console.log("执行成功"+result);
-                            },
-                            //请求失败，包含具体的错误信息
-                            error: function (e) {
-                                console.log(e.status);
-                                console.log(e.responseText);
+                                // 异常提示
+                                layer.msg('网络故障'+e.status, {
+                                    icon : 5
+                                });
                             }
                         });
                         /*ajax结束*/
                     }
+                    else if(obj.event === "notagree"){
+                        //获取当前页码
+                        var currentPage = $(".layui-laypage-skip .layui-input").val();
+                        layer.prompt({title: '请填写不同意理由', formType: 2},
+                            function(text, index){
+                                /*ajax开始*/
+                                $.ajax({
+                                    type: "post",
+                                    url: "askForLeaveServlet?action=notAgreeLeave",
+                                    data:{
+                                        serialnumber : data.serialnumber,
+                                        approval_reason : text
+                                    },
+                                    dataType: 'json',
+                                    success: function (result) {
+                                        if(result != -1){
+                                            //重载表格
+                                            table.reload('approval', {
+                                                url: 'askForLeaveServlet?action=queryAllLeaveInfo'
+                                                ,page: {
+                                                    curr: currentPage//重新从第 1 页开始
+                                                }
+                                                ,request: {
+                                                    pageName: 'curr' //页码的参数名称，默认：page
+                                                    ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                                }
+                                            });
+                                        }else {
+                                            layer.msg('业务提交失败', {
+                                                icon : 5
+                                            });
+                                        }
+                                        layer.close(index);
+                                    },
+                                    error: function (e) {
+                                        // 异常提示
+                                        layer.msg('网络故障'+e.status, {
+                                            icon : 5
+                                        });
+                                        layer.close(index);
+                                    }
+                                });
+                                /*ajax结束*/
+
+                            }
+                        );
+                    }
+                    else if(obj.event === "toResumeWorkPage"){
+                        //跳转到销假页面
+                        window.location.href = "pages/service/endOfLeave/endOfLeave.jsp"
+                    }
+                });
+
+                //头工具栏事件
+                table.on('toolbar(approval)', function(obj){
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    switch(obj.event){
+                        case 'batchAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        case 'batchNotAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        //自定义头工具栏右侧图标 - 提示
+                        case 'LAYTABLE_TIPS':
+                            layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                            break;
+                    };
                 });
 
                 //监听查询区域的提交按钮事件

@@ -1,21 +1,67 @@
 package com.ctf.utils;
 
+import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.Person;
+import com.ctf.dao.AskForLeaveDao;
+import com.ctf.dao.PersonDao;
+import com.ctf.dao.SystemDataDao;
+import com.ctf.service.impl.PersonServiceImpl;
+import com.ctf.web.Servlet.AskForLeaveServlet;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
 public class WebUtilsTest {
+    private static final String DATEFORMAT_YMD = "yyyy年MM月dd日";
 
+    private static AskForLeaveDao askForLeaveDao = new AskForLeaveDao();
+    private static PersonDao personDao = new PersonDao();
+    private static PersonServiceImpl personService = new PersonServiceImpl();
+    private static SystemDataDao systemDataDao = new SystemDataDao();
     WebUtils webUtils = new WebUtils();
+
+    AskForLeaveServlet askForLeaveServlet = new AskForLeaveServlet();
 
     @Test
     public void parseInt() {
+
+    }
+
+    @Test
+    public void stringListTostringArray(){
+        //根据流水号解析请假信息，返回LeaveInfo对象
+        LeaveInfo leaveInfo = askForLeaveDao.queryLeaveInfoBySerialnumber(9);
+        Integer person_id = leaveInfo.getPerson_id();
+
+        //根据人员编号获取该人员Person对象
+        Person person = personDao.queryPersonInfoByID(person_id);
+
+
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATEFORMAT_YMD);
+        //封装短信模板参数数据
+        String name = person.getName();
+        String leaveType = leaveInfo.getLeave_type();
+        String leaveDays = Integer.toString(leaveInfo.getLeave_days_projected());
+        String startDate = simpleDateFormat.format(leaveInfo.getStart_date());
+        String endDateMaybe = simpleDateFormat.format(leaveInfo.getEnd_date_maybe());
+        List<String> templateParamList = new ArrayList<>();
+        templateParamList.add(name);
+        templateParamList.add(leaveType);
+        templateParamList.add(leaveDays);
+        templateParamList.add(startDate);
+        templateParamList.add(endDateMaybe);
+        String[] strings = WebUtils.stringListTostringArray(templateParamList);
+        for(String s:strings){
+            System.out.println(s);
+        }
+
     }
 
     @Test
@@ -53,11 +99,4 @@ public class WebUtilsTest {
         System.out.println(person);
     }
 
-    @Test
-    public void generateAPersonId() {
-        Person person = new Person();
-        person.setName("夏雨婷");
-        person.setPhone("18089922104");
-        System.out.println(WebUtils.generateAPersonId(person));
-    }
 }

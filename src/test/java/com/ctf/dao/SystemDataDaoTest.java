@@ -12,8 +12,7 @@ public class SystemDataDaoTest {
     SystemDataDao systemDataDao = new SystemDataDao();
     @Test
     public void queryOffice() {
-        List<Office> offices = systemDataDao.queryOffice();
-        System.out.println(offices);
+
     }
 
     @Test
@@ -21,4 +20,18 @@ public class SystemDataDaoTest {
         List<Nation> nations = systemDataDao.queryNation();
         System.out.println(nations);
     }
+
+    @Test
+    public void querySmsAlertDays() {
+        int i = systemDataDao.querySmsAlertDays();
+        System.out.println(i);
+    }
+
+    @Test
+    public void querySendObjStatusCode() {
+        String objName = "doesSendLeader";
+        System.out.println(systemDataDao.querySendObjStatusCode(objName));
+    }
+
+
 }

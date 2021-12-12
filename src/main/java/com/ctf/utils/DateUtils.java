@@ -14,13 +14,20 @@ import java.util.Date;
  */
 public class DateUtils {
 
-    public static Date StringToDate(String date_str) {
+    public static Date StringToDate(String date_str,String formatSTR) {
         try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(date_str);
+            return new SimpleDateFormat(formatSTR).parse(date_str);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    //返回当前年份的字符串
+    public static String getCurrentYear(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+        Date date = new Date();
+        return sdf.format(date);
     }
 
     //date对象转calendar对象
@@ -34,12 +41,31 @@ public class DateUtils {
     public static Date addAndSubtractDays(Date date,int days){
         Calendar cal=Calendar.getInstance();
         cal.setTime(date);
+        if(days > 0){
+            days--;
+        }else if(days < 0){
+            days++;
+        }
         cal.add(Calendar.DATE,days);
         date = cal.getTime();
         return date;
     }
 
-    //精确计算相隔天数
+    //精确计算相隔天数String
+    public static Integer getDaysBetween(String dateSTR1, String dateSTR2,String formatSTR) {
+        Date date1 = StringToDate(dateSTR1, formatSTR);
+        Date date2 = StringToDate(dateSTR2, formatSTR);
+        return getDaysBetween(date1,date2);
+    }
+
+    //精确计算相隔天数Date
+    public static Integer getDaysBetween(Date date1, Date date2) {
+        Calendar d1 = DateToCalendar(date1);
+        Calendar d2 = DateToCalendar(date2);
+        return getDaysBetween(d1, d2);
+    }
+
+    //精确计算相隔天数Calendar
     public static Integer getDaysBetween(Calendar d1, Calendar d2) {
         if (d1.after(d2)) {
             java.util.Calendar swap = d1;
@@ -57,4 +83,25 @@ public class DateUtils {
         }
         return days;
     }
+
+    //精确计算相隔天数Calendar:加1类型
+    public static Integer getDaysBetweenPlusOne(Calendar d1, Calendar d2) {
+        return getDaysBetween(d1,d2)+1;
+    }
+
+    //精确计算相隔天数Date:加1类型
+    public static Integer getDaysBetweenPlusOne(Date date1, Date date2) {
+        Calendar d1 = DateToCalendar(date1);
+        Calendar d2 = DateToCalendar(date2);
+        return getDaysBetweenPlusOne(d1,d2);
+    }
+
+    //精确计算相隔天数String:加1类型
+    public static Integer getDaysBetweenPlusOne(String dateSTR1, String dateSTR2,String formatSTR) {
+        Date date1 = StringToDate(dateSTR1, formatSTR);
+        Date date2 = StringToDate(dateSTR2, formatSTR);
+        return getDaysBetweenPlusOne(date1,date2);
+    }
+
+
 }

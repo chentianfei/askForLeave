@@ -9,19 +9,22 @@ package com.ctf.bean;
  */
 
 public class Office {
-    String office_name;//工作单位名称
+    private String office_name;//工作单位名称
+    private int id;//工作单位id
 
     public Office() {
     }
 
-    public Office(String office_name) {
+    public Office(String office_name, int id) {
         this.office_name = office_name;
+        this.id = id;
     }
 
     @Override
     public String toString() {
         return "Office{" +
                 "office_name='" + office_name + '\'' +
+                ", id=" + id +
                 '}';
     }
 
@@ -31,5 +34,13 @@ public class Office {
 
     public void setOffice_name(String office_name) {
         this.office_name = office_name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
