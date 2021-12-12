@@ -15,7 +15,7 @@
     <body>
         <div style="padding: 10px">
 
-            <form class="layui-form layui-form-pane" action="#" method="post">
+            <form class="layui-form layui-form-pane">
 
                 <div class="layui-form-item">
                     <div class="layui-inline">
@@ -23,7 +23,7 @@
                         <div class="layui-input-inline" style="width:405px">
                             <input type="text" autocomplete=“off”
                                    id="leaderName"
-                                   name="leaderName" placeholder="请输入" lay-verify="required" id="username"
+                                   name="leaderName" lay-verify="required"
                                    class="layui-input">
                         </div>
                     </div>
@@ -32,8 +32,9 @@
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <div class="layui-input-inline" style="width:555px">
-                            <select name="leader_id" id="leader_id" lay-verify="required">
-                                <option value="">请先输入领导姓名</option>
+                            <select name="leader_id" id="leader_id"
+                                    lay-verify="required">
+                                <option value="">请输入领导姓名，敲回车查询信息</option>
                             </select>
                         </div>
                     </div>
@@ -61,14 +62,18 @@
             layui.use(['form','common'], function() {
                 var form = layui.form;
                 var $ = layui.jquery;
+                var subordinate_id = parent.$("#person_id:hidden").val();
 
                 form.render();
                 form.on('submit(bindLeaderSubmit)', function(data){
                     const sourceData = data.field;
 
                     const leader_id = sourceData.leader_id;
-                    const subordinate_id = sourceData.subordinate_id;
+                    const subordinate_id = parent.$("#person_id").val();
                     const leaderName = sourceData.leaderName;
+
+                    //获取当前页码
+                    var currentPage = parent.$(".layui-laypage-skip .layui-input").val();
 
                     $.ajax({
                         type : 'POST',
@@ -102,28 +107,22 @@
                                     },
                                     dataType: 'json',
                                     success: function (data) {
-                                        parent.layer.msg('绑定成功', {
-                                            icon: 6
-                                        });
-
-                                        /*//重载表格
-                                        parent.parent.layui.table.reload('leader_info', {
-                                            where: {
-                                                subordinate_id: subordinate_id
-                                            }
-                                        });
-*/
                                         //重载表格
                                         parent.layui.table.reload('personinformation', {
                                             url: 'personServlet?action=queryAllPerson'
                                             ,page: {
-                                                curr: 1 //重新从第 1 页开始
+                                                curr: currentPage
                                             }
                                             ,request: {
                                                 pageName: 'curr' //页码的参数名称，默认：page
                                                 ,limitName: 'nums' //每页数据量的参数名，默认：limit
                                             }
                                         });
+
+                                        parent.layer.msg('绑定成功', {
+                                            icon: 6
+                                        });
+
                                     },
                                     error : function(data) {
                                         parent.layer.msg('出现网络故障', {
@@ -149,47 +148,52 @@
                 });
 
                 //名字输入框onblur后发起数据查询——开始
-                $("#leaderName").blur(function (e) {
-                    $.ajax({
-                        url: 'personServlet?action=queryPersonInfoByName',
-                        dataType: 'json',
-                        data:{
-                            person_name : $("#leaderName").val()
-                        },
-                        type: 'post',
-                        success: function (result) {
-                            if (result.data.length > 0) {
-                                $("#leader_id").empty();
-                                $("#leader_id").append("<option value=''>已查询出领导信息，请选择</option>");
-                                $.each(result, function (key, value) {
-                                    if(key == "data"){
-                                        $.each(result.data,function (infoIndex,personInfo) {
-                                            var leaderInfo = personInfo.name+":"
-                                                +personInfo.office+"-"
-                                                +personInfo.post+"-"
-                                                +personInfo.phone;
-                                            var lerder_id_result = personInfo.person_id;
-                                            //加入和本人id不同的领导信息
-                                            if(lerder_id_result != $("#subordinate_id").val()) {
-                                                $('#leader_id').append(new Option(leaderInfo,lerder_id_result));
-                                            }else{
-                                                $("#leader_id").empty();
-                                                parent.layer.msg("不能选择您自己作为领导",{
-                                                    icon : 5
-                                                });
+                $("#leaderName").keydown(function (e) {
+                    switch (e.keyCode) {
+                        case 13:
+                            $.ajax({
+                                url: 'personServlet?action=queryPersonInfoByName',
+                                dataType: 'json',
+                                data:{
+                                    person_name : $("#leaderName").val()
+                                },
+                                type: 'post',
+                                success: function (result) {
+                                    if (result.data.length > 0) {
+                                        $("#leader_id").empty();
+                                        $("#leader_id").append("<option value=''>已查询出领导信息，请选择</option>");
 
+                                        $.each(result, function (key, value) {
+                                            if(key == "data"){
+                                                $.each(result.data,function (infoIndex,personInfo) {
+                                                    var leaderInfo = personInfo.name+":"
+                                                        +personInfo.office+"-"
+                                                        +personInfo.post+"-"
+                                                        +personInfo.phone;
+                                                    var lerder_id_result = personInfo.person_id;
+                                                    //加入和本人id不同的领导信息
+                                                    if(lerder_id_result != subordinate_id) {
+                                                        $('#leader_id').append(new Option(leaderInfo,lerder_id_result));
+                                                    }else{
+                                                        $("#leader_id").empty();
+                                                        parent.layer.msg("不能选择您自己作为领导",{
+                                                            icon : 5
+                                                        });
+                                                    }
+                                                })
                                             }
-                                        })
+                                        });
+
+                                    } else {
+                                        $("#leader_id").empty();
+                                        $("#leader_id").append("<option value=''>无该领导信息，请核实输入是否正确</option>");
                                     }
-                                });
-                            } else {
-                                $("#leader_id").empty();
-                                $("#leader_id").append("<option value=''>无该领导信息，请核实输入是否正确</option>");
-                            }
-                            //重新渲染
-                            form.render("select");
-                        }
-                    });
+                                    //重新渲染
+                                    form.render("select");
+                                }
+                            });
+                            break;
+                    }
                 });
                 //名字输入框onblur后发起数据查询——结束
 

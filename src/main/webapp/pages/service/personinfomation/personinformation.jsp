@@ -695,7 +695,6 @@
                     return false;
                 });
 
-                table.exportFile(personinformation_query.config.id, data);
 
             });
         </script>

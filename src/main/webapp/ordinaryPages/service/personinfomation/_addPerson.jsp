@@ -172,7 +172,7 @@
                     const level = sourceData.level;
                     const name = sourceData.name;
                     const nation = sourceData.nation;
-                    const office = ${sessionScope.user.office};
+                    const office = "${sessionScope.user.office}";
                     const phone = sourceData.phone;
                     const sex = sourceData.sex;
                     const post = sourceData.post;
