@@ -12,13 +12,13 @@
                <div class="layui-col-md3" style="height: 70px">
                </div>
                <div class="layui-col-md6">
-                  <%-- <h1>【演示】仲巴县委组织部请销假管理系统</h1>--%>
                    <h1>仲巴县委组织部请销假管理系统</h1>
                </div>
                <div class="layui-col-md3" style="height: 70px">
                    <div class="layui-row" style="padding-top: 20px;padding-left: 60px">
                        <p>
-                           当前用户：****，<a href="#">退出</a>
+                           当前用户：${sessionScope.user.operator}，
+                           <a href="loginServlet?action=loginOut" style="color:whitesmoke;">退出</a>
                        </p>
                    </div>
 

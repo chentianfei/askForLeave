@@ -1,11 +1,15 @@
 package com.ctf.service.impl;
 
+import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 import com.ctf.dao.PersonDao;
 import com.ctf.service.PersonService;
 import com.ctf.utils.WebUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -67,28 +71,47 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<Person> queryAllPersonLimit(int pageNo,int pageSize) {
-        return personDao.queryAllPersonLimit(pageNo,pageSize);
+    public List<HashMap<String, Object>> queryAllPersonLimit(int pageNo,int pageSize,String user_office) {
+        List<Person> personList = personDao.queryAllPersonLimit(pageNo, pageSize,user_office);
+        return formatInfo(personList);
     }
 
     @Override
-    public List<Person> queryAllPerson() {
-        return personDao.queryAllPerson();
+    public List<HashMap<String, Object>> queryAllPerson(String user_office) {
+        List<Person> personList = personDao.queryAllPerson(user_office);
+        return formatInfo(personList);
     }
 
     @Override
-    public List<Person> querySomePerson(Person person) {
-        return personDao.querySomePerson(person);
+    public List<HashMap<String, Object>> querySomePerson(Person person) {
+        List<Person> personList = personDao.querySomePerson(person);
+        return formatInfo(personList);
     }
 
     @Override
-    public List<Person> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize) {
-         return personDao.querySomePersonLimit(person,pageNo,pageSize);
+    public List<HashMap<String, Object>> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize) {
+        List<Person> personList = personDao.querySomePersonLimit(person,pageNo,pageSize);
+        return formatInfo(personList);
     }
 
     @Override
     public Person queryPersonInfoById(Integer person_id) {
         return personDao.queryPersonInfoByID(person_id);
+    }
+
+    @Override
+    public List<Person> queryPersonInfoByIdRTNList(Integer person_id) {
+        List<Person> peopleList = new ArrayList<>();
+        peopleList.add(personDao.queryPersonInfoByID(person_id));
+        return personDao.getNormalResult(peopleList);
+    }
+
+    public List<HashMap<String,Object>> queryPersonInfoByIdRTNMap(Integer person_id){
+        ArrayList<Person> arrayList = new ArrayList<>();
+        Person person = queryPersonInfoById(person_id);
+        person.setLeader(personDao.queryRelatedLeader(person_id));
+        arrayList.add(person);
+        return formatInfo(arrayList);
     }
 
     @Override
@@ -106,5 +129,29 @@ public class PersonServiceImpl implements PersonService {
         return null;
     }
 
+    //封装数据，主要为了前台显示的日期格式
+    public List<HashMap<String,Object>> formatInfo(List<Person> personList){
+        List<HashMap<String,Object>> mapList = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+        for (Person person: personList){
+            //封装回显数据
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("person_id",person.getPerson_id());
+            hashMap.put("name",person.getName());
+            hashMap.put("sex", person.getSex());
+            hashMap.put("nation", person.getNation());
+            hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+            hashMap.put("nativePlace", person.getNativePlace());
+            hashMap.put("office", person.getOffice());
+            hashMap.put("post", person.getPost());
+            hashMap.put("area_class", person.getArea_class());
+            hashMap.put("level", person.getLevel());
+            hashMap.put("phone", person.getPhone());
+            hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+            hashMap.put("leader", person.getLeader());
+            mapList.add(hashMap);
+        }
+        return mapList;
+    }
 
 }

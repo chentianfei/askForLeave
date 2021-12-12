@@ -184,6 +184,6 @@ public class Person {
     }
 
     public void setLeader(List<Person> leader) {
-        this.leader = new PersonDao().queryRelatedLeader(this.person_id);
+        this.leader = leader;
     }
 }

@@ -30,10 +30,13 @@ public class  LeaveInfo {
     private Date end_date_maybe;//预计到岗日期
     private String start_leave_operator;//请假操作员
     private String approval_status;//审批状态
+    private String approval_reason;//审批理由
+
     private Date end_date;//销假日期（实际到岗日期）
     private String end_leave_remark;//销假备注
     private String end_leave_operator;//销假操作员
     private Integer leave_days_actual;//请假天数（实际请假天数）
+
 
 
     public LeaveInfo() {
@@ -48,7 +51,8 @@ public class  LeaveInfo {
                      String start_leave_remark, Date end_date_maybe,
                      String start_leave_operator, String approval_status,
                      Date end_date, String end_leave_remark,
-                     String end_leave_operator, Integer leave_days_actual) {
+                     String end_leave_operator, Integer leave_days_actual,
+                     String approval_reason) {
         this.serialnumber = serialnumber;
         this.name = name;
         this.person_id = person_id;
@@ -68,6 +72,7 @@ public class  LeaveInfo {
         this.end_leave_remark = end_leave_remark;
         this.end_leave_operator = end_leave_operator;
         this.leave_days_actual = leave_days_actual;
+        this.approval_reason = approval_reason;
     }
 
     @Override
@@ -92,7 +97,16 @@ public class  LeaveInfo {
                 ", end_leave_remark='" + end_leave_remark + '\'' +
                 ", end_leave_operator='" + end_leave_operator + '\'' +
                 ", leave_days_actual=" + leave_days_actual +
+                ", approval_reason='" + approval_reason + '\'' +
                 '}';
+    }
+
+    public String getApproval_reason() {
+        return approval_reason;
+    }
+
+    public void setApproval_reason(String approval_reason) {
+        this.approval_reason = approval_reason;
     }
 
     public String getApproval_status() {

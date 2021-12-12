@@ -55,17 +55,23 @@
             <div class="layui-inline">
                 <label class="layui-form-label" style="width: 150px">本人籍贯</label>
                 <div class="layui-input-inline" style="width: 120px">
-                    <select id="province" name="province"  lay-filter="province" lay-search>
+                    <select id="province" name="province"  lay-filter="province"
+                            lay-verify="required"
+                            lay-search>
                         <option value="">选择省</option>
                     </select>
                 </div>
                 <div class="layui-input-inline" style="width: 120px">
-                    <select id="city" name="city"  lay-filter="city" lay-search>
+                    <select id="city" name="city"  lay-filter="city"
+                            lay-verify="required"
+                            lay-search>
                         <option value="">选择市</option>
                     </select>
                 </div>
                 <div class="layui-input-inline" style="width: 120px">
-                    <select id="district" name="district"  lay-filter="district" lay-search>
+                    <select id="district" name="district"  lay-filter="district"
+                            lay-verify="required"
+                            lay-search>
                         <option value="">选择区</option>
                     </select>
                 </div>
@@ -128,7 +134,7 @@
             <div class="layui-input-inline" style="width:400px">
                 <input type="text" name="allow_Leave_Days"
                        id="allow_Leave_Days"
-                       placeholder="请输入" lay-verify="required|number"
+                       placeholder="请输入" lay-verify="required|number|integer"
                        autocomplete="off" class="layui-input">
             </div>
         </div>
@@ -166,16 +172,22 @@
         //日期框
         laydate.render({
             elem: '#birthDate'//指定元素
-            , type: 'date'
+            ,type: 'date'
         });
 
         form.render();
-
+        //数字验证
+        form.verify({
+            integer: [
+                /^[1-9]\d*$/
+                , '只能输入正整数'
+            ]
+        });
         form.on('submit(updatePersonSubmit)', function(data){
             const sourceData = data.field;
             const person_id = sourceData.person_id;
             const area_class = sourceData.area_class;
-            const birthDate = sourceData.birthDate;
+            const birthDate = replaceYMDChinese(sourceData.birthDate);
             const level = sourceData.level;
             const name = sourceData.name;
             const nation = sourceData.nation;
@@ -201,6 +213,9 @@
 
             //解析解析框中的地址内容
             const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
+
+            //获取当前页码
+            var currentPage = parent.$(".layui-laypage-skip .layui-input").val();
 
             $.ajax({
                 type : 'POST',
@@ -230,7 +245,7 @@
                     parent.layui.table.reload('personinformation', {
                         url: 'personServlet?action=queryAllPerson'
                         ,page: {
-                            curr: 1 //重新从第 1 页开始
+                            curr: currentPage //重新从第 1 页开始
                         }
                         ,request: {
                             pageName: 'curr' //页码的参数名称，默认：page

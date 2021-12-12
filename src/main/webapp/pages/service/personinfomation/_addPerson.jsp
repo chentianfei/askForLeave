@@ -58,17 +58,23 @@
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width: 150px">本人籍贯</label>
                         <div class="layui-input-inline" style="width: 120px">
-                            <select name="province" data-area="西藏自治区" lay-filter="province" lay-search>
+                            <select name="province" data-area="西藏自治区"
+                                    lay-verify="required"
+                                    lay-filter="province" lay-search>
                                 <option value="">选择省</option>
                             </select>
                         </div>
                         <div class="layui-input-inline" style="width: 120px">
-                            <select name="city" data-area="日喀则市" lay-filter="city" lay-search>
+                            <select name="city" data-area="日喀则市"
+                                    lay-verify="required"
+                                    lay-filter="city" lay-search>
                                 <option value="">选择市</option>
                             </select>
                         </div>
                         <div class="layui-input-inline" style="width: 120px">
-                            <select name="district" lay-filter="district" lay-search>
+                            <select name="district" lay-filter="district"
+                                    lay-verify="required"
+                                    lay-search>
                                 <option value="">选择区</option>
                             </select>
                         </div>
@@ -130,7 +136,8 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">允许休假天数</label>
                     <div class="layui-input-inline" style="width:400px">
-                        <input type="text" name="allow_Leave_Days" placeholder="请输入" lay-verify="required|number"
+                        <input type="text" name="allow_Leave_Days"
+                               placeholder="请输入" lay-verify="required|number|integer"
                                autocomplete="off" class="layui-input">
                     </div>
                 </div>
@@ -156,6 +163,14 @@
                 laydate.render({
                     elem: '#birthDate'//指定元素
                     , type: 'date'
+                });
+
+                //数字验证
+                form.verify({
+                    integer: [
+                        /^[1-9]\d*$/
+                        , '只能输入正整数'
+                    ]
                 });
 
                 form.render();

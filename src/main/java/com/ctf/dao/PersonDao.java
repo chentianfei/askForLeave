@@ -19,23 +19,53 @@ import java.util.List;
  */
 public class PersonDao extends BaseDao{
 
-    public List<Person> queryAllPersonLimit(int pageNo,int pageSize)  {
+    //根据用户单位返回该单位所有人员的人员编号List
+    public List<Object> queryAllPersonIdByOffice(String office){
+        String sql = "select person_id from person_info where office=?";
+        return queryForOneCol(sql,office);
+    }
+
+    public List<Person> queryAllPersonLimit(int pageNo,int pageSize,String user_office)  {
         //分页参数：起始值
         Integer start = (pageNo-1)*pageSize;
         //分页参数：结束值
         Integer end = pageSize;
 
-        String sql = "select * from person_info order by person_id desc limit ?,? ";
-        List<Person> personList = queryForList(Person.class, sql,start,end);
+        StringBuilder sql = new StringBuilder("select * from person_info where 1=1 ");
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        if(user_office != null ){
+            if(!user_office.equals("")){
+                //根据单位查询
+                sql.append(" and office=? ");
+                parmas.add(user_office);
+            }
+        }
+        //查询全部数据，不区分单位
+        sql.append(" order by person_id desc limit ?,? ");
+        parmas.add(start);
+        parmas.add(end);
+        List<Person> personList = queryForList(Person.class, sql.toString(),parmas.toArray());
         //对查询出来的每个人绑定领导后返回
         return  getNormalResult(personList);
     }
 
-    public List<Person> queryAllPerson() {
-        String sql = "select * from person_info";
+    //根据用户属性查询所有人员信息
+    public List<Person> queryAllPerson(String user_office) {
+        StringBuilder sql = new StringBuilder("select * from person_info where 1=1 ");
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        if(user_office != null ){
+            if(!user_office.equals("")){
+                //根据单位查询
+                sql.append(" and office=? ");
+                parmas.add(user_office);
+            }
+        }
+        //查询全部数据，不区分单位
+        sql.append(" order by person_id desc");
 
-        //先查询
-        List<Person> personList = queryForList(Person.class, sql);
+        List<Person> personList = queryForList(Person.class, sql.toString(),parmas.toArray());
         //对查询出来的每个人绑定领导后返回
         return  getNormalResult(personList);
     }
@@ -136,7 +166,7 @@ public class PersonDao extends BaseDao{
         String phone = person.getPhone();
         if(phone != "" && !phone.trim().isEmpty()){
             sql.append(" and phone = ?");
-            parmas.add('"'+phone.trim()+'"');
+            parmas.add(phone.trim());
         }
 
         //允许休假天数
@@ -147,7 +177,7 @@ public class PersonDao extends BaseDao{
         }
 
         //分页操作
-        sql.append(" limit ?,? ");
+        sql.append(" order by person_id desc limit ?,? ");
         parmas.add(start);
         parmas.add(end);
 
@@ -277,14 +307,8 @@ public class PersonDao extends BaseDao{
 
     //新增人员
     public Integer addAPerson(Person person) {
-        System.out.println("调用了persondao的addAPerson方法："+person);
         //给出sql模板,为了便于后面添加sql语句
         String sql ="insert into person_info(person_id," +
-                "NAME,nation,sex,birthdate,nativeplace,office," +
-                "post,level,phone,allow_leave_days,area_class) " +
-                "values(null,?,?,?,?,?,?,?,?,?,?,?)";
-
-        String sql2 ="insert into person_info_copy(person_id," +
                 "NAME,nation,sex,birthdate,nativeplace,office," +
                 "post,level,phone,allow_leave_days,area_class) " +
                 "values(null,?,?,?,?,?,?,?,?,?,?,?)";
@@ -304,7 +328,6 @@ public class PersonDao extends BaseDao{
         parmas.add(person.getArea_class());
 
         int insertCount = update(sql,parmas.toArray());
-        int insertCopyCount = update(sql2,parmas.toArray());
 
         return insertCount;
     }
@@ -337,19 +360,6 @@ public class PersonDao extends BaseDao{
                  "allow_leave_days=?," +
                  "area_class=? "+
                  "where person_id=?";
-        String updatePerson_Info_CopySQL = "update person_info_copy set " +
-                "`NAME`=?," +
-                "nation=?," +
-                "sex=?," +
-                "birthdate=?," +
-                "nativeplace=?," +
-                "office=?," +
-                "post=?," +
-                "`level`=?," +
-                "phone=?," +
-                "allow_leave_days=?," +
-                "area_class=? "+
-                "where person_id=?";
 
         //用于保存可变参数
         List<Object> parmas = new ArrayList<Object>();
@@ -366,16 +376,16 @@ public class PersonDao extends BaseDao{
         parmas.add(newPersonInfo.getArea_class());
         parmas.add(newPersonInfo.getPerson_id());
 
-        int updateCount = update(updatePerson_InfoSQL,parmas.toArray());
-        int updateCopyCount = update(updatePerson_Info_CopySQL,parmas.toArray());
-
-        return updateCount;
+        return update(updatePerson_InfoSQL,parmas.toArray());
     }
 
     //根据人员编号person_id查找一个人的信息
     public Person queryPersonInfoByID(Integer person_id){
         String sql = "select * from person_info where person_id = ?";
-        return queryForOne(Person.class, sql,person_id);
+        Person person = queryForOne(Person.class, sql,person_id);
+        //绑定领导
+        person.setLeader(queryRelatedLeader(person_id));
+        return person;
     }
 
     //根据人员id删除人员信息
@@ -395,6 +405,7 @@ public class PersonDao extends BaseDao{
         }
         return personList;
     }
+
     //根据人员姓名查询人员信息（用于查询重名信息）
     public List<Person> queryPersonInfoByName(String person_name) {
         String sql = "select person_id,`NAME`,phone,office,post from person_info where `NAME`=?";

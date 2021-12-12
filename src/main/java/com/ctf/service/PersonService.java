@@ -3,6 +3,7 @@ package com.ctf.service;
 import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 
+import java.util.HashMap;
 import java.util.List;
 
 /*
@@ -23,15 +24,17 @@ public interface PersonService {
     //新增一个人员信息
     Integer addAPerson(Person person);
     //分页查询库中所有人员信息
-    List<Person> queryAllPersonLimit(int pageNo,int pageSize);
+    List<HashMap<String, Object>> queryAllPersonLimit(int pageNo, int pageSize,String user_office);
     //查询库中所有人员信息
-    List<Person> queryAllPerson();
+    List<HashMap<String, Object>> queryAllPerson(String user_office);
     //根据不定条件查询人员信息_不分页
-    List<Person> querySomePerson(Person person);
+    List<HashMap<String, Object>> querySomePerson(Person person);
     //根据不定条件查询人员信息_分页
-    List<Person> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize);
+    List<HashMap<String, Object>> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize);
     //根据人员编号查询单个人员信息
     Person queryPersonInfoById(Integer person_id);
+    //根据人员编号查询单个人员信息，返回绑定好领导的list
+    List<Person> queryPersonInfoByIdRTNList(Integer person_id);
     //根据人员姓名、人员电话查询人员全部信息
     Person queryOnePersonByNameAndPhone(String person_name,String person_phoneNum);
     //根据人员姓名查询人员信息

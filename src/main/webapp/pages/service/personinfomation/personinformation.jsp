@@ -152,7 +152,7 @@
                                             <div class="layui-form-item" style="padding-left: 70%">
                                                 <div class="layui-input-block">
                                                     <button type="submit" class="layui-btn" lay-submit lay-filter="person_info_query">查询</button>
-                                                    <button type="reset" class="layui-btn layui-btn-normal" >重置</button>
+                                                    <button type="reset" class="layui-btn layui-btn-normal" id="person_info_query_reset" >重置</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -202,9 +202,9 @@
         <%--表格上方工具栏--%>
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增单个人员</button>
-                <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
-                <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
+                <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增人员</button>
+                <%--<button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
+                <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>--%>
             </div>
         </script>
 
@@ -214,27 +214,26 @@
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
 
             {{# if(d.leader.length === 0){ }}
-            <a type="button"
+            <a type="button" id="bindLeader"
                class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
                lay-event="bindLeader">
                 暂未绑定领导
             </a>
-            <%--<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="unPass">未审批</a>--%>
             {{#  } }}
 
             {{#  if(d.leader.length >0 ){ }}
-            <a type="button"
+            <a type="button" id="showRelatedLeader"
                class="layui-btn  layui-btn-xs layui-btn-primary layui-border-green  layui-btn-radius"
                lay-event="showRelatedLeader">
                 已绑定{{ d.leader.length }}位领导
             </a>
-            <%--<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="pass">已审批</a>--%>
             {{#  } }}
 
         </script>
 
         <script>
 
+            let person_id_value;
 
             layui.use(['table','upload','laydate','common','element','form',
                 'layer', 'util','laypage'], function(){
@@ -247,13 +246,14 @@
                 var form = layui.form;
                 var laydate = layui.laydate;
                 var laypage = layui.laypage;
+                var upload = layui.upload;
 
                 bindLevelSelectData();
                 bindNationSelectData();
                 bindOfficeSelectData();
 
                 //表格数据读取参数
-                table.render({
+                var personinformation_query = table.render({
                     elem: '#personinformation'
                     ,url:'personServlet?action=queryAllPerson'
                     ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
@@ -265,16 +265,9 @@
                     ,limit:5
                     ,limits:[5,10,15]
                     ,cols: [[
-                        /*{field:'person_id', title:'人员编号',width: 120}*/
                         {field:'name', title:'姓名',align:"center",width: 100}
                         ,{field:'sex', title:'性别',align:"center",width: 60}
-                        ,{field:'birthDate',
-                            title:'出生日期',
-                            width: 140,
-                            align:"center",
-                            templet:
-                                '<div>{{ layui.util.toDateString(new Date(d.birthDate).getTime(), "yyyy年MM月dd日") }}</div>'
-                        }
+                        ,{field:'birthDate',title:'出生日期',width: 140,align:"center"}
                         ,{field:'area_class', title:'所在类区',align:"center",width: 85}
                         ,{field:'nation', title:'民族',align:"center",width: 80}
                         ,{field:'nativePlace', title:'本人籍贯',align:"center",width: 240}
@@ -283,7 +276,6 @@
                         ,{field:'level', title:'职级',align:"center",width: 120}
                         ,{field:'phone', title:'联系电话',align:"center",width: 125}
                         ,{field:'allow_Leave_Days', title:'允许休假天数',align:"center",width: 120}
-                        ,{field:'leader', title:'相关领导',hide:true,align:"center",width: 120}
                         ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:220}
                     ]]
                     ,page: true
@@ -291,15 +283,8 @@
 
                 /*设定表格工具事件*/
                 table.on('toolbar(personinformation)', function(obj){
-                    var checkStatus = table.checkStatus(obj.config.id);
-
-                    //obj.event：对应的事件
                     switch(obj.event){
                         case 'addAPerson':
-                            //选择的行的具体内容：checkStatus.data;
-                            //选中的行数：checkStatus.data.length
-                            //是否全选的状态：checkStatus.isAll
-
                             /*点击新增单个人员按钮后的弹窗*/
                             layer.open({
                                 type: 2,
@@ -343,27 +328,25 @@
                 });
 
                 /*设定行工具事件*/
-                table.on('tool(personinformation)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                table.on('tool(personinformation)', function(obj){
+
                     var data = obj.data; //获得当前行数据
                     //解析当前行数据
-
+                    person_id_value = data.person_id;
+                    //向本页指定数据域赋值
+                    $("#person_id:hidden").val(person_id_value);
                     var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
-                    var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
                     var deleteLayer;
                     var updateLayer;
                     var bindLeaderLayer;
                     var showRelatedLeaderLayer;
-
-                    var person_id = data.person_id;
-                    $("#person_id").val(person_id);
-
+                    //获取当前页码
+                    var currentPage = $(".layui-laypage-skip .layui-input").val();
                     //更新人员信息
                     if(layEvent === 'update'){
                         updateLayer = layer.open({
                             type: 2,
                             title: '更新人员信息',
-                            shadeClose: true,
-                            shade: false,
                             maxmin: true, //开启最大化最小化按钮
                             area: ['600px', '600px'],
                             content: "pages/service/personinfomation/_updatePerson.jsp",
@@ -381,9 +364,7 @@
                                 body.find("input[name=sex][value=男]").attr("checked", data.sex == "男" ? true : false);
                                 body.find("input[name=sex][value=女]").attr("checked", data.sex == "女" ? true : false);
                                 body.find("#name").val(data.name);
-                                body.find("#birthDate").val(
-                                    layui.util.toDateString(new Date(data.birthDate).getTime(), 'yyyy-MM-dd')
-                                );
+                                body.find("#birthDate").val(data.birthDate);
                                 body.find("#post").val(data.post);
                                 body.find("#phone").val(data.phone);
                                 body.find("#allow_Leave_Days").val(data.allow_Leave_Days);
@@ -391,15 +372,14 @@
                                 body.find("#area_class option[value='" + data.area_class+"']")
                                     .attr("selected", "selected");
                                 body.find("#person_id").val(data.person_id)
-
                                 //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
                                 $.ajax({
-                                    url: 'systemDataServlet?action=bindLevelSelectData',
+                                    url: 'systemDataServlet?action=queryLevelInfo',
                                     type : 'POST',
                                     dataType : 'json',
                                     contentType : "text/html;charset=utf-8",
-                                    success: function (SourceData) {
-
+                                    success: function (sourceData) {
+                                        var SourceData = sourceData.data;
                                         $.each(SourceData, function (index, item) {
                                             if (data.level == item.level_name) {
                                                 body.find('[id=level]').append(
@@ -418,12 +398,12 @@
 
                                 //通过ajax为弹框页面工作单位下拉框拉取当前页面数据并绑定数据库中其他数据
                                 $.ajax({
-                                    url: 'systemDataServlet?action=bindOfficeSelectData',
+                                    url: 'systemDataServlet?action=queryOffice',
                                     type : 'POST',
                                     dataType : 'json',
                                     contentType : "text/html;charset=utf-8",
-                                    success: function (SourceData) {
-
+                                    success: function (sourceData) {
+                                        var SourceData = sourceData.data;
                                         $.each(SourceData, function (index, item) {
                                             if (data.office == item.office_name) {
                                                 body.find('[id=office]').append(
@@ -486,7 +466,7 @@
                     }
                     //删除人员
                     else if(layEvent === 'delete'){
-                       deleteLayer = layer.confirm('真的删除行么', function(index){
+                       deleteLayer = layer.confirm('确定删除该人员吗？', function(index){
                             obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                             layer.close(index);
                             //向服务端发送删除指令
@@ -499,14 +479,14 @@
                                dataType : 'json',
                                success : function(data) {
                                    // 成功提示框
-                                   parent.layer.msg('已删除', {
+                                   layer.msg('已删除', {
                                        icon : 6,
                                    });
                                    //重载表格
-                                   parent.layui.table.reload('personinformation', {
+                                   table.reload('personinformation', {
                                        url: 'personServlet?action=queryAllPerson'
                                        ,page: {
-                                           curr: 1 //重新从第 1 页开始
+                                           curr: currentPage //重新从第 1 页开始
                                        }
                                        ,request: {
                                            pageName: 'curr' //页码的参数名称，默认：page
@@ -514,11 +494,11 @@
                                        }
                                    });
                                    //关闭此页面
-                                   parent.layer.close(deleteLayer);
+                                   layer.close(deleteLayer);
                                },
                                error : function(data) {
                                    // 异常提示
-                                   parent.layer.msg('出现网络故障', {
+                                   layer.msg('出现网络故障', {
                                        icon : 5
                                    });
                                }
@@ -542,7 +522,7 @@
                             success: function (layero, index) {
                                 var body = layer.getChildFrame('body', index);
                                 //给隐藏域传值
-                                body.find("#subordinate_id").val(person_id);
+                                //body.find("#subordinate_id").val(person_id);
                             },
                             yes:function (index, layero) {
                                 var body = layer.getChildFrame('body', index);
@@ -552,7 +532,7 @@
                                 table.reload('personinformation', {
                                     url: 'personServlet?action=queryAllPerson'
                                     ,page: {
-                                        curr: 1 //重新从第 1 页开始
+                                        curr: currentPage //重新从第 1 页开始
                                     }
                                     ,request: {
                                         pageName: 'curr' //页码的参数名称，默认：page
@@ -564,7 +544,7 @@
                             },
                             cancel: function () {
                                 //关闭此页面
-                                parent.layer.close(bindLeaderLayer);
+                                layer.close(bindLeaderLayer);
                                 //右上角关闭回调
                                 //return false 开启该代码可禁止点击该按钮关闭
                             }
@@ -579,7 +559,7 @@
                             title: '查看相关领导',
                             fixed: true,
                             maxmin: true, //开启最大化最小化按钮
-                            area: ['1200px', '600px'],
+                            area: ['1500px', '600px'],
                             id: "LAY_layuipro",
                             content: "pages/service/personinfomation/_showRelatedLeader.jsp",
                             anim:2,
@@ -591,8 +571,19 @@
                                   */
                             },
                             cancel: function () {
+                                //重载表格
+                                table.reload('personinformation', {
+                                    url: 'personServlet?action=queryAllPerson'
+                                    ,page: {
+                                        curr: currentPage //重新从第 1 页开始
+                                    }
+                                    ,request: {
+                                        pageName: 'curr' //页码的参数名称，默认：page
+                                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                    }
+                                });
                                 //关闭此页面
-                                parent.layer.close(showRelatedLeaderLayer);
+                                layer.close(showRelatedLeaderLayer);
                                 //右上角关闭回调
                                 //return false 开启该代码可禁止点击该按钮关闭
                             }
@@ -600,15 +591,14 @@
                     }
                 });
 
-
-                //上传功能js
-                var upload = layui.upload;
                 upload.render({
                     elem: '#batchAddPerson' //绑定元素
-                    ,url: '/upload/' //上传接口
+                    ,method: 'POST'
+                    ,url: 'personServlet?action=batchAddPerson' //上传接口
                     ,auto: false //选择文件后不自动上传
-                    ,accept:'file'
                     ,bindAction: '#uploadBtn'
+                    ,accept: 'file'
+                    ,exts: 'xls|xlsx' //允许上传的文件后缀
                     ,done: function(res){
                         //上传完毕回调
                     }
@@ -630,38 +620,52 @@
                 });
 
                 //监听查询模块提交事件
-                form.on('submit(person_info_query)', function(data){
-                    const sourceData = data.field;
+                //用于保存导出时的查询条件
+                var name;
+                var sex;
+                var nation;
+                var nation;
+                var birthDate;
+                var nativePlace;
+                var office;
+                var post;
+                var area_class;
+                var level;
+                var phone;
 
-                    const area_class = sourceData.area_class;
-                    const birthDate = sourceData.birthDate;
-                    const level = sourceData.level;
-                    const name = sourceData.name;
-                    const nation = sourceData.nation;
-                    const office = sourceData.office;
-                    const phone = sourceData.phone;
-                    const sex = sourceData.sex;
-                    const post = sourceData.post;
+
+                form.on('submit(person_info_query)', function(data){
+                    var sourceData = data.field;
+
+                    area_class = sourceData.area_class;
+                    birthDate = sourceData.birthDate;
+                    level = sourceData.level;
+                    name = sourceData.name;
+                    nation = sourceData.nation;
+                    office = sourceData.office;
+                    phone = sourceData.phone;
+                    sex = sourceData.sex;
+                    post = sourceData.post;
 
                     //解析解析框中的地址内容
-                    const city = sourceData.city;
-                    const district = sourceData.district;
-                    const province = sourceData.province;
+                    var city = sourceData.city;
+                    var district = sourceData.district;
+                    var province = sourceData.province;
                     // 通过地址code码获取地址名称
                     var address = common.getCity({
                         province,
                         city,
                         district
                     });
-                    let provinceName = address.provinceName;
-                    let cityName = address.cityName;
-                    let districtName = address.districtName;
+                    var provinceName = address.provinceName;
+                    var cityName = address.cityName;
+                    var districtName = address.districtName;
 
                     //解析解析框中的地址内容
-                    const nativePlace = provinceName + '' + cityName + '' + districtName;
+                    nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
 
                     //重载表格
-                    table.reload('personinformation', {
+                    personinformation_query.reload({
                         url: 'personServlet?action=querySomePersons'
                         ,where: {
                             //设定异步数据接口的额外参数
@@ -685,9 +689,13 @@
                             curr: 1 //重新从第 1 页开始
                         }
                     });
+
+                    $("#person_info_query_reset").click();
+
                     return false;
                 });
 
+                table.exportFile(personinformation_query.config.id, data);
 
             });
         </script>

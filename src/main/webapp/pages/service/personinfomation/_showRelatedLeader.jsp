@@ -86,7 +86,7 @@
                 会出现父页面将值赋给子页面有延迟，子页面获取值时，父页面还没赋值完，导致获取到空值
                 这里直接采用获取父页面隐藏域的值的方式，父页面的值随时都有，子页面难以读取就能读取出来
                 */
-                var subordinate_id = parent.$("#person_id").val();
+                var subordinate_id = parent.$("#person_id:hidden").val();
                 //给本页面subordinate_id赋值
                 $("#subordinate_id").val(subordinate_id);
 
@@ -141,6 +141,7 @@
 
                 //头工具栏事件
                 table.on('toolbar(leader_info)', function(obj){
+                    var currentPage = parent.$(".layui-laypage-skip .layui-input").val();
                     switch(obj.event){
                         case 'bindLeader':
                             parent.layer.open({
@@ -151,7 +152,7 @@
                                 maxmin: true,
                                 btn:['提交'],
                                 anim:2,
-                                content: "pages/service/personinfomation/_bindLeader.jsp",
+                                content: "pages/service/personinfomation/_showRelatedLeader_bindLeader.jsp",
                                 success: function (layero, index) {
                                     var body = parent.layer.getChildFrame('body', index);
                                     //给隐藏域传值
@@ -163,20 +164,13 @@
                                     // 找到隐藏的提交按钮模拟点击提交
                                     body.find('#bindLeaderSubmit').click();
 
-                                  /*  //重载表格
-                                    table.reload('leader_info',{
-                                        where: {
-                                            subordinate_id: subordinate_id
-                                        }
-                                    },true);*/
-                                   console.log(index);
-                                   console.log(layero);
+                                    //刷新本页面
+                                    self.location.reload();
 
                                     //关闭此页面
                                     parent.layer.close(index);
                                 },
                                 cancel: function (index, layero) {
-                                    layero_ctf = layero;
                                     //关闭此页面
                                     parent.layer.close(index);
                                 }
@@ -189,7 +183,7 @@
                 //监听行工具事件
                 table.on('tool(leader_info)', function(obj){
                     var data = obj.data;
-                    console.log(data);
+                    var currentPage = parent.$(".layui-laypage-skip .layui-input").val();
                     if(obj.event === 'deleteLeader'){
 
                         layer.confirm('确定删除该领导吗？', function(index){
@@ -213,7 +207,7 @@
                                     parent.layui.table.reload('personinformation', {
                                         url: 'personServlet?action=queryAllPerson'
                                         ,page: {
-                                            curr: 1 //重新从第 1 页开始
+                                            curr: currentPage //重新从第 1 页开始
                                         }
                                         ,request: {
                                             pageName: 'curr' //页码的参数名称，默认：page
