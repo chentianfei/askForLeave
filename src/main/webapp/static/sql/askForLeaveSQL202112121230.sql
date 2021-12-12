@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50736
 File Encoding         : 65001
 
-Date: 2021-12-12 12:19:26
+Date: 2021-12-12 12:30:17
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -335,9 +335,9 @@ CREATE TABLE `role_info` (
 -- ----------------------------
 -- Records of role_info
 -- ----------------------------
-INSERT INTO `role_info` VALUES ('00000000001', '超级管理员', '超级管理员的描述');
-INSERT INTO `role_info` VALUES ('00000000002', '组织部', '组织部的描述');
-INSERT INTO `role_info` VALUES ('00000000003', '普通用户', '普通用户的描述');
+INSERT INTO `role_info` VALUES ('00000000001', '超级管理员', '系统所有权限');
+INSERT INTO `role_info` VALUES ('00000000002', '组织部', '管理全县人员信息及操作全县请销假管理流程');
+INSERT INTO `role_info` VALUES ('00000000003', '普通用户', '可以查看本单位人员信息与请假记录');
 
 -- ----------------------------
 -- Table structure for sendmsglog
@@ -366,11 +366,12 @@ CREATE TABLE `system_info` (
   `sms_alert` tinyint(2) NOT NULL DEFAULT '3',
   `doesSendLeader` tinyint(2) NOT NULL DEFAULT '1',
   `doesSendSelf` tinyint(2) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of system_info
 -- ----------------------------
+INSERT INTO `system_info` VALUES ('3', '1', '1');
 
 -- ----------------------------
 -- Table structure for user_info
