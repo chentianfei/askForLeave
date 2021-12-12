@@ -1,14 +1,22 @@
 /*
-MySQL Backup
-Source Server Version: 5.7.36
-Source Database: test
-Date: 2021/12/10 21:02:12
+Navicat MySQL Data Transfer
+
+Source Server         : CTFConnect
+Source Server Version : 50736
+Source Host           : localhost:3306
+Source Database       : test
+
+Target Server Type    : MYSQL
+Target Server Version : 50736
+File Encoding         : 65001
+
+Date: 2021-12-12 12:19:26
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
---  Table structure for `approval`
+-- Table structure for approval
 -- ----------------------------
 DROP TABLE IF EXISTS `approval`;
 CREATE TABLE `approval` (
@@ -36,7 +44,11 @@ CREATE TABLE `approval` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `history_info`
+-- Records of approval
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for history_info
 -- ----------------------------
 DROP TABLE IF EXISTS `history_info`;
 CREATE TABLE `history_info` (
@@ -68,7 +80,11 @@ CREATE TABLE `history_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `history_info_backups`
+-- Records of history_info
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for history_info_backups
 -- ----------------------------
 DROP TABLE IF EXISTS `history_info_backups`;
 CREATE TABLE `history_info_backups` (
@@ -103,7 +119,11 @@ CREATE TABLE `history_info_backups` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `leader_subordinate`
+-- Records of history_info_backups
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for leader_subordinate
 -- ----------------------------
 DROP TABLE IF EXISTS `leader_subordinate`;
 CREATE TABLE `leader_subordinate` (
@@ -118,7 +138,11 @@ CREATE TABLE `leader_subordinate` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `leave_type`
+-- Records of leader_subordinate
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for leave_type
 -- ----------------------------
 DROP TABLE IF EXISTS `leave_type`;
 CREATE TABLE `leave_type` (
@@ -126,10 +150,15 @@ CREATE TABLE `leave_type` (
   `leave_type` varchar(20) NOT NULL,
   PRIMARY KEY (`leave_type`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `level_info`
+-- Records of leave_type
+-- ----------------------------
+INSERT INTO `leave_type` VALUES ('00000001', '调休');
+
+-- ----------------------------
+-- Table structure for level_info
 -- ----------------------------
 DROP TABLE IF EXISTS `level_info`;
 CREATE TABLE `level_info` (
@@ -140,7 +169,11 @@ CREATE TABLE `level_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `nation_info`
+-- Records of level_info
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for nation_info
 -- ----------------------------
 DROP TABLE IF EXISTS `nation_info`;
 CREATE TABLE `nation_info` (
@@ -151,7 +184,67 @@ CREATE TABLE `nation_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `office_info`
+-- Records of nation_info
+-- ----------------------------
+INSERT INTO `nation_info` VALUES ('00000001', '汉族');
+INSERT INTO `nation_info` VALUES ('00000002', '蒙古族');
+INSERT INTO `nation_info` VALUES ('00000003', '回族');
+INSERT INTO `nation_info` VALUES ('00000004', '藏族');
+INSERT INTO `nation_info` VALUES ('00000005', '维吾尔族');
+INSERT INTO `nation_info` VALUES ('00000006', '苗族');
+INSERT INTO `nation_info` VALUES ('00000007', '彝族');
+INSERT INTO `nation_info` VALUES ('00000008', '壮族');
+INSERT INTO `nation_info` VALUES ('00000009', '布依族');
+INSERT INTO `nation_info` VALUES ('00000010', '朝鲜族');
+INSERT INTO `nation_info` VALUES ('00000011', '满族');
+INSERT INTO `nation_info` VALUES ('00000012', '侗族');
+INSERT INTO `nation_info` VALUES ('00000013', '瑶族');
+INSERT INTO `nation_info` VALUES ('00000014', '白族');
+INSERT INTO `nation_info` VALUES ('00000015', '土家族');
+INSERT INTO `nation_info` VALUES ('00000016', '哈尼族');
+INSERT INTO `nation_info` VALUES ('00000017', '哈萨克族');
+INSERT INTO `nation_info` VALUES ('00000018', '傣族');
+INSERT INTO `nation_info` VALUES ('00000019', '黎族');
+INSERT INTO `nation_info` VALUES ('00000020', '僳僳族');
+INSERT INTO `nation_info` VALUES ('00000021', '佤族');
+INSERT INTO `nation_info` VALUES ('00000022', '畲族');
+INSERT INTO `nation_info` VALUES ('00000023', '高山族');
+INSERT INTO `nation_info` VALUES ('00000024', '拉祜族');
+INSERT INTO `nation_info` VALUES ('00000025', '水族');
+INSERT INTO `nation_info` VALUES ('00000026', '东乡族');
+INSERT INTO `nation_info` VALUES ('00000027', '纳西族');
+INSERT INTO `nation_info` VALUES ('00000028', '景颇族');
+INSERT INTO `nation_info` VALUES ('00000029', '柯尔克孜族');
+INSERT INTO `nation_info` VALUES ('00000030', '土族');
+INSERT INTO `nation_info` VALUES ('00000031', '达斡尔族');
+INSERT INTO `nation_info` VALUES ('00000032', '仫佬族');
+INSERT INTO `nation_info` VALUES ('00000033', '羌族');
+INSERT INTO `nation_info` VALUES ('00000034', '布朗族');
+INSERT INTO `nation_info` VALUES ('00000035', '撒拉族');
+INSERT INTO `nation_info` VALUES ('00000036', '毛南族');
+INSERT INTO `nation_info` VALUES ('00000037', '仡佬族');
+INSERT INTO `nation_info` VALUES ('00000038', '锡伯族');
+INSERT INTO `nation_info` VALUES ('00000039', '阿昌族');
+INSERT INTO `nation_info` VALUES ('00000040', '普米族');
+INSERT INTO `nation_info` VALUES ('00000041', '塔吉克族');
+INSERT INTO `nation_info` VALUES ('00000042', '怒族');
+INSERT INTO `nation_info` VALUES ('00000043', '乌孜别克族');
+INSERT INTO `nation_info` VALUES ('00000044', '俄罗斯族');
+INSERT INTO `nation_info` VALUES ('00000045', '鄂温克族');
+INSERT INTO `nation_info` VALUES ('00000046', '德昂族');
+INSERT INTO `nation_info` VALUES ('00000047', '保安族');
+INSERT INTO `nation_info` VALUES ('00000048', '裕固族');
+INSERT INTO `nation_info` VALUES ('00000049', '京族');
+INSERT INTO `nation_info` VALUES ('00000050', '塔塔尔族');
+INSERT INTO `nation_info` VALUES ('00000051', '独龙族');
+INSERT INTO `nation_info` VALUES ('00000052', '鄂伦春族');
+INSERT INTO `nation_info` VALUES ('00000053', '赫哲族');
+INSERT INTO `nation_info` VALUES ('00000054', '门巴族');
+INSERT INTO `nation_info` VALUES ('00000055', '珞巴族');
+INSERT INTO `nation_info` VALUES ('00000056', '基诺族');
+
+-- ----------------------------
+-- Table structure for office_info
 -- ----------------------------
 DROP TABLE IF EXISTS `office_info`;
 CREATE TABLE `office_info` (
@@ -162,7 +255,13 @@ CREATE TABLE `office_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `person_info`
+-- Records of office_info
+-- ----------------------------
+INSERT INTO `office_info` VALUES ('00000001', '超级管理员');
+INSERT INTO `office_info` VALUES ('00000002', '县委组织部');
+
+-- ----------------------------
+-- Table structure for person_info
 -- ----------------------------
 DROP TABLE IF EXISTS `person_info`;
 CREATE TABLE `person_info` (
@@ -187,7 +286,11 @@ CREATE TABLE `person_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `resume_work`
+-- Records of person_info
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for resume_work
 -- ----------------------------
 DROP TABLE IF EXISTS `resume_work`;
 CREATE TABLE `resume_work` (
@@ -215,7 +318,11 @@ CREATE TABLE `resume_work` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `role_info`
+-- Records of resume_work
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for role_info
 -- ----------------------------
 DROP TABLE IF EXISTS `role_info`;
 CREATE TABLE `role_info` (
@@ -226,7 +333,14 @@ CREATE TABLE `role_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `sendmsglog`
+-- Records of role_info
+-- ----------------------------
+INSERT INTO `role_info` VALUES ('00000000001', '超级管理员', '超级管理员的描述');
+INSERT INTO `role_info` VALUES ('00000000002', '组织部', '组织部的描述');
+INSERT INTO `role_info` VALUES ('00000000003', '普通用户', '普通用户的描述');
+
+-- ----------------------------
+-- Table structure for sendmsglog
 -- ----------------------------
 DROP TABLE IF EXISTS `sendmsglog`;
 CREATE TABLE `sendmsglog` (
@@ -241,7 +355,11 @@ CREATE TABLE `sendmsglog` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Table structure for `system_info`
+-- Records of sendmsglog
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for system_info
 -- ----------------------------
 DROP TABLE IF EXISTS `system_info`;
 CREATE TABLE `system_info` (
@@ -251,7 +369,11 @@ CREATE TABLE `system_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
---  Table structure for `user_info`
+-- Records of system_info
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for user_info
 -- ----------------------------
 DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info` (
@@ -271,10 +393,6 @@ CREATE TABLE `user_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
---  Records 
+-- Records of user_info
 -- ----------------------------
-INSERT INTO `nation_info` VALUES ('00000001','汉族'), ('00000002','蒙古族'), ('00000003','回族'), ('00000004','藏族'), ('00000005','维吾尔族'), ('00000006','苗族'), ('00000007','彝族'), ('00000008','壮族'), ('00000009','布依族'), ('00000010','朝鲜族'), ('00000011','满族'), ('00000012','侗族'), ('00000013','瑶族'), ('00000014','白族'), ('00000015','土家族'), ('00000016','哈尼族'), ('00000017','哈萨克族'), ('00000018','傣族'), ('00000019','黎族'), ('00000020','僳僳族'), ('00000021','佤族'), ('00000022','畲族'), ('00000023','高山族'), ('00000024','拉祜族'), ('00000025','水族'), ('00000026','东乡族'), ('00000027','纳西族'), ('00000028','景颇族'), ('00000029','柯尔克孜族'), ('00000030','土族'), ('00000031','达斡尔族'), ('00000032','仫佬族'), ('00000033','羌族'), ('00000034','布朗族'), ('00000035','撒拉族'), ('00000036','毛南族'), ('00000037','仡佬族'), ('00000038','锡伯族'), ('00000039','阿昌族'), ('00000040','普米族'), ('00000041','塔吉克族'), ('00000042','怒族'), ('00000043','乌孜别克族'), ('00000044','俄罗斯族'), ('00000045','鄂温克族'), ('00000046','德昂族'), ('00000047','保安族'), ('00000048','裕固族'), ('00000049','京族'), ('00000050','塔塔尔族'), ('00000051','独龙族'), ('00000052','鄂伦春族'), ('00000053','赫哲族'), ('00000054','门巴族'), ('00000055','珞巴族'), ('00000056','基诺族');
-INSERT INTO `office_info` VALUES ('00000001','超级管理员'), ('00000002','县委组织部');
-INSERT INTO `role_info` VALUES ('00000000001','超级管理员','系统所有权限'), ('00000000002','组织部','管理全县人员信息及操作全县请销假管理流程'), ('00000000003','普通用户','可以查看本单位人员信息与请假记录');
-INSERT INTO `system_info` VALUES ('3','1','1');
-INSERT INTO `user_info` VALUES ('00000000001','admin','admin123456','admin','00000000000','超级管理员','1');
+INSERT INTO `user_info` VALUES ('00000000001', 'admin', 'admin123456', 'admin', '00000000000', '超级管理员', '1');
