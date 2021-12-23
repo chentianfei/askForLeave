@@ -462,7 +462,27 @@
                 });
 
                 //初始化请假种类下拉框
-                bindLeaveTypeSelectData();
+                $.ajax({
+                    url: 'systemDataServlet?action=queryLeaveType',
+                    dataType: 'json',
+                    type: 'post',
+                    success: function (data) {
+                        var sourceData = data.data;
+                        if (sourceData !== null) {
+                            $("#leave_type").empty();
+                            $("#leave_type").append("<option value=''>请选择</option>");
+                            $.each(sourceData, function (index, item) {
+                                if(item.leave_type !== "调休"){
+                                    $('#leave_type').append(new Option(item.leave_type,item.leave_type));
+                                }
+                            });
+                        } else {
+                            $("#leave_type").append(new Option("暂无数据", ""));
+                        }
+                        //重新渲染
+                        form.render("select");
+                    }
+                });
 
                 //表单提交事件
                 form.on('submit(submit)', function(data){

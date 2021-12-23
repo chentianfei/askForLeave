@@ -28,6 +28,33 @@ public class AskForLeaveServlet extends BaseServlet{
 
     AskForLeaveServiceImpl askForLeaveService = new AskForLeaveServiceImpl();
 
+    //查询今日应到假人员信息
+    public void queryCurrentEOLPerson(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //获取当前页码
+        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        //获取每页显示数量
+        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+
+
+        List<HashMap<String, Object>> hashMaps =
+                askForLeaveService.queryCurrentEOLPersonLimit(pageNo,pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",askForLeaveService.queryCurrentEOLPerson().size());
+        map.put("data",hashMaps);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
     //处理请假操作
     public void addLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
         //解决post请求方式获取请求参数的中文乱码问题

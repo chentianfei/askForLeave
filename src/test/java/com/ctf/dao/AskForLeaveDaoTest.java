@@ -22,4 +22,13 @@ class AskForLeaveDaoTest {
     public void queryRecentWorkDaysByPersonID() {
         System.out.println(askForLeaveDao.queryRecentWorkDaysByPersonID(12));
     }
+
+    @Test
+    public void queryCurrentEOLPerson() {
+        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryCurrentEOLPerson();
+        System.out.println(leaveInfoList.size());
+        for (LeaveInfo leaveInfo:leaveInfoList){
+            System.out.println(leaveInfo);
+        }
+    }
 }
