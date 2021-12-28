@@ -1,13 +1,10 @@
 package com.ctf.quartz;
 
 import com.ctf.bean.LeaveInfo;
-import com.ctf.bean.Person;
 import com.ctf.dao.AskForLeaveDao;
 import com.ctf.dao.PersonDao;
 import com.ctf.dao.SystemDataDao;
-import com.ctf.service.AskForLeaveService;
 import com.ctf.service.impl.AskForLeaveServiceImpl;
-import com.ctf.utils.DateUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -27,7 +24,6 @@ public class SendMsgJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("开始查询");
         Date currentDate = new Date();
         //查询需要提前多少天提醒请假者
         int smsAlertDays = systemDataDao.querySmsAlertDays();

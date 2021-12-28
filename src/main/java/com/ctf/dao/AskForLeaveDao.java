@@ -959,6 +959,30 @@ public class AskForLeaveDao extends BaseDao {
         return queryForList(LeaveInfo.class, leaveInfoSQL.toString(), leaveInfoSQLparmas.toArray());
     }
 
+    //查询所有今日应到假人员信息
+    public List<LeaveInfo> queryCurrentEOLPerson() {
+        String sql = "select * from resume_work where end_date_maybe = ? order by serialnumber desc";
+
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+        String format = simpleDateFormat.format(new Date());
+
+        return queryForList(LeaveInfo.class,sql,format);
+    }
+
+    //分页查询所有待销假记录（展示待销假信息审核用）
+    public List<LeaveInfo> queryCurrentEOLPersonLimit(Integer pageNo, Integer pageSize) {
+        //分页参数：起始值
+        Integer start = (pageNo-1)*pageSize;
+        //分页参数：结束值
+        Integer end = pageSize;
+
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+        String format = simpleDateFormat.format(new Date());
+
+        String sql = "SELECT * FROM resume_work where end_date_maybe = ? order by serialnumber desc limit ?,? ";
+        return queryForList(LeaveInfo.class,sql,format,start,end);
+    }
+
     //查询待销假记录表resume_work中指定数据并插入已销假数据表（历史请假记录）history_info及其备份表history_info_backups
     public int insertAHistoryInfo(Integer serialnumber,Integer leaveDaysActual,String end_leave_remarkSTR,
                                   Date end_date, String end_leave_operator){

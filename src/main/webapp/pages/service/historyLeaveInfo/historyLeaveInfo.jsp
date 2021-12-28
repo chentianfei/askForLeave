@@ -321,7 +321,7 @@
                         ,{field:'end_date_maybe',title:'预计到岗日期',align:"center",width:140}
                         ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
                         ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
-                        ,{field: "end_date", title: '实际到岗日期', align:'center',width:140}
+                        ,{field: "end_date", title: '实际到岗日期', align:'center',width:150}
                         ,{field: 'leave_days_actual', title: '实际请假天数', align:'center',width:100}
                         ,{field: 'end_leave_remark', title: '销假备注',align:'center',width:190}
                         ,{field: 'end_leave_operator', title: '销假操作者',align:'center',width:170}

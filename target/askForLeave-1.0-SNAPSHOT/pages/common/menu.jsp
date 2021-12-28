@@ -17,9 +17,16 @@
                 </dl>
             </li>
 
-            <li class="layui-nav-item">
-                <a href="pages/service/endOfLeave/endOfLeave.jsp">销假操作</a>
+            <li class="layui-nav-item layui-nav-itemed">
+                <a href="javascript:;">销假操作</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="pages/service/endOfLeave/endOfLeave.jsp">销假操作</a></dd>
+                    <dd><a href="pages/service/endOfLeave/showCurrentEOLInfo.jsp">今日应到岗人员</a></dd>
+                    <dd></dd>
+                </dl>
             </li>
+
+
 
             <li class="layui-nav-item">
                 <a href="pages/service/historyLeaveInfo/historyLeaveInfo.jsp">历史记录查询</a>

@@ -15,7 +15,6 @@
                 <group>trigger_group</group>
                 <job-name>SendMsgQuartz</job-name>
                 <job-group>job_group</job-group>
-                <!--<cron-expression>0 * * * * ?</cron-expression>-->
                 <cron-expression>0 0 16 ? * *</cron-expression>
             </cron>
         </trigger>

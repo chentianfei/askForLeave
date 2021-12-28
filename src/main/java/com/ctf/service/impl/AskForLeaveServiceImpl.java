@@ -321,6 +321,33 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         return hashMap;
     }
 
+
+    @Override
+    /*
+     * @Description ：查询所有今日应到假人员信息
+     * @Param
+     * @Return ：List<HashMap<String,Object>>
+     * @Author: CTF
+     * @Date ：2021/12/16 11:54
+     */
+    public List<HashMap<String, Object>> queryCurrentEOLPerson() {
+        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryCurrentEOLPerson();
+        return getLeaveInfo(leaveInfoList);
+    }
+
+    @Override
+    /*
+     * @Description ：分页查询今日应到假人员信息
+     * @Param
+     * @Return ：List<HashMap<String,Object>>
+     * @Author: CTF
+     * @Date ：2021/12/16 11:54
+     */
+    public List<HashMap<String, Object>> queryCurrentEOLPersonLimit(Integer pageNo,Integer pageSize) {
+        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryCurrentEOLPersonLimit(pageNo, pageSize);
+        return getLeaveInfo(leaveInfoList);
+    }
+
     @Override
     /*
      * @Description ：按人员编号查询本年度某种假期的详细请假数据
