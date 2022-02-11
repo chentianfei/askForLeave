@@ -3,6 +3,7 @@ package com.ctf.service;
 import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import java.util.List;
  * @Date 2021/8/29 11:52
  **/
 public interface PersonService {
+    //批量新增人员
+    int batchAddPerson(String filePath) throws Exception;
     //根据人员id删除人员信息
     Integer deletePersonInfoByID(Integer person_id);
     //更新人员信息

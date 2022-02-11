@@ -1,13 +1,12 @@
 package com.ctf.web.Servlet;
 
 import com.ctf.bean.Person;
+import com.ctf.dao.PersonDao;
 import com.ctf.service.impl.PersonServiceImpl;
-import com.ctf.utils.ExcelToDatabaseUtils;
-import com.ctf.utils.JDBCUtils;
-import com.ctf.utils.PropertiedUtils;
-import com.ctf.utils.WebUtils;
+import com.ctf.utils.*;
 import com.google.gson.Gson;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
@@ -18,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -32,15 +33,16 @@ public class PersonServlet extends BaseServlet{
 
     PersonServiceImpl personService = new PersonServiceImpl();
 
-    //批量新增人员
-    public void batchAddPerson(HttpServletRequest request,HttpServletResponse response) throws Exception {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
+    //上传文件
+    public void uploadFiles(HttpServletRequest request,HttpServletResponse response) {
 
-        int result = 0;
-        int judge = 0;
-        String filePath = "";
+        response.setContentType("text/html;charset=utf-8");
+
+        Gson gson = new Gson();
+
         try {
+            request.setCharacterEncoding("utf-8");
+            String filePath = "";
             // 配置上传参数
             DiskFileItemFactory factory = new DiskFileItemFactory();
             ServletFileUpload upload = new ServletFileUpload(factory);
@@ -53,44 +55,155 @@ public class PersonServlet extends BaseServlet{
                 // 处理不在表单中的字段
                 if (!item.isFormField()) {
                     String fileName = item.getName();
-                    int index=fileName.lastIndexOf("\\");
-                    if(index!=-1) {
-                        fileName=fileName.substring(index+1);
+                    int index = fileName.lastIndexOf(File.separator);
+                    if (index != -1) {
+                        fileName = fileName.substring(index + 1);
                     }
                     //定义上传文件的存放路径
-                    String path = PropertiedUtils.getValue(
-                            PropertiedUtils.SYSTEMPROPERTIES,
-                            "path",
-                            String.class
-                    );
+                    //String path = "C:"+File.separator+"LocalFiles";
+                    String path = File.separator+"Users"+File.separator+"tianfeichen"+File.separator+"Desktop";
                     //定义上传文件的完整路径
-                    filePath = String.format("%s\\%s",path,fileName);
+                    filePath = String.format("%s"+File.separator+"%s", path, fileName);
+
                     File storeFile = new File(filePath);
-                    // 在控制台输出文件的上传路径
-                    System.out.println("filePath:"+filePath);
                     // 保存文件到硬盘
                     item.write(storeFile);
                 }
+                //以json格式返回给前端
+
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("filepath",filePath);
+                result.put("msg","ok");
+
+                String result_json = gson.toJson(result);
+
+                response.getWriter().write(new Gson().toJson(result_json));
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            result = 2;
+        } catch (UnsupportedEncodingException e) {
+            //以json格式返回给前端
+            try {
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("msg",e.getMessage());
+                String result_json = gson.toJson(result);
+                response.getWriter().write(new Gson().toJson(result_json));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (IOException e) {
+            //以json格式返回给前端
+            try {
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("msg",e.getMessage());
+                String result_json = gson.toJson(result);
+                response.getWriter().write(new Gson().toJson(result_json));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (ClassNotFoundException e) {
+            //以json格式返回给前端
+            try {
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("msg",e.getMessage());
+                String result_json = gson.toJson(result);
+                response.getWriter().write(new Gson().toJson(result_json));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (FileUploadException e) {
+            //以json格式返回给前端
+            try {
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("msg",e.getMessage());
+                String result_json = gson.toJson(result);
+                response.getWriter().write(new Gson().toJson(result_json));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (Exception e) { //以json格式返回给前端
+            //以json格式返回给前端
+            try {
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("msg",e.getMessage());
+                String result_json = gson.toJson(result);
+                response.getWriter().write(new Gson().toJson(result_json));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
+    }
 
-        ExcelToDatabaseUtils.parseExcelToPersonListOBJ(filePath);
-
-        if(judge!=0){
-            result = 1;
-
-        }else{
-            result = 2;
-        }
-
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(result);
+    //批量新增人员
+    public void batchAddPerson(HttpServletRequest request,HttpServletResponse response) {
         response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
+        Gson gson = new Gson();
+        //解决post请求方式获取请求参数的中文乱码问题
+        try {
+            request.setCharacterEncoding("utf-8");
+            String filepath = request.getParameter("filepath");
+            int batchAddPersonCounts = personService.batchAddPerson(filepath);
+
+            //封装成json字符串，通过getWriter().write()返回给页面
+            Map<String,Object> result = new HashMap<>();
+            result.put("addCounts",batchAddPersonCounts);
+            result.put("status","ok");
+            String result_json = gson.toJson(result);
+            response.getWriter().write(result_json);
+        } catch (UnsupportedEncodingException e) {
+            //封装成json字符串，通过getWriter().write()返回给页面
+            Map<String,Object> result = new HashMap<>();
+            result.put("status","fail");
+            result.put("msg",e.getMessage());
+            String result_json = gson.toJson(result);
+            try {
+                response.getWriter().write(result_json);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            int errorCode = throwables.getErrorCode();
+            String errorMessage = ErrorCode.returnCHNMessageByErrorCode(errorCode);
+            try {
+                //封装成json字符串，通过getWriter().write()返回给页面
+                Map<String,Object> result = new HashMap<>();
+                result.put("status","fail");
+                result.put("statusCode",errorCode);
+                result.put("msg",errorMessage);
+                String result_json = gson.toJson(result);
+                response.getWriter().write(result_json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            //封装成json字符串，通过getWriter().write()返回给页面
+            Map<String,Object> result = new HashMap<>();
+            result.put("status","fail");
+            result.put("msg",e.getMessage());
+            String result_json = gson.toJson(result);
+            try {
+                response.getWriter().write(result_json);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }  catch (Exception e) {
+            e.printStackTrace();
+            //封装成json字符串，通过getWriter().write()返回给页面
+            Map<String,Object> result = new HashMap<>();
+            result.put("status","fail");
+            result.put("msg",e.getMessage());
+            String result_json = gson.toJson(result);
+            try {
+                response.getWriter().write(result_json);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     //判断手机号是否存在
@@ -370,7 +483,6 @@ public class PersonServlet extends BaseServlet{
 
     //删除人员信息
     public void deleteThePerson(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("调用了PersonServlet的deleteThePerson");
         request.setCharacterEncoding("utf-8");
         Integer person_id = Integer.parseInt(request.getParameter("person_id"));
 

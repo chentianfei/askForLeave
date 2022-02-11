@@ -4,11 +4,13 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -34,43 +36,42 @@ public class ExcelToDatabaseUtils {
     private final static String excel2007U = ".xlsx"; // 2007+ 版本的excel
 
     //读取excel数据，返回Workbook类对象
-    public static Workbook readExcelToWorkbook(String filePath) throws Exception {
+    public static Workbook readExcelToWorkbook(String filePath) throws IOException {
         // 1. 获取读取文件的输入流
         FileInputStream in = new FileInputStream(filePath);
-        Workbook wb;
+        Workbook wb = null;
         String fileType = filePath
                 .trim()
                 .substring(filePath.lastIndexOf("."));
-        System.out.println(fileType);
         if (excel2003L.equals(fileType)) {
             wb = new HSSFWorkbook(in); // 2003-
         } else if (excel2007U.equals(fileType)) {
             wb = new XSSFWorkbook(in); // 2007+
-        } else {
-            throw new Exception("解析的文件格式有误！");
-        }
+        } 
         // 关闭流资源
         in.close();
         return wb;
     }
 
     //读取excel数据，封装为person类的list后返回
-    public static List<Person> parseExcelToPersonListOBJ(String filePath) throws Exception {
+    public static List<Person> parseExcelToPersonListOBJ(String filePath) throws IOException, ParseException {
         Workbook workbook = readExcelToWorkbook(filePath);
+
         List<Person> personList = new ArrayList<>();
         boolean isFirstRow = true;
+
         if(null != workbook){
             Sheet sheet = workbook.getSheetAt(0);
+
             for(Row row : sheet){
                 //第一行跳过，不封装为对象
                 if(isFirstRow){
                     isFirstRow = false;
                     continue;
                 }
-
+                //从第二行开始解析数据
                 if(row != null){
                     Person person = new Person();
-
                     for(Cell cell:row){
                         //读取数据，封装对象
                         switch (cell.getColumnIndex()){
@@ -79,48 +80,51 @@ public class ExcelToDatabaseUtils {
                                 person.setName(name0);
                                 break;
                             case 1:
-                                String nation1 = cell.getStringCellValue();
-                                person.setNation(nation1);
+                                String sex1 = cell.getStringCellValue();
+                                person.setSex(sex1);
                                 break;
                             case 2:
-                                String sex2 = cell.getStringCellValue();
-                                person.setSex(sex2);
+                                String birthdate2 = cell.getStringCellValue();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                                System.out.println(birthdate2);
+                                person.setBirthDate(sdf.parse(birthdate2));
                                 break;
                             case 3:
-                                Date birthdate3 = cell.getDateCellValue();
-                                person.setBirthDate(birthdate3);
+                                String area_class3 = cell.getStringCellValue();
+                                person.setArea_class(area_class3);
                                 break;
                             case 4:
-                                String nativeplace4 = cell.getStringCellValue();
-                                person.setNativePlace(nativeplace4);
+                                String nation4 = cell.getStringCellValue();
+                                person.setNation(nation4);
                                 break;
                             case 5:
-                                String office5 = cell.getStringCellValue();
-                                person.setOffice(office5);
+                                String nativeplace5 = cell.getStringCellValue();
+                                person.setNativePlace(nativeplace5);
                                 break;
                             case 6:
-                                String post6 = cell.getStringCellValue();
-                                person.setPost(post6);
+                                String office6 = cell.getStringCellValue();
+                                person.setOffice(office6);
                                 break;
                             case 7:
-                                String level7 = cell.getStringCellValue();
-                                person.setLevel(level7);
+                                String post7 = cell.getStringCellValue();
+                                person.setPost(post7);
                                 break;
                             case 8:
-                                String phone8 = new BigDecimal(cell.getNumericCellValue()).toPlainString();
-                                person.setPhone(phone8);
+                                String level8 = cell.getStringCellValue();
+                                person.setLevel(level8);
                                 break;
                             case 9:
-                                int allow_leave_days9 = (int)cell.getNumericCellValue();
-                                person.setAllow_Leave_Days(allow_leave_days9);
+                                String phone9 = new BigDecimal(
+                                        cell.getNumericCellValue()
+                                ).toPlainString();
+                                person.setPhone(phone9);
                                 break;
                             case 10:
-                                String area_class10 = cell.getStringCellValue();
-                                person.setArea_class(area_class10);
+                                int allow_leave_days10 = (int)cell.getNumericCellValue();
+                                person.setAllow_Leave_Days(allow_leave_days10);
                                 break;
                         }
                     }
-
                     personList.add(person);
                 }
             }

@@ -40,6 +40,10 @@ public class SendMsg {
     public static final String TEMPLATEID_TOLEADERWHENRESUMEWORK = "1225838";
     //到假前本人收到的提示短信模板ID
     public static final String TEMPLATEID_TOSELFFORALERT = "1225834";
+    //到期未销假（之前）提醒短信（仲巴县）模板ID
+    public static final String TEMPLATEID_ALERTTORETURN_HISTORY = "1292724";
+    //当日到假未到岗提醒短信（仲巴县）ID
+    public static final String TEMPLATEID_ALERTTORETURN = "1292719";
 
     /* 国际/港澳台短信 SenderId: 国内短信填空，默认未开通 */
     private static final String SENDERID = "";
@@ -114,9 +118,33 @@ public class SendMsg {
             //传入模板中的参数
             req.setTemplateParamSet(templateParam);
 
+            //发送前保存时间，供查询使用
+            long start_time = new Date().getTime();
             /* 通过 client 对象调用 SendSms 方法发起请求。注意请求方法名与请求对象是对应的
              * 返回的 res 是一个 SendSmsResponse 类的实例，与请求对象对应 */
             res = client.SendSms(req);
+
+            SendStatus[] sendStatusSet = res.getSendStatusSet();
+            for (SendStatus sendStatus :sendStatusSet){
+                System.out.println(sendStatus);
+            }
+            //发送完成后立即查询发送状态，并保存到日志
+            for(String phongNum : phoneNumbers){
+
+                PullSmsSendStatusByPhoneNumberResponse pullSmsSendStatusByPhoneNumberResponse =
+                        pullSmsSendStatusByPhoneNumber(start_time, new Date().getTime(),
+                                100l, 0l,phongNum, SENDMSGSDKAPPID);
+
+                PullSmsSendStatus[] pullSmsSendStatusSet =
+                        pullSmsSendStatusByPhoneNumberResponse.getPullSmsSendStatusSet();
+
+                for(PullSmsSendStatus psss :pullSmsSendStatusSet){
+                    //控制台输出发送状态
+                    System.out.println(psss);
+                }
+
+                //存到日志
+            }
 
             // 输出json格式的字符串回包:System.out.println(SendSmsResponse.toJsonString(res));
 
@@ -241,9 +269,33 @@ public class SendMsg {
      * @Author: CTF
      * @Date ：2021/12/3 12:53
      */
-    public static PullSmsSendStatusByPhoneNumberResponse pullSmsSendStatusByPhoneNumber(String beginTimeSTR,String endTimeSTR,
+    public static PullSmsSendStatusByPhoneNumberResponse pullSmsSendStatusByPhoneNumber(long beginTime,long endTime,
                                                       Long limit,Long offset,
                                                       String phoneNumber,String smsSdkAppId){
+        PullSmsSendStatusByPhoneNumberResponse resp = null;
+        try{
+            // 实例化一个请求对象,每个接口都会对应一个request对象
+            PullSmsSendStatusByPhoneNumberRequest req = new PullSmsSendStatusByPhoneNumberRequest();
+            req.setOffset(offset);
+            req.setLimit(limit);
+            req.setPhoneNumber(phoneNumber);
+            req.setSmsSdkAppId(smsSdkAppId);
+            req.setBeginTime(beginTime);
+            req.setEndTime(endTime);
+
+            // 返回的resp是一个PullSmsSendStatusByPhoneNumberResponse的实例，与请求对象对应
+            resp = client.PullSmsSendStatusByPhoneNumber(req);
+            // 输出json格式的字符串回包
+            //.println(PullSmsSendStatusByPhoneNumberResponse.toJsonString(resp));
+        } catch (TencentCloudSDKException e) {
+            System.out.println(e);
+        }
+        return resp;
+    }
+
+    public static PullSmsSendStatusByPhoneNumberResponse pullSmsSendStatusByPhoneNumber(String beginTimeSTR,String endTimeSTR,
+                                                                                        Long limit,Long offset,
+                                                                                        String phoneNumber,String smsSdkAppId){
         PullSmsSendStatusByPhoneNumberResponse resp = null;
         try{
             // 实例化一个请求对象,每个接口都会对应一个request对象
@@ -256,15 +308,16 @@ public class SendMsg {
             Long sevendaySeconds = Long.valueOf(60*60*24*7);
             //处理时间字符串，转换为时间戳
             if(beginTimeSTR == "" || beginTimeSTR == null){
-                //若未设置起始时间，则默认设置为以当前时间前7天为其实日
+                //若未设置起始时间，则默认设置为以当前时间前7天为起始日
                 req.setEndTime((System.currentTimeMillis()-sevendaySeconds)/1000);
             }else {
                 long beginTime = 0L;
-                Date beginTimeDate = new SimpleDateFormat("yyyyMMddHH").parse(beginTimeSTR);
-                if((System.currentTimeMillis() - beginTimeDate.getTime())/1000 >= sevendaySeconds  ){
+                long beginTimeDate = DateUtils.getSecondByDateStr_yyyyMMddHH(beginTimeSTR);
+
+                if(System.currentTimeMillis()/1000 - beginTimeDate >= sevendaySeconds  ){
                     beginTime = (System.currentTimeMillis() - sevendaySeconds)/1000;
                 }else {
-                    beginTime = beginTimeDate.getTime()/1000;
+                    beginTime = beginTimeDate;
                 }
                 req.setBeginTime(beginTime);
             }
@@ -272,11 +325,11 @@ public class SendMsg {
             if(endTimeSTR == "" || endTimeSTR == null){
                 req.setEndTime(System.currentTimeMillis()/1000);
             }else {
-                Date endTimeDate = new SimpleDateFormat("yyyyMMddHH").parse(endTimeSTR);
-                if(endTimeDate.getTime() >= System.currentTimeMillis()){
+                long endTimeDate = DateUtils.getSecondByDateStr_yyyyMMddHH(endTimeSTR);
+                if(endTimeDate >= System.currentTimeMillis()/1000){
                     req.setEndTime(System.currentTimeMillis()/1000);
                 }else {
-                    req.setEndTime(endTimeDate.getTime()/1000);
+                    req.setEndTime(endTimeDate);
                 }
             }
 
@@ -285,7 +338,7 @@ public class SendMsg {
             // 输出json格式的字符串回包
             //.println(PullSmsSendStatusByPhoneNumberResponse.toJsonString(resp));
         } catch (TencentCloudSDKException | ParseException e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
         return resp;
     }
@@ -344,7 +397,7 @@ public class SendMsg {
             Long sevendaySeconds = Long.valueOf(60*60*24*7);
             //处理时间字符串，转换为时间戳
             if(beginTimeSTR == "" || beginTimeSTR == null){
-                //若未设置起始时间，则默认设置为以当前时间前7天为其实日
+                //若未设置起始时间，则默认设置为以当前时间前7天为起始日
                 req.setEndTime((System.currentTimeMillis()-sevendaySeconds)/1000);
             }else {
                 long beginTime = 0L;
@@ -437,5 +490,47 @@ public class SendMsg {
             e.printStackTrace();
         }
     }
+
+    private static String getCodeMsgCHN(String code){
+        return "";
+    }
+
+    /*
+    * 根据日期字符串设置起始时间，unix时间戳，单位为秒，起始时间设置规则为：
+    * 用户选择的起始时间不得大于当前小时的前7*24小时
+    * 若起始时间大于当前小时的前7*24小时，则默认起始时间为当前小时的前7*24小时
+    * */
+    public static long getBeginTimeByDateStr(String dateSTR) throws ParseException {
+        Long sevendaySeconds = Long.valueOf(60*60*24*7);
+        long dateToTime;
+        Date beginTimeDate = new SimpleDateFormat("yyyyMMddHH").parse(dateSTR);
+        if((System.currentTimeMillis() - beginTimeDate.getTime())/1000 >= sevendaySeconds  ){
+            //如果查询时间在当前时间7*24小时之前，则将起始时间设置为当前时间的7*24小时
+            dateToTime = (System.currentTimeMillis() - sevendaySeconds)/1000;
+        }else {
+            dateToTime = beginTimeDate.getTime()/1000;
+        }
+        return dateToTime;
+    }
+
+    /*
+     * 根据日期字符串设置结束时间，unix时间戳，单位为秒，结束时间设置规则为：
+     * 用户选择的结束时间在当前小时之后，若结束时间在当前小时之后，则默认结束时间为当前小时
+     * 用户选择的结束时间在当前小时之后，若结束时间在当前小时之后，则默认结束时间为当前小时
+     * */
+    public static long getEndTimeByDateStr(String dateSTR) throws ParseException {
+        long endTimeDate = DateUtils.getSecondByDateStr_yyyyMMddHH(dateSTR);
+        if(dateSTR == "" || dateSTR == null){
+            //若结束时间字符串为null或空字符串，则返回当前时间的描述
+            return System.currentTimeMillis()/1000;
+        }else {
+            if(endTimeDate >= System.currentTimeMillis()/1000){
+                return System.currentTimeMillis()/1000;
+            }else {
+                return endTimeDate;
+            }
+        }
+    }
+
 
 }

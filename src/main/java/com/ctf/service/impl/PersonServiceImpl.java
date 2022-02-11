@@ -1,12 +1,13 @@
 package com.ctf.service.impl;
 
-import com.ctf.bean.LeaveInfo;
-import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 import com.ctf.dao.PersonDao;
 import com.ctf.service.PersonService;
-import com.ctf.utils.WebUtils;
+import com.ctf.utils.ExcelToDatabaseUtils;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,19 @@ import java.util.List;
  */
 public class PersonServiceImpl implements PersonService {
     PersonDao personDao = new PersonDao();
+
+    @Override
+    /*
+     * @Description ：批量新增人员
+     * @param: filePath 上传的表格存放路径
+     * @return java.lang.String
+     * @Author tianfeichen
+     * @Date 2021/12/29 14:11
+     **/
+    public int batchAddPerson(String filePath) throws IOException, SQLException, ParseException {
+        List<Person> personList = ExcelToDatabaseUtils.parseExcelToPersonListOBJ(filePath);
+        return  personDao.addPersonBatch(personList);
+    }
 
     @Override
     public Integer deleteTheLeader(Integer leader_id, Integer subordinate_id) {

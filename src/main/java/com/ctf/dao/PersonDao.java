@@ -2,8 +2,10 @@ package com.ctf.dao;
 
 import com.ctf.bean.Office;
 import com.ctf.bean.Person;
+import com.ctf.utils.JDBCUtils;
+import com.google.gson.Gson;
 
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,6 +20,44 @@ import java.util.List;
  * @Version v1.0
  */
 public class PersonDao extends BaseDao{
+
+    //批量新增人员
+    public int addPersonBatch(List<Person> personList) throws SQLException {
+
+        Connection conn = JDBCUtils.getConnection();
+        String sql ="insert into person_info(person_id," +
+                "NAME,nation,sex,birthdate,nativeplace,office," +
+                "post,level,phone,allow_leave_days,area_class) " +
+                "values(null,?,?,?,?,?,?,?,?,?,?,?)";
+
+        conn.setAutoCommit(false);
+        PreparedStatement prest = conn.prepareStatement(sql,
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        conn.setAutoCommit(false);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        for(Person person : personList){
+            prest.setString(1,person.getName());
+            prest.setString(2,person.getNation());
+            prest.setString(3,person.getSex());
+            prest.setString(4,sdf.format(person.getBirthDate()));
+            prest.setString(5,person.getNativePlace());
+            prest.setString(6,person.getOffice());
+            prest.setString(7,person.getPost());
+            prest.setString(8,person.getLevel());
+            prest.setString(9,person.getPhone());
+            prest.setInt(10,person.getAllow_Leave_Days());
+            prest.setString(11,person.getArea_class());
+            prest.addBatch();
+        }
+
+        int[] insertCounts = prest.executeBatch();
+        conn.commit();
+        conn.close();
+        return insertCounts.length;
+    }
 
     //根据用户单位返回该单位所有人员的人员编号List
     public List<Object> queryAllPersonIdByOffice(String office){

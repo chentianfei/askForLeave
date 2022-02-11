@@ -969,6 +969,31 @@ public class AskForLeaveDao extends BaseDao {
         return queryForList(LeaveInfo.class,sql,format);
     }
 
+    //查询所有到假未到岗人员
+    public List<LeaveInfo> queryAllCurrentEOLPerson(Integer pageNo,Integer pageSize) {
+        //获取当前时间
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+        String date = simpleDateFormat.format(new Date());
+        StringBuilder sql = new StringBuilder("select * from resume_work where end_date_maybe < '"+ date +
+                "' order by serialnumber desc");
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        //判断是否需要分页
+        if(pageNo!=null && pageSize!=null){
+            //分页查询
+            //分页参数：起始值
+            Integer start = (pageNo-1)*pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+
+            sql.append( " limit ?,?");
+            parmas.add(start);
+            parmas.add(end);
+        }
+        System.out.println(sql);
+        return queryForList(LeaveInfo.class,sql.toString(),parmas.toArray());
+    }
+
     //分页查询所有待销假记录（展示待销假信息审核用）
     public List<LeaveInfo> queryCurrentEOLPersonLimit(Integer pageNo, Integer pageSize) {
         //分页参数：起始值

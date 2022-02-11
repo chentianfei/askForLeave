@@ -7,6 +7,8 @@ import com.ctf.bean.User;
 import com.ctf.service.impl.AskForLeaveServiceImpl;
 import com.ctf.utils.WebUtils;
 import com.google.gson.Gson;
+import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
+import com.tencentcloudapi.sms.v20210111.models.SendStatus;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,6 +30,37 @@ public class AskForLeaveServlet extends BaseServlet{
 
     AskForLeaveServiceImpl askForLeaveService = new AskForLeaveServiceImpl();
 
+    //发送销假提示短信
+    public void sendAlertSMS(HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //获取流水号
+        String serialnumber_str = request.getParameter("serialnumber");
+        Integer serialnumber = null;
+        if(serialnumber_str!=null){
+            if(!serialnumber_str.trim().equals("")){
+                serialnumber =  Integer.valueOf(serialnumber_str);
+            }
+        }
+
+        System.out.println("AskForLeaveServlet:serialnumber="+serialnumber);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        SendSmsResponse sendSmsResponse = askForLeaveService.sendAlertSMS(serialnumber);
+
+        SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+        StringBuilder message = new StringBuilder();
+        for (SendStatus sendstatus : sendStatusSet){
+            message.append(sendstatus.getMessage());
+        }
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(message);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
     //查询今日应到假人员信息
     public void queryCurrentEOLPerson(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -47,6 +80,45 @@ public class AskForLeaveServlet extends BaseServlet{
         map.put("code",0);
         map.put("msg","");
         map.put("count",askForLeaveService.queryCurrentEOLPerson().size());
+        map.put("data",hashMaps);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //查询所有到假未到岗人员
+    public void queryAllCurrentEOLPerson(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+            if(!curr_str.trim().equals("")){
+                //获取当前页码
+                pageNo =Integer.valueOf(curr_str);
+            }
+        }
+        if(nums_str!=null){
+            if(!nums_str.trim().equals("")){
+                //获取每页显示数量
+               pageSize = Integer.valueOf(nums_str);
+            }
+        }
+
+        List<HashMap<String, Object>> hashMaps =
+                askForLeaveService.queryAllCurrentEOLPerson(pageNo,pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",askForLeaveService
+                .queryAllCurrentEOLPerson(null,null).size());
         map.put("data",hashMaps);
 
         //以json格式返回给前端

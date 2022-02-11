@@ -20,7 +20,10 @@ public abstract class BaseDao {
     public int update(String sql, Object... args) {
         Connection connection = JDBCUtils.getConnection();
         try {
-            return queryRunner.update(connection, sql, args);
+            connection.setAutoCommit(false);
+            int updateCounts = queryRunner.update(connection, sql, args);
+            connection.commit();
+            return updateCounts;
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -39,26 +42,28 @@ public abstract class BaseDao {
      * @return
      */
     public <T> T queryForOne(Class<T> type, String sql, Object... args) {
-        Connection con =JDBCUtils.getConnection();
+        Connection connection =JDBCUtils.getConnection();
         try {
-            return queryRunner.query(con, sql, new BeanHandler<T>(type), args);
+            connection.setAutoCommit(false);
+            return queryRunner.query(connection, sql, new BeanHandler<T>(type), args);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            JDBCUtils.close(con);
+            JDBCUtils.close(connection);
         }
         return null;
     }
 
     //用于查询某一行的某一个数据
     public Object[] queryForANumber(String sql, Object... args) {
-        Connection con =JDBCUtils.getConnection();
+        Connection connection =JDBCUtils.getConnection();
         try {
-            return queryRunner.query(con, sql, new ArrayHandler(), args);
+            connection.setAutoCommit(false);
+            return queryRunner.query(connection, sql, new ArrayHandler(), args);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            JDBCUtils.close(con);
+            JDBCUtils.close(connection);
         }
         return null;
     }
@@ -76,6 +81,7 @@ public abstract class BaseDao {
     public <T> List<T> queryForList(Class<T> type, String sql, Object... args) {
         Connection con = JDBCUtils.getConnection();
         try {
+            con.setAutoCommit(false);
             return queryRunner.query(con, sql, new BeanListHandler<T>(type), args);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,6 +102,7 @@ public abstract class BaseDao {
         Connection conn = JDBCUtils.getConnection();
 
         try {
+            conn.setAutoCommit(false);
             return queryRunner.query(conn, sql, new ScalarHandler(), args);
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,6 +126,7 @@ public abstract class BaseDao {
         Connection conn = JDBCUtils.getConnection();
 
         try {
+            conn.setAutoCommit(false);
             return queryRunner.query(conn,sql, new ColumnListHandler("person_id"),args);
         } catch (Exception e) {
             e.printStackTrace();

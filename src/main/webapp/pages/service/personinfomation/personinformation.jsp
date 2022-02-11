@@ -203,8 +203,8 @@
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增人员</button>
-                <%--<button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
-                <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>--%>
+                <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
+                <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
             </div>
         </script>
 
@@ -323,7 +323,6 @@
                             break;
                         case 'uploadBtn':
                             break;
-
                     };
                 });
 
@@ -594,21 +593,75 @@
                 upload.render({
                     elem: '#batchAddPerson' //绑定元素
                     ,method: 'POST'
-                    ,url: 'personServlet?action=batchAddPerson' //上传接口
+                    ,url: 'personServlet?action=uploadFiles' //上传接口
                     ,auto: false //选择文件后不自动上传
                     ,bindAction: '#uploadBtn'
                     ,accept: 'file'
                     ,exts: 'xls|xlsx' //允许上传的文件后缀
                     ,done: function(res){
                         //上传完毕回调
+                        var filepath = res.filepath;
+                        layer.msg("开始解析信息，请稍候！");
+
+                        $.ajax({
+                            url: 'personServlet?action=batchAddPerson',
+                            type : 'get',
+                            dataType : 'json',
+                            data : {
+                              filepath:filepath
+                            },
+                            success: function (result) {
+                                switch (result.status){
+                                    case "ok":
+                                        //重载表格
+                                        table.reload('personinformation', {
+                                            url: 'personServlet?action=queryAllPerson'
+                                            ,page: {
+                                                curr: 1 //重新从第 1 页开始
+                                            }
+                                            ,request: {
+                                                pageName: 'curr' //页码的参数名称，默认：page
+                                                ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                            }
+                                        });
+                                        layer.msg("批量新增成功，共新增"+result.addCounts+"条数据", {
+                                            icon: 1,
+                                            shift: 6,
+                                            time: 5000}
+                                        );
+                                        break;
+                                    case "fail":
+                                        layer.msg("插入失败："+result.msg+"。错误代码："+result.statusCode, {
+                                            icon: 5,
+                                            shift: 6,
+                                            time: 5000 }
+                                        );
+                                        break;
+                                }
+                            },
+                            error:function (result) {
+                                layer.msg("error:系统异常错误！错误信息："+result, {
+                                    icon: 5,
+                                    shift: 6 }
+                                );
+                            }
+                        })
+
                     }
-                    ,error: function(){
+                    ,error: function (res) {
                         //请求异常回调
+                        layer.msg("系统异常错误！错误信息："+res, {
+                            icon: 5,
+                            shift: 6 }
+                        );
+                        /*layer.closeAll('loading'); //关闭loading*/
                     }
                     ,progress: function(n, elem, e){
                         element.progress('demo', n + '%'); //可配合 layui 进度条元素使用
                         if(n == 100){
-                            layer.msg('上传完毕', {icon: 1});
+                            layer.msg('上传完毕', {
+                                icon: 1
+                            });
                         }
                     }
                 });
@@ -632,7 +685,6 @@
                 var area_class;
                 var level;
                 var phone;
-
 
                 form.on('submit(person_info_query)', function(data){
                     var sourceData = data.field;

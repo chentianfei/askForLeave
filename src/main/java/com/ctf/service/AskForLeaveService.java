@@ -51,6 +51,8 @@ public interface AskForLeaveService {
      List<HashMap<String,Object>> querySomeResumeWorkInfosLimit(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
     //查询所有今日应到假人员信息
     List<HashMap<String,Object>> queryCurrentEOLPerson();
+    //查询所有到假未到岗人员
+    List<HashMap<String,Object>> queryAllCurrentEOLPerson(Integer pageNo,Integer pageSize);
     //分页查询今日应到假人员信息
     List<HashMap<String,Object>> queryCurrentEOLPersonLimit(Integer pageNo,Integer pageSize);
     //处理销假业务

@@ -103,5 +103,10 @@ public class DateUtils {
         return getDaysBetweenPlusOne(date1,date2);
     }
 
+    //将带小时格式的日期转为UNIX 时间戳（时间：秒）。
+    public static long getSecondByDateStr_yyyyMMddHH(String dateSTR) throws ParseException {
+        Date beginTimeDate = new SimpleDateFormat("yyyyMMddHH").parse(dateSTR);
+        return beginTimeDate.getTime()/1000;
+    }
 
 }

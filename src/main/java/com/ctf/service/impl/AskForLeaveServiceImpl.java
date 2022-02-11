@@ -211,6 +211,61 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         return sendSmsResponse;
     }
 
+    //根据流水号给到假未到岗人员发送短信
+    public SendSmsResponse sendAlertSMS(Integer serialnumber){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATEFORMAT_YMD);
+
+        //根据流水号解析请假信息，返回LeaveInfo对象
+        LeaveInfo leaveInfo = askForLeaveDao.queryLeaveInfoBySerialnumber(serialnumber);
+        Integer person_id = leaveInfo.getPerson_id();
+
+        //根据人员编号获取该人员Person对象
+        Person person = personDao.queryPersonInfoByID(person_id);
+
+        //根据人员编号获取本人手机号
+        String[] phoneNumberSet = new String[]{person.getPhone()};
+
+        //封装短信模板参数数据
+        List<String> templateParamList = new ArrayList<>();
+
+        Date end_date_maybe = leaveInfo.getEnd_date_maybe();
+        Integer daysBetween = DateUtils.getDaysBetween(end_date_maybe, new Date());
+        if(daysBetween>0){
+            System.out.println("超出1天了");
+            /*{1}，您好，您在{2}申请的{3}已超出规定销假时间{4}天，请及时到岗销假！*/
+            //封装短信模板数据
+            templateParamList.add(person.getName());
+            templateParamList.add(simpleDateFormat.format(leaveInfo.getStart_date()));
+            templateParamList.add(leaveInfo.getLeave_type());
+            templateParamList.add(Integer.toString(daysBetween));
+        }else {
+            System.out.println("今天到假");
+            /*{1}，您好，您在{2}申请的{3}已到规定销假时间，请及时到岗销假！*/
+            //封装短信模板数据
+            templateParamList.add(person.getName());
+            templateParamList.add(simpleDateFormat.format(leaveInfo.getStart_date()));
+            templateParamList.add(leaveInfo.getLeave_type());
+        }
+
+        for (String str : templateParamList){
+            System.out.println(str);
+        }
+
+        String[] templateParams = WebUtils.stringListTostringArray(templateParamList);
+
+
+
+        //发送短信，并获取响应对象
+        SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
+                SendMsg.SIGNNAME_ZBXWZZB,
+                SendMsg.TEMPLATEID_ALERTTORETURN,phoneNumberSet,templateParams);
+
+        //存储短信发送日志
+
+
+        return sendSmsResponse;
+    }
+
     //将leaveinfo对象和person对象合封装成一个map，并加入list，以list形式返回前端
     private List<HashMap<String,Object>> getLeaveInfo(List<LeaveInfo> leaveInfoList) {
         List<HashMap<String,Object>> mapList = new ArrayList<>();
@@ -321,6 +376,19 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         return hashMap;
     }
 
+    @Override
+    /*
+     * @Description :查询所有到假未到岗人员
+     * @param: pageNo
+     * @param: pageSize
+     * @return java.util.List<java.util.HashMap<java.lang.String,java.lang.Object>>
+     * @Author tianfeichen
+     * @Date 2022/1/28 19:18
+     **/
+    public List<HashMap<String, Object>> queryAllCurrentEOLPerson(Integer pageNo,Integer pageSize) {
+        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryAllCurrentEOLPerson(pageNo, pageSize);
+        return getLeaveInfo(leaveInfoList);
+    }
 
     @Override
     /*
