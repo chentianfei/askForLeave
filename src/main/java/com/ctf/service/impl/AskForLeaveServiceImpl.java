@@ -51,7 +51,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     //封装短信模板参数数据
                     List<String> templateParamList = new ArrayList<>();
                     templateParamList.add(leader.getName());
-                    templateParamList.add(leader.getOffice());
+                    templateParamList.add(person.getOffice());
                     templateParamList.add(person.getName());
                     templateParamList.add(new SimpleDateFormat(DATEFORMAT_YMD).format(leaveInfo.getEnd_date()));
                     templateParamList.add(Integer.toString(leaveInfo.getLeave_days_actual()));
@@ -269,7 +269,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     //封装短信模板参数数据
                     List<String> templateParamList = new ArrayList<>();
                     templateParamList.add(leader.getName());
-                    templateParamList.add(leader.getOffice());
+                    templateParamList.add(person.getOffice());
                     templateParamList.add(person.getName());
                     templateParamList.add(leaveInfo.getLeave_type());
                     templateParamList.add(Integer.toString(leaveInfo.getLeave_days_projected()));
