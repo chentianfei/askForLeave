@@ -352,7 +352,7 @@
     <div  class="login">
 
        <div>
-            <h1>仲巴县委组织部请销假管理系统</h1>
+            <h1>仲巴县人社局请销假管理系统</h1>
             <form method="post" action="loginServlet?action=login">
                 <input type="text" name="username" id="username" placeholder="用户名" autocomplete="off"
                        required="required" />
