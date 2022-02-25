@@ -1,0 +1,47 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="askForLeave_zbx_rsj">
+    <output-path>$PROJECT_DIR$/out/artifacts/zbx-rsj</output-path>
+    <root id="archive" name="askForLeave_zbx_rsj.war">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="askForLeave" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="gson-2.2.4" />
+          <element id="library" level="project" name="askForLeave" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi:4.0.0" />
+          <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.10" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-collections4:4.2" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi-ooxml:4.0.0" />
+          <element id="library" level="project" name="Maven: org.apache.commons:commons-compress:1.18" />
+          <element id="library" level="project" name="Maven: com.github.virtuald:curvesapi:1.04" />
+          <element id="library" level="project" name="Maven: org.apache.poi:poi-ooxml-schemas:4.0.0" />
+          <element id="library" level="project" name="Maven: org.apache.xmlbeans:xmlbeans:3.0.1" />
+          <element id="library" level="project" name="Maven: commons-fileupload:commons-fileupload:1.3.1" />
+          <element id="library" level="project" name="Maven: commons-io:commons-io:2.2" />
+          <element id="library" level="project" name="Maven: junit:junit:4.13.2" />
+          <element id="library" level="project" name="Maven: org.hamcrest:hamcrest-core:1.3" />
+          <element id="library" level="project" name="Maven: javax.annotation:javax.annotation-api:1.3.2" />
+          <element id="library" level="project" name="Maven: com.tencentcloudapi:tencentcloud-sdk-java:3.1.409" />
+          <element id="library" level="project" name="Maven: commons-logging:commons-logging:1.2" />
+          <element id="library" level="project" name="Maven: com.squareup.okio:okio:1.12.0" />
+          <element id="library" level="project" name="Maven: com.squareup.okhttp:okhttp:2.7.5" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.2.4" />
+          <element id="library" level="project" name="Maven: javax.xml.bind:jaxb-api:2.3.0" />
+          <element id="library" level="project" name="Maven: com.squareup.okhttp:logging-interceptor:2.7.5" />
+          <element id="library" level="project" name="Maven: org.ini4j:ini4j:0.5.4" />
+          <element id="library" level="project" name="Maven: org.quartz-scheduler:quartz:2.2.1" />
+          <element id="library" level="project" name="Maven: c3p0:c3p0:0.9.1.1" />
+          <element id="library" level="project" name="Maven: org.quartz-scheduler:quartz-jobs:2.2.1" />
+          <element id="library" level="project" name="Maven: javax.transaction:jta:1.1" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.21" />
+          <element id="library" level="project" name="Maven: org.slf4j:slf4j-log4j12:1.7.21" />
+          <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:9.0.41" />
+          <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-annotations-api:9.0.41" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="askForLeave/web/Web" />
+    </root>
+  </artifact>
+</component>
