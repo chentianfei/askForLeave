@@ -4,7 +4,7 @@
     <div class="layui-row" style="height: 30px">
         <p style="font-size: 10px;color:#2E2D3C;text-align: center;line-height: 30px">
             <i class="layui-icon" style="font-size: 10px;">&#xe672;</i>
-            仲巴县人社局
+            仁布县人社局
         </p>
     </div>
 </div>
