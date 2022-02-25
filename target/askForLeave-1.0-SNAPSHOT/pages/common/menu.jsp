@@ -2,7 +2,6 @@
 <div class="layui-side layui-bg-black">
     <div class="layui-side-scroll">
         <ul class="layui-nav layui-nav-tree" lay-filter="test">
-
             <li class="layui-nav-item">
                 <a href="pages/service/personinfomation/personinformation.jsp">人员信息管理</a>
             </li>
@@ -26,18 +25,17 @@
                 </dl>
             </li>
 
-
-
             <li class="layui-nav-item">
                 <a href="pages/service/historyLeaveInfo/historyLeaveInfo.jsp">历史记录查询</a>
             </li>
 
             <li class="layui-nav-item layui-nav-itemed">
-                <a href="javascript:;">系统设置</a>
+                <a href="javascript:;">系统参数</a>
                 <dl class="layui-nav-child">
                     <dd><a href="pages/service/systemInfo/systemInfo.jsp">业务参数</a></dd>
                     <dd><a href="pages/service/systemInfo/setWords.jsp">系统字段</a></dd>
                     <dd><a href="pages/service/systemInfo/accountInfo.jsp">账号管理</a></dd>
+                    <dd><a href="pages/service/timeline/timeline.jsp">研发历程</a></dd>
                 </dl>
             </li>
 

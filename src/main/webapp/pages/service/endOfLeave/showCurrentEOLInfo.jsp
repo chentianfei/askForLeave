@@ -59,14 +59,28 @@
         <script type="text/html" id="toolbar_currentEOLInfo_today">
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_today" id="endOfLeave_today">销假</button>
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly_today" id="endOfLeave_quickly_today">快速销假</button>
+
+            {{# if(d.send_alertsms_count < 1){ }}
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS_today" id="sendAlertSMS_today">发送提醒短信</button>
+            {{#  } }}
+
+            {{# if(d.send_alertsms_count >= 1){ }}
+            <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled" disabled="disabled">发送提醒短信</button>
+            {{#  } }}
         </script>
 
         <%--所有到假未到岗人员表格内部工具栏--%>
         <script type="text/html" id="toolbar_currentEOLInfo_all">
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave" id="endOfLeave">销假</button>
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly" id="endOfLeave_quickly">快速销假</button>
-            <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS" id="sendAlertSMS">发送提醒短信</button>
+
+            {{# if(d.send_alertsms_count < 1){ }}
+                <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS" id="sendAlertSMS">发送提醒短信</button>
+            {{#  } }}
+
+            {{# if(d.send_alertsms_count >= 1){ }}
+                <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled" disabled="disabled">发送提醒短信</button>
+            {{#  } }}
         </script>
 
         <script>
@@ -286,8 +300,6 @@
                         }
                     }
                     else if(obj.event === "sendAlertSMS_today") {
-                        //将按钮设置为不可点击,1分钟后可点：短信发送频率不能低于1分钟1条
-                        $(this).addClass("layui-btn-disabled").attr("disabled",true);
                         //弹出提示框
                         layer.load(1);
                         //发送提醒短信
@@ -299,8 +311,23 @@
                                 serialnumber: data.serialnumber
                             },
                             success: function (result) {
+                                var currentPage = $(".layui-laypage-skip .layui-input").val();
                                 layer.closeAll('loading');
-                                layer.msg('发送成功', {icon: 1,time: 1000});
+                                if(result.code="ok"){
+                                    layer.msg('发送成功', {icon: 1,time: 1000});
+                                    table.reload('personinformation', {
+                                        url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
+                                        ,page: {
+                                            curr: currentPage //重新从第 1 页开始
+                                        }
+                                        ,request: {
+                                            pageName: 'curr' //页码的参数名称，默认：page
+                                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                        }
+                                    });
+                                }else {
+                                    layer.msg('发送失败，请重试', {icon : 5});
+                                }
                             },
                             //请求失败，包含具体的错误信息
                             error: function (e) {
@@ -504,8 +531,6 @@
                         }
                     }
                     else if(obj.event === "sendAlertSMS") {
-                        //将按钮设置为不可点击,1分钟后可点：短信发送频率不能低于1分钟1条
-                        $(this).addClass("layui-btn-disabled").attr("disabled",true);
                         //弹出提示框
                         layer.load(1);
                         //发送提醒短信
@@ -517,12 +542,27 @@
                                 serialnumber: data.serialnumber
                             },
                             success: function (result) {
+                                var currentPage = $(".layui-laypage-skip .layui-input").val();
                                 layer.closeAll('loading');
-                                layer.msg('发送成功', {icon: 1,time: 1000});
+                                if(result.code="ok"){
+                                    layer.msg('发送成功', {icon: 1,time: 1000});
+                                    table.reload('personinformation', {
+                                        url: 'askForLeaveServlet?action=queryAllCurrentEOLPerson'
+                                        ,page: {
+                                            curr: currentPage //重新从第 1 页开始
+                                        }
+                                        ,request: {
+                                            pageName: 'curr' //页码的参数名称，默认：page
+                                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                        }
+                                    });
+                                }else {
+                                    layer.msg('发送失败，请重试', {icon : 5});
+                                }
                             },
                             //请求失败，包含具体的错误信息
                             error: function (e) {
-                                layer.msg('发送失败，请重试'+e.status, {
+                                layer.msg('网络故障，请稍后重试'+e.status, {
                                     icon : 5
                                 });
                                 layer.closeAll('loading');

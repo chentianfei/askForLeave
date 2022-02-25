@@ -1,5 +1,6 @@
 package com.ctf.utils;
 
+import com.ctf.dao.SMSLogDao;
 import com.ctf.dao.SystemDataDao;
 import com.tencentcloudapi.common.Credential;
 import com.tencentcloudapi.common.exception.TencentCloudSDKException;
@@ -95,66 +96,64 @@ public class SendMsg {
      * @Date ：2021/12/3 12:17
      */
     public static SendSmsResponse sendMsgByPhoneNum(String smsSdkAppId,
-                                                    String signName,
-                                                    String templateId,
-                                                    String[] phoneNumbers,
-                                                    String[] templateParam){
+                                        String signName,
+                                        String templateId,
+                                        String[] phoneNumbers,
+                                        String[] templateParam){
         SendSmsResponse res = null;
         try {
+            //获取短信发送请求对象
             SendSmsRequest req = new SendSmsRequest();
-
             /*设置短信应用ID*/
             req.setSmsSdkAppId(smsSdkAppId);
-
             /*设置短信签名内容*/
             req.setSignName(signName);
-
             // 设置下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
             req.setPhoneNumberSet(phoneNumbers);
-
             //指定使用的短信模板
             req.setTemplateId(templateId);
-
             //传入模板中的参数
             req.setTemplateParamSet(templateParam);
 
-            //发送前保存时间，供查询使用
-            long start_time = new Date().getTime();
-            /* 通过 client 对象调用 SendSms 方法发起请求。注意请求方法名与请求对象是对应的
-             * 返回的 res 是一个 SendSmsResponse 类的实例，与请求对象对应 */
+            /* 通过 client 对象调用 SendSms 方法发起请求。
+            注意请求方法名与请求对象是对应的返回的 res 是一个 SendSmsResponse 类的实例，与请求对象对应 */
             res = client.SendSms(req);
-
-            SendStatus[] sendStatusSet = res.getSendStatusSet();
-            for (SendStatus sendStatus :sendStatusSet){
-                System.out.println(sendStatus);
-            }
-            //发送完成后立即查询发送状态，并保存到日志
-            for(String phongNum : phoneNumbers){
-
-                PullSmsSendStatusByPhoneNumberResponse pullSmsSendStatusByPhoneNumberResponse =
-                        pullSmsSendStatusByPhoneNumber(start_time, new Date().getTime(),
-                                100l, 0l,phongNum, SENDMSGSDKAPPID);
-
-                PullSmsSendStatus[] pullSmsSendStatusSet =
-                        pullSmsSendStatusByPhoneNumberResponse.getPullSmsSendStatusSet();
-
-                for(PullSmsSendStatus psss :pullSmsSendStatusSet){
-                    //控制台输出发送状态
-                    System.out.println(psss);
-                }
-
-                //存到日志
-            }
-
-            // 输出json格式的字符串回包:System.out.println(SendSmsResponse.toJsonString(res));
-
-            // 也可以取出单个值，你可以通过官网接口文档或跳转到response对象的定义处查看返回字段的定义
-            //System.out.println(res.getRequestId());
 
         } catch (TencentCloudSDKException e) {
             e.printStackTrace();
         }
+
         return res;
+    }
+
+    //拼凑短信内容
+    public static String getSMSContent(String templateId,String[] templateParam){
+        if(templateId.equals("1292724")){
+            //到期未销假（之前）提醒短信（仲巴县）
+            return templateParam[0]+"，您好，您在"+templateParam[1]+"申请的"+templateParam[2]+"已超出规定销假时间"+templateParam[3]+"天，请及时到岗销假！";
+        }else  if(templateId.equals("1292719")){
+            //当日到假未到岗提醒短信（仲巴县）
+            return templateParam[0]+"，您好，您在"+templateParam[1]+"申请的"+templateParam[2]+"已到规定销假时间，请及时到岗销假！";
+        }else  if(templateId.equals("1225838")){
+            //销假成功后绑定领导收到的短信提醒模板
+            return "尊敬的"+templateParam[0]+"，您好，您单位"+templateParam[1]+"的"+templateParam[2]+"已于"+templateParam[3]+"销假，实际请假天数为"+templateParam[4]+"天，请知悉！";
+        }else  if(templateId.equals("1225837")){
+            //销假成功后本人收到的短信提醒模板
+            return templateParam[0]+"，您好，您于"+templateParam[1]+"销假成功，实际请假天数为"+templateParam[2]+"天，请及时到岗！";
+        }else  if(templateId.equals("1225834")){
+            //到假前本人收到的提示短信模板
+            return "温馨提示："+templateParam[0]+"，您好，您的"+templateParam[1]+"假还有"+templateParam[2]+"天到期，请按时到岗！";
+        }else  if(templateId.equals("1225833")){
+            //请假审批同意后请假者领导收到的短信提醒模板
+            return "尊敬的"+templateParam[0]+"，您好，您单位"+templateParam[1]+"的"+templateParam[2]+templateParam[3]
+                    +"申请已通过审核，请假天数为"+templateParam[4]+"天，请假时间为"+templateParam[5]+"到"+templateParam[6]+"，请知悉！";
+        }else  if(templateId.equals("1225831")){
+            //请假审批同意后请假者本人收到的短信提醒模板
+            return templateParam[0]+"，您好，您的"+templateParam[1]+"申请已通过审核，请假天数为"
+                    +templateParam[2]+"天，请假时间为"+templateParam[3]+"到"+templateParam[4]+"，请按规定时间归假！";
+        }else {
+            return "Error!";
+        }
     }
 
     /*

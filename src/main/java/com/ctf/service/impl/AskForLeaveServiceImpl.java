@@ -10,6 +10,7 @@ import com.ctf.utils.DateUtils;
 import com.ctf.utils.SendMsg;
 import com.ctf.utils.WebUtils;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
+import com.tencentcloudapi.sms.v20210111.models.SendStatus;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,12 +23,15 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
     private static PersonDao personDao = new PersonDao();
     private static PersonServiceImpl personService = new PersonServiceImpl();
     private static SystemDataDao systemDataDao = new SystemDataDao();
+
     private static UserDao userDao = new UserDao();
     private SMSLogDao smsLogDao = new SMSLogDao();
 
     //销假成功后根据请假流水号给领导发送短信
     private List<SendSmsResponse> sendMsgToLeaderBySerialnumberWhenResumeWork(int serialnumber){
+
         List<SendSmsResponse> sendSmsResponseList = new ArrayList<>();
+
         /*
         尊敬的{1}，您好，您单位{2}的{3}已于{4}销假，实际请假天数为{5}天，请知悉！
          * */
@@ -42,6 +46,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         List<Person> leaderList = personDao.queryRelatedLeader(person_id);
         if(leaderList != null){
             if(leaderList.size()!=0){
+                int sendStatus = 0;
                 for(Person leader : leaderList){
                     //封装短信模板参数数据
                     List<String> templateParamList = new ArrayList<>();
@@ -53,6 +58,8 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
                     String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
 
+                     //发送前保存时间，写入日志
+                    Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
                     //发送短信，并获取响应对象
                     SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(
                             SendMsg.SENDMSGSDKAPPID, SendMsg.SIGNNAME_ZBXWZZB,
@@ -60,7 +67,41 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                             new String[]{leader.getPhone()},
                             templateParam
                     );
+                    //通过发射后的相应对象，获取此次发射的响应状态集数组
+                    SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+                    //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+                    SendStatus thisSendStatus = sendStatusSet[0];
+                    //发送后保存时间，写入日志
+                    Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
 
+                    //写入日志
+                    String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                            "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                            "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                            "?,?,?,?,?,?,?)";
+
+                    List<Object> params = new ArrayList<>();
+                    params.add(leader.getPhone());//PhoneNumber
+                    params.add(serialnumber);//SerialNo_askforleave_thisSystem
+                    params.add(person_id);//person_id
+
+                    params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+                    params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+                    params.add(SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK);//TemplateId
+                    params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+                    params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK,templateParam));//SmsContent
+
+                    params.add(thisSendStatus.getCode());//SendStatus,from res
+                    params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+                    params.add(thisSendStatus.getFee());//Fee,from res
+                    params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+                    params.add(start_time);//send_startdate
+                    params.add(end_time);//send_enddate
+                    params.add(leaveInfo.getStart_leave_operator());//operator
+                    //写入日志
+                    smsLogDao.insertALog(sql,params);
                     sendSmsResponseList.add(sendSmsResponse);
                 }
             }
@@ -92,9 +133,46 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
 
+        //发送前保存时间，写入日志
+        Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
         //发送短信，并获取响应对象
         SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,SendMsg.SIGNNAME_ZBXWZZB,
                 SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK,phoneNumberSet,templateParam);
+        //通过发射后的相应对象，获取此次发射的响应状态集数组
+        SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+        //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+        SendStatus thisSendStatus = sendStatusSet[0];
+        //发送后保存时间，写入日志
+        Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
+
+        //写入日志
+        String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                "?,?,?,?,?,?,?)";
+
+        List<Object> params = new ArrayList<>();
+        params.add(phoneNumberSet[0]);//PhoneNumber
+        params.add(serialnumber);//SerialNo_askforleave_thisSystem
+        params.add(person_id);//person_id
+
+        params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+        params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+        params.add(SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK);//TemplateId
+        params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+        params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK,templateParam));//SmsContent
+
+        params.add(thisSendStatus.getCode());//SendStatus,from res
+        params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+        params.add(thisSendStatus.getFee());//Fee,from res
+        params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+        params.add(start_time);//send_startdate
+        params.add(end_time);//send_enddate
+        params.add(leaveInfo.getStart_leave_operator());//operator
+        //写入日志
+        smsLogDao.insertALog(sql,params);
 
         return sendSmsResponse;
     }
@@ -121,18 +199,54 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                 Integer.toString(systemDataDao.querySmsAlertDays())
         };
 
+        //发送前保存时间，写入日志
+        Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
         //发送短信，并获取响应对象
         SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(
                 SendMsg.SENDMSGSDKAPPID,
                 SendMsg.SIGNNAME_ZBXWZZB,
                 SendMsg.TEMPLATEID_TOSELFFORALERT,phoneNumberSet,templateParam);
+        //通过发射后的相应对象，获取此次发射的响应状态集数组
+        SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+        //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+        SendStatus thisSendStatus = sendStatusSet[0];
+        //发送后保存时间，写入日志
+        Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
+
+        //写入日志
+        String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                "?,?,?,?,?,?,?)";
+
+        List<Object> params = new ArrayList<>();
+        params.add(phoneNumberSet[0]);//PhoneNumber
+        params.add(serialnumber);//SerialNo_askforleave_thisSystem
+        params.add(person_id);//person_id
+
+        params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+        params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+        params.add(SendMsg.TEMPLATEID_TOSELFFORALERT);//TemplateId
+        params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+        params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOSELFFORALERT,templateParam));//SmsContent
+
+        params.add(thisSendStatus.getCode());//SendStatus,from res
+        params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+        params.add(thisSendStatus.getFee());//Fee,from res
+        params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+        params.add(start_time);//send_startdate
+        params.add(end_time);//send_enddate
+        params.add(leaveInfo.getStart_leave_operator());//operator
+        //写入日志
+        smsLogDao.insertALog(sql,params);
 
         return sendSmsResponse;
     }
 
     //请假审批后根据请假流水号给领导发送短信
     private List<SendSmsResponse> sendMsgToLeaderBySerialnumberWhenAskForLeave(int serialnumber){
-
         List<SendSmsResponse> sendSmsResponseList = new ArrayList<>();
         /*
          *尊敬的{1}，您好，您单位{2}的{3} {4}申请已通过审核，
@@ -150,6 +264,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         if(leaderList != null){
             if(leaderList.size()!=0){
+                int sendStatus = 0;
                 for(Person leader : leaderList){
                     //封装短信模板参数数据
                     List<String> templateParamList = new ArrayList<>();
@@ -160,20 +275,57 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     templateParamList.add(Integer.toString(leaveInfo.getLeave_days_projected()));
                     templateParamList.add(new SimpleDateFormat(DATEFORMAT_YMD).format(leaveInfo.getStart_date()));
                     templateParamList.add(new SimpleDateFormat(DATEFORMAT_YMD).format(leaveInfo.getEnd_date_maybe()));
+
                     String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
 
+                    //发送前保存时间，写入日志
+                    Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
                     //发送短信，并获取响应对象
-                   SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
-                           SendMsg.SIGNNAME_ZBXWZZB,
+                    SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
+                            SendMsg.SIGNNAME_ZBXWZZB,
                             SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE, new String[]{leader.getPhone()},
                             templateParam);
-                   sendSmsResponseList.add(sendSmsResponse);
+                    //通过发射后的相应对象，获取此次发射的响应状态集数组
+                    SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+                    //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+                    SendStatus thisSendStatus = sendStatusSet[0];
+                    //发送后保存时间，写入日志
+                    Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
+
+                    //写入日志
+                    String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                            "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                            "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                            "?,?,?,?,?,?,?)";
+
+                    List<Object> params = new ArrayList<>();
+                    params.add(leader.getPhone());//PhoneNumber
+                    params.add(serialnumber);//SerialNo_askforleave_thisSystem
+                    params.add(person_id);//person_id
+
+                    params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+                    params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+                    params.add(SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE);//TemplateId
+                    params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+                    params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE,templateParam));//SmsContent
+
+                    params.add(thisSendStatus.getCode());//SendStatus,from res
+                    params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+                    params.add(thisSendStatus.getFee());//Fee,from res
+                    params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+                    params.add(start_time);//send_startdate
+                    params.add(end_time);//send_enddate
+                    params.add(leaveInfo.getStart_leave_operator());//operator
+                    //写入日志
+                    smsLogDao.insertALog(sql,params);
+                    sendSmsResponseList.add(sendSmsResponse);
                 }
             }
         }
 
         return sendSmsResponseList;
-
     }
 
     //请假审批后根据请假流水号给本人发送短信
@@ -203,15 +355,52 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         String[] templateParams = WebUtils.stringListTostringArray(templateParamList);
 
+        //发送前保存时间，写入日志
+        Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
         //发送短信，并获取响应对象
         SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
                 SendMsg.SIGNNAME_ZBXWZZB,
-                SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE,phoneNumberSet,templateParams);
+                SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE, phoneNumberSet, templateParams);
+        //通过发射后的相应对象，获取此次发射的响应状态集数组
+        SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+        //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+        SendStatus thisSendStatus = sendStatusSet[0];
+        //发送后保存时间，写入日志
+        Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
+
+        //写入日志
+        String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                "?,?,?,?,?,?,?)";
+
+        List<Object> params = new ArrayList<>();
+        params.add(phoneNumberSet[0]);//PhoneNumber
+        params.add(serialnumber);//SerialNo_askforleave_thisSystem
+        params.add(person_id);//person_id
+
+        params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+        params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+        params.add(SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE);//TemplateId
+        params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+        params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE,templateParams));//SmsContent
+
+        params.add(thisSendStatus.getCode());//SendStatus,from res
+        params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+        params.add(thisSendStatus.getFee());//Fee,from res
+        params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+        params.add(start_time);//send_startdate
+        params.add(end_time);//send_enddate
+        params.add(leaveInfo.getStart_leave_operator());//operator
+        //写入日志
+        smsLogDao.insertALog(sql,params);
 
         return sendSmsResponse;
     }
 
-    //根据流水号给到假未到岗人员发送短信
+    //根据流水号给到假未到岗人员发送提醒短信
     public SendSmsResponse sendAlertSMS(Integer serialnumber){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATEFORMAT_YMD);
 
@@ -230,42 +419,116 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         Date end_date_maybe = leaveInfo.getEnd_date_maybe();
         Integer daysBetween = DateUtils.getDaysBetween(end_date_maybe, new Date());
+
         if(daysBetween>0){
-            System.out.println("超出1天了");
             /*{1}，您好，您在{2}申请的{3}已超出规定销假时间{4}天，请及时到岗销假！*/
+
             //封装短信模板数据
             templateParamList.add(person.getName());
             templateParamList.add(simpleDateFormat.format(leaveInfo.getStart_date()));
             templateParamList.add(leaveInfo.getLeave_type());
             templateParamList.add(Integer.toString(daysBetween));
+
+            String[] templateParams = WebUtils.stringListTostringArray(templateParamList);
+
+            //发送前保存时间，写入日志
+            Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
+            //发送短信，并获取响应对象
+            SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
+                    SendMsg.SIGNNAME_ZBXWZZB,
+                    SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY, phoneNumberSet, templateParams);
+            //通过发射后的相应对象，获取此次发射的响应状态集数组
+            SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+            //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+            SendStatus thisSendStatus = sendStatusSet[0];
+            //发送后保存时间，写入日志
+            Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
+
+            //写入日志
+            String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                    "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                    "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                    "?,?,?,?,?,?,?)";
+
+            List<Object> params = new ArrayList<>();
+            params.add(phoneNumberSet[0]);//PhoneNumber
+            params.add(serialnumber);//SerialNo_askforleave_thisSystem
+            params.add(person_id);//person_id
+
+            params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+            params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+            params.add(SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY);//TemplateId
+            params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+            params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY,templateParams));//SmsContent
+
+            params.add(thisSendStatus.getCode());//SendStatus,from res
+            params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+            params.add(thisSendStatus.getFee());//Fee,from res
+            params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+            params.add(start_time);//send_startdate
+            params.add(end_time);//send_enddate
+            params.add(leaveInfo.getStart_leave_operator());//operator
+            //写入日志
+            smsLogDao.insertALog(sql,params);
+            return sendSmsResponse;
         }else {
-            System.out.println("今天到假");
             /*{1}，您好，您在{2}申请的{3}已到规定销假时间，请及时到岗销假！*/
             //封装短信模板数据
             templateParamList.add(person.getName());
             templateParamList.add(simpleDateFormat.format(leaveInfo.getStart_date()));
             templateParamList.add(leaveInfo.getLeave_type());
+
+            String[] templateParams = WebUtils.stringListTostringArray(templateParamList);
+
+            //发送前保存时间，写入日志
+            Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
+            //发送短信，并获取响应对象
+            SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
+                    SendMsg.SIGNNAME_ZBXWZZB,
+                    SendMsg.TEMPLATEID_ALERTTORETURN, phoneNumberSet, templateParams);
+            //通过发射后的相应对象，获取此次发射的响应状态集数组
+            SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
+            //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+            SendStatus thisSendStatus = sendStatusSet[0];
+            //发送后保存时间，写入日志
+            Date end_time = DateUtils.timestampToDate_YMDHMS(new Date());
+
+            //写入日志
+            String sql = "insert into sms_sendlog(SerialNo_sendmsg_thisSystem,PhoneNumber,SerialNo_askforleave_thisSystem," +
+                    "person_id,SerialNo_sendmsg_server,SmsSdkAppId,TemplateId,SignName,SmsContent," +
+                    "SendStatus,ErrorMsg,Fee,IsoCode,send_startdate,send_enddate,operator) values(null,?,?,?,?,?,?,?,?," +
+                    "?,?,?,?,?,?,?)";
+
+            List<Object> params = new ArrayList<>();
+            params.add(phoneNumberSet[0]);//PhoneNumber
+            params.add(serialnumber);//SerialNo_askforleave_thisSystem
+            params.add(person_id);//person_id
+
+            params.add(thisSendStatus.getSerialNo());//SerialNo_sendmsg_server,from res
+
+            params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
+            params.add(SendMsg.TEMPLATEID_ALERTTORETURN);//TemplateId
+            params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+            params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_ALERTTORETURN,templateParams));//SmsContent
+
+            params.add(thisSendStatus.getCode());//SendStatus,from res
+            params.add(thisSendStatus.getMessage());//ErrorMsg,from res
+            params.add(thisSendStatus.getFee());//Fee,from res
+            params.add(thisSendStatus.getIsoCode());//IsoCode,from res
+
+            params.add(start_time);//send_startdate
+            params.add(end_time);//send_enddate
+            params.add(leaveInfo.getStart_leave_operator());//operator
+            //写入日志
+            smsLogDao.insertALog(sql,params);
+
+            return sendSmsResponse;
         }
 
-        for (String str : templateParamList){
-            System.out.println(str);
-        }
-
-        String[] templateParams = WebUtils.stringListTostringArray(templateParamList);
-
-
-
-        //发送短信，并获取响应对象
-        SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
-                SendMsg.SIGNNAME_ZBXWZZB,
-                SendMsg.TEMPLATEID_ALERTTORETURN,phoneNumberSet,templateParams);
-
-        //存储短信发送日志
-
-
-        return sendSmsResponse;
     }
-
+/*---------------------------------------------------------------------------------------------------------------------*/
     //将leaveinfo对象和person对象合封装成一个map，并加入list，以list形式返回前端
     private List<HashMap<String,Object>> getLeaveInfo(List<LeaveInfo> leaveInfoList) {
         List<HashMap<String,Object>> mapList = new ArrayList<>();
@@ -387,33 +650,112 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
      **/
     public List<HashMap<String, Object>> queryAllCurrentEOLPerson(Integer pageNo,Integer pageSize) {
         List<LeaveInfo> leaveInfoList = askForLeaveDao.queryAllCurrentEOLPerson(pageNo, pageSize);
-        return getLeaveInfo(leaveInfoList);
+
+        List<HashMap<String,Object>> mapList = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+
+        for (LeaveInfo leaveInfo: leaveInfoList){
+            int  person_id = leaveInfo.getPerson_id();
+            Person person = personDao.queryPersonInfoByID(person_id);
+            //封装回显数据
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("person_id", person.getPerson_id());
+            hashMap.put("name",person.getName());
+            hashMap.put("office",person.getOffice());
+            hashMap.put("post",person.getPost());
+            hashMap.put("phone", person.getPhone());
+            hashMap.put("sex", person.getSex());
+            hashMap.put("nation", person.getNation());
+            hashMap.put("nativePlace", person.getNativePlace());
+            hashMap.put("area_class", person.getArea_class());
+            hashMap.put("level", person.getLevel());
+            hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+            if(person.getBirthDate()!=null){
+                hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+            }
+            hashMap.put("leader", person.getLeader());
+            hashMap.put("serialnumber",leaveInfo.getSerialnumber());
+            hashMap.put("leave_type",leaveInfo.getLeave_type());
+            if(leaveInfo.getStart_date()!=null){
+                hashMap.put("start_date",simpleDateFormat.format(leaveInfo.getStart_date()));
+            }
+            hashMap.put("leave_days_projected",leaveInfo.getLeave_days_projected());
+            hashMap.put("work_leader",leaveInfo.getWork_leader());
+            hashMap.put("leave_reason",leaveInfo.getLeave_reason());
+            hashMap.put("approver",leaveInfo.getApprover());
+            hashMap.put("depart_location",leaveInfo.getDepart_location());
+            hashMap.put("arrive_location",leaveInfo.getArrive_location());
+            if(leaveInfo.getEnd_date_maybe()!=null){
+                hashMap.put("end_date_maybe",simpleDateFormat.format(leaveInfo.getEnd_date_maybe()));
+            }
+            hashMap.put("start_leave_remark",leaveInfo.getStart_leave_remark());
+            hashMap.put("start_leave_operator",leaveInfo.getStart_leave_operator());
+            //新增提醒短信发送数据
+            hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_history(leaveInfo.getSerialnumber()));
+
+            mapList.add(hashMap);
+        }
+
+        return mapList;
     }
 
     @Override
     /*
-     * @Description ：查询所有今日应到假人员信息
+     * @Description ：查询今日应到假人员信息
      * @Param
      * @Return ：List<HashMap<String,Object>>
      * @Author: CTF
      * @Date ：2021/12/16 11:54
      */
-    public List<HashMap<String, Object>> queryCurrentEOLPerson() {
-        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryCurrentEOLPerson();
-        return getLeaveInfo(leaveInfoList);
-    }
+    public List<HashMap<String, Object>> queryCurrentEOLPerson(Integer pageNo,Integer pageSize) {
+        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryCurrentEOLPerson(pageNo, pageSize);
 
-    @Override
-    /*
-     * @Description ：分页查询今日应到假人员信息
-     * @Param
-     * @Return ：List<HashMap<String,Object>>
-     * @Author: CTF
-     * @Date ：2021/12/16 11:54
-     */
-    public List<HashMap<String, Object>> queryCurrentEOLPersonLimit(Integer pageNo,Integer pageSize) {
-        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryCurrentEOLPersonLimit(pageNo, pageSize);
-        return getLeaveInfo(leaveInfoList);
+        List<HashMap<String,Object>> mapList = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+
+        for (LeaveInfo leaveInfo: leaveInfoList){
+            int  person_id = leaveInfo.getPerson_id();
+            Person person = personDao.queryPersonInfoByID(person_id);
+            //封装回显数据
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("person_id", person.getPerson_id());
+            hashMap.put("name",person.getName());
+            hashMap.put("office",person.getOffice());
+            hashMap.put("post",person.getPost());
+            hashMap.put("phone", person.getPhone());
+            hashMap.put("sex", person.getSex());
+            hashMap.put("nation", person.getNation());
+            hashMap.put("nativePlace", person.getNativePlace());
+            hashMap.put("area_class", person.getArea_class());
+            hashMap.put("level", person.getLevel());
+            hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+            if(person.getBirthDate()!=null){
+                hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+            }
+            hashMap.put("leader", person.getLeader());
+            hashMap.put("serialnumber",leaveInfo.getSerialnumber());
+            hashMap.put("leave_type",leaveInfo.getLeave_type());
+            if(leaveInfo.getStart_date()!=null){
+                hashMap.put("start_date",simpleDateFormat.format(leaveInfo.getStart_date()));
+            }
+            hashMap.put("leave_days_projected",leaveInfo.getLeave_days_projected());
+            hashMap.put("work_leader",leaveInfo.getWork_leader());
+            hashMap.put("leave_reason",leaveInfo.getLeave_reason());
+            hashMap.put("approver",leaveInfo.getApprover());
+            hashMap.put("depart_location",leaveInfo.getDepart_location());
+            hashMap.put("arrive_location",leaveInfo.getArrive_location());
+            if(leaveInfo.getEnd_date_maybe()!=null){
+                hashMap.put("end_date_maybe",simpleDateFormat.format(leaveInfo.getEnd_date_maybe()));
+            }
+            hashMap.put("start_leave_remark",leaveInfo.getStart_leave_remark());
+            hashMap.put("start_leave_operator",leaveInfo.getStart_leave_operator());
+            //新增提醒短信发送数据
+            hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_today(leaveInfo.getSerialnumber()));
+
+            mapList.add(hashMap);
+        }
+
+        return mapList;
     }
 
     @Override

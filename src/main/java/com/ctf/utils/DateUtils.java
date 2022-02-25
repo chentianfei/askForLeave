@@ -1,9 +1,11 @@
 package com.ctf.utils;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @Description :
@@ -13,7 +15,17 @@ import java.util.Date;
  * @Version v1.0
  */
 public class DateUtils {
+    private static final String YMDHMSFORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    //时间戳转date
+    public static Date timestampToDate_YMDHMS(Date date){
+        //日期格式字符串
+        DateFormat df = DateFormat.getDateTimeInstance();//可以精确到时分秒
+        String date_str = df.format(date);
+        return DateUtils.StringToDate(date_str, YMDHMSFORMAT);
+    }
+
+    //字符串转date
     public static Date StringToDate(String date_str,String formatSTR) {
         try {
             return new SimpleDateFormat(formatSTR).parse(date_str);

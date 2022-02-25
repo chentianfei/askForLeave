@@ -30,8 +30,8 @@ public class AskForLeaveServlet extends BaseServlet{
 
     AskForLeaveServiceImpl askForLeaveService = new AskForLeaveServiceImpl();
 
-    //发送销假提示短信
-    public void sendAlertSMS(HttpServletRequest request,HttpServletResponse response)throws IOException, ServletException {
+    //发送催促销假警告短信
+    public void sendAlertSMS(HttpServletRequest request,HttpServletResponse response)throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
@@ -44,19 +44,19 @@ public class AskForLeaveServlet extends BaseServlet{
             }
         }
 
-        System.out.println("AskForLeaveServlet:serialnumber="+serialnumber);
-
-        //封装成json字符串，通过getWriter().write()返回给页面
         SendSmsResponse sendSmsResponse = askForLeaveService.sendAlertSMS(serialnumber);
 
+        //通过发射后的相应对象，获取此次发射的响应状态集数组
         SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
-        StringBuilder message = new StringBuilder();
-        for (SendStatus sendstatus : sendStatusSet){
-            message.append(sendstatus.getMessage());
-        }
+        //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
+        SendStatus thisSendStatus = sendStatusSet[0];
+
+        Map<String,Object> sendStatusMap = new HashMap<>();
+        sendStatusMap.put("code",thisSendStatus.getCode());
+        sendStatusMap.put("message",thisSendStatus.getMessage());
 
         //以json格式返回给前端
-        String result_json = new Gson().toJson(message);
+        String result_json = new Gson().toJson(sendStatusMap);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
@@ -71,15 +71,14 @@ public class AskForLeaveServlet extends BaseServlet{
         //获取每页显示数量
         Integer pageSize = Integer.valueOf(request.getParameter("nums"));
 
-
         List<HashMap<String, Object>> hashMaps =
-                askForLeaveService.queryCurrentEOLPersonLimit(pageNo,pageSize);
+                askForLeaveService.queryCurrentEOLPerson(pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryCurrentEOLPerson().size());
+        map.put("count",askForLeaveService.queryCurrentEOLPerson(null,null).size());
         map.put("data",hashMaps);
 
         //以json格式返回给前端

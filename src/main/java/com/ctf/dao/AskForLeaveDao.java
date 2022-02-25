@@ -959,14 +959,31 @@ public class AskForLeaveDao extends BaseDao {
         return queryForList(LeaveInfo.class, leaveInfoSQL.toString(), leaveInfoSQLparmas.toArray());
     }
 
-    //查询所有今日应到假人员信息
-    public List<LeaveInfo> queryCurrentEOLPerson() {
-        String sql = "select * from resume_work where end_date_maybe = ? order by serialnumber desc";
+    //查询今日应到假人员信息
+    public List<LeaveInfo> queryCurrentEOLPerson(Integer pageNo, Integer pageSize) {
+        String sql_str = "SELECT * FROM resume_work where end_date_maybe = ? order by serialnumber desc ";
+        StringBuilder sql = new StringBuilder(sql_str);
+        List<Object> params = new ArrayList<>();
 
         SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
-        String format = simpleDateFormat.format(new Date());
+        String end_date_maybe = simpleDateFormat.format(new Date());
+        params.add(end_date_maybe);
 
-        return queryForList(LeaveInfo.class,sql,format);
+        //判断是否分页
+        if(pageNo!=null && pageSize!=null){
+            //需要分页
+            //分页参数：起始值
+            Integer start = (pageNo-1)*pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+
+            sql.append(" limit ?,?");
+            params.add(start);
+            params.add(end);
+        }
+
+
+        return queryForList(LeaveInfo.class,sql.toString(),params.toArray());
     }
 
     //查询所有到假未到岗人员
@@ -990,22 +1007,8 @@ public class AskForLeaveDao extends BaseDao {
             parmas.add(start);
             parmas.add(end);
         }
-        System.out.println(sql);
+
         return queryForList(LeaveInfo.class,sql.toString(),parmas.toArray());
-    }
-
-    //分页查询所有待销假记录（展示待销假信息审核用）
-    public List<LeaveInfo> queryCurrentEOLPersonLimit(Integer pageNo, Integer pageSize) {
-        //分页参数：起始值
-        Integer start = (pageNo-1)*pageSize;
-        //分页参数：结束值
-        Integer end = pageSize;
-
-        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
-        String format = simpleDateFormat.format(new Date());
-
-        String sql = "SELECT * FROM resume_work where end_date_maybe = ? order by serialnumber desc limit ?,? ";
-        return queryForList(LeaveInfo.class,sql,format,start,end);
     }
 
     //查询待销假记录表resume_work中指定数据并插入已销假数据表（历史请假记录）history_info及其备份表history_info_backups
