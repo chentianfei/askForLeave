@@ -9,8 +9,7 @@
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">请假操作</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="pages/service/askForLeave/askForLeave.jsp">常规请假登记</a></dd>
-                    <dd><a href="pages/service/rest/rest.jsp">调休登记</a></dd>
+                    <dd><a href="pages/service/askForLeave/askForLeave.jsp">请假登记</a></dd>
                     <dd><a href="pages/service/approvalLeave/approvalLeave.jsp">请假审批</a></dd>
                     <dd></dd>
                 </dl>
@@ -32,10 +31,9 @@
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">系统参数</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="pages/service/systemInfo/systemInfo.jsp">业务参数</a></dd>
                     <dd><a href="pages/service/systemInfo/setWords.jsp">系统字段</a></dd>
                     <dd><a href="pages/service/systemInfo/accountInfo.jsp">账号管理</a></dd>
-                    <dd><a href="pages/service/timeline/timeline.jsp">研发历程</a></dd>
+                    <dd><a href="pages/service/timeline/timeline.jsp">开发历程</a></dd>
                 </dl>
             </li>
 

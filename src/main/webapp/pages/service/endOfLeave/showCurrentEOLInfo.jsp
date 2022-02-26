@@ -59,14 +59,22 @@
         <script type="text/html" id="toolbar_currentEOLInfo_today">
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_today" id="endOfLeave_today">销假</button>
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly_today" id="endOfLeave_quickly_today">快速销假</button>
-
-            {{# if(d.send_alertsms_count < 1){ }}
+<%--            {{# if(d.send_alertsms_count < 1){ }}
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS_today" id="sendAlertSMS_today">发送提醒短信</button>
             {{#  } }}
 
             {{# if(d.send_alertsms_count >= 1){ }}
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled" disabled="disabled">发送提醒短信</button>
-            {{#  } }}
+            {{#  } }}--%>
+        </script>
+
+        <%--今日到假未到岗人员表格上方工具栏--%>
+        <script type="text/html" id="toolbar_top_currentEOLInfo_today">
+            <div class="layui-btn-container">
+                <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+                <button class="layui-btn layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
+            </div>
         </script>
 
         <%--所有到假未到岗人员表格内部工具栏--%>
@@ -74,13 +82,22 @@
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave" id="endOfLeave">销假</button>
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly" id="endOfLeave_quickly">快速销假</button>
 
-            {{# if(d.send_alertsms_count < 1){ }}
+<%--            {{# if(d.send_alertsms_count < 1){ }}
                 <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS" id="sendAlertSMS">发送提醒短信</button>
             {{#  } }}
 
             {{# if(d.send_alertsms_count >= 1){ }}
                 <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled" disabled="disabled">发送提醒短信</button>
-            {{#  } }}
+            {{#  } }}--%>
+        </script>
+
+        <%--所有到假未到岗人员表格上方工具栏--%>
+        <script type="text/html" id="toolbar_top_currentEOLInfo_all">
+            <div class="layui-btn-container">
+                <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+                <button class="layui-btn layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
+            </div>
         </script>
 
         <script>
@@ -109,11 +126,16 @@
                     ,range: ['#end_date_maybe_min', '#end_date_maybe_max']
                 });
 
-                table.render({
+                //定义今日到假未到岗人员表格导出的数据
+                let exportData_currentEOLInfo_today = {};
+
+                //今日到假未到岗人员表格初始化
+                var currentEOLInfo_today_table = table.render({
                     elem: '#currentEOLInfo_today'
                     ,url:'askForLeaveServlet?action=queryCurrentEOLPerson'
-                    //,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
-                    ,title: '待销假信息表'
+                    ,toolbar: '#toolbar_top_currentEOLInfo_today'
+                    ,defaultToolbar: []
+                    ,title: '今日到假未到岗人员信息表'
                     ,request: {
                         pageName: 'curr' //页码的参数名称，默认：page
                         ,limitName: 'nums' //每页数据量的参数名，默认：limit
@@ -140,6 +162,16 @@
                         ,{fixed: 'right', title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_today',width: 250}
                     ]]
                     ,page : true
+                    ,parseData: function(res) { //res 即为原始返回的数据
+                        //将本次查询的数据赋值给导出数据指定的变量
+                        exportData_currentEOLInfo_today = res.count;
+                        return {
+                            "code": res.code, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "count": res.count.length, //解析数据长度
+                            "data": res.data //解析数据列表
+                        };
+                    }
                    /* ,done : function(res, curr, count){
                         tableList=res.data;
                         $('th').css({'background-color': '#FF5722',color:"#FAFAFA"})
@@ -299,7 +331,7 @@
                             layer.alert("当前日期小于起始日期，不能销假");
                         }
                     }
-                    else if(obj.event === "sendAlertSMS_today") {
+                   /* else if(obj.event === "sendAlertSMS_today") {
                         //弹出提示框
                         layer.load(1);
                         //发送提醒短信
@@ -337,14 +369,44 @@
                                 layer.closeAll('loading');
                             }
                         });
-                    }
+                    }*/
                 });
 
-                table.render({
+                //头工具栏事件
+                table.on('toolbar(currentEOLInfo_today)', function(obj){
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    switch(obj.event){
+                        case 'batchAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        case 'batchNotAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        //导出数据
+                        case 'export':
+                            table.exportFile(currentEOLInfo_today_table.config.id, exportData_currentEOLInfo_today, 'xls');
+                            break;
+                    };
+                });
+/*-----------------------------------------------------------------------------------------------*/
+                //定义今日到假未到岗人员表格导出的数据
+                let exportData_currentEOLInfo_all= {};
+
+                //今日到假未到岗人员表格初始化
+                var currentEOLInfo_all_table =  table.render({
                     elem: '#currentEOLInfo_all'
                     ,url:'askForLeaveServlet?action=queryAllCurrentEOLPerson'
-                    //,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
-                    ,title: '待销假信息表'
+                    ,toolbar: '#toolbar_top_currentEOLInfo_all'
+                    ,defaultToolbar: []
+                    ,title: '所有到假未到岗人员信息表'
                     ,request: {
                         pageName: 'curr' //页码的参数名称，默认：page
                         ,limitName: 'nums' //每页数据量的参数名，默认：limit
@@ -371,6 +433,16 @@
                         ,{fixed: 'right', title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_all',width: 250}
                     ]]
                     ,page : true
+                    ,parseData: function(res) { //res 即为原始返回的数据
+                        //将本次查询的数据赋值给导出数据指定的变量
+                        exportData_currentEOLInfo_all = res.count;
+                        return {
+                            "code": res.code, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "count": res.count.length, //解析数据长度
+                            "data": res.data //解析数据列表
+                        };
+                    }
                     /* ,done : function(res, curr, count){
                          tableList=res.data;
                          $('th').css({'background-color': '#FF5722',color:"#FAFAFA"})
@@ -530,7 +602,7 @@
                             layer.alert("当前日期小于起始日期，不能销假");
                         }
                     }
-                    else if(obj.event === "sendAlertSMS") {
+                   /* else if(obj.event === "sendAlertSMS") {
                         //弹出提示框
                         layer.load(1);
                         //发送提醒短信
@@ -568,7 +640,33 @@
                                 layer.closeAll('loading');
                             }
                         });
-                    }
+                    }*/
+                });
+
+                //头工具栏事件
+                table.on('toolbar(currentEOLInfo_all)', function(obj){
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    switch(obj.event){
+                        case 'batchAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        case 'batchNotAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        //导出数据
+                        case 'export':
+                            console.log()
+                            table.exportFile(currentEOLInfo_all_table.config.id, exportData_currentEOLInfo_all, 'xls');
+                            break;
+                    };
                 });
 
             });

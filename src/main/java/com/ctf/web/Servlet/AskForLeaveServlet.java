@@ -78,7 +78,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryCurrentEOLPerson(null,null).size());
+        map.put("count",askForLeaveService.queryCurrentEOLPerson(null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -117,7 +117,7 @@ public class AskForLeaveServlet extends BaseServlet{
         map.put("code",0);
         map.put("msg","");
         map.put("count",askForLeaveService
-                .queryAllCurrentEOLPerson(null,null).size());
+                .queryAllCurrentEOLPerson(null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -164,7 +164,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeLeaveInfos(dataMap).size());
+        map.put("count",askForLeaveService.querySomeLeaveInfos(dataMap));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -189,7 +189,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryAllLeaveInfo().size());
+        map.put("count",askForLeaveService.queryAllLeaveInfo());
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -212,7 +212,7 @@ public class AskForLeaveServlet extends BaseServlet{
         response.getWriter().write(result_json);
     }
 
-   //待审核_同意功能
+    //##待审核_同意功能
     public void agreeLeave(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -228,7 +228,7 @@ public class AskForLeaveServlet extends BaseServlet{
         response.getWriter().write(result_json);
     }
 
-   ///待审核_不同意功能
+    //待审核_不同意功能
     public void notAgreeLeave(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -324,7 +324,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryALLResumeWorkInfo().size());
+        map.put("count",askForLeaveService.queryALLResumeWorkInfo());
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -353,7 +353,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeResumeWorkInfo(dataMap).size());
+        map.put("count",askForLeaveService.querySomeResumeWorkInfo(dataMap));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -362,7 +362,7 @@ public class AskForLeaveServlet extends BaseServlet{
         response.getWriter().write(result_json);
     }
 
-    //处理销假到岗
+    //##处理销假到岗
     public void resumeWork(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -456,7 +456,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryALLHistoryInfo(user).size());
+        map.put("count",askForLeaveService.queryALLHistoryInfo(user));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -485,7 +485,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeHistoryInfo(dataMap).size());
+        map.put("count",askForLeaveService.querySomeHistoryInfo(dataMap));
         map.put("data",hashMaps);
 
         //以json格式返回给前端

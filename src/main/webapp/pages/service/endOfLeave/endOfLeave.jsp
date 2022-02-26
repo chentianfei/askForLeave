@@ -269,6 +269,15 @@
             <button type="button" class="layui-btn layui-btn-xs" lay-event="endOfLeave_quickly" id="endOfLeave_quickly">快速销假</button>
         </script>
 
+        <%--表格上方工具栏--%>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+                <button class="layui-btn layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
+            </div>
+        </script>
+
         <script>
             layui.use(['table', 'upload', 'laydate',  'form', 'layer','common'], function () {
                 var layer = layui.layer
@@ -302,10 +311,14 @@
                 // 初始化请假种类复选框数据
                 bindLeaveTypeCheckboxData();
 
-                table.render({
+                //定义导出报表的数据
+                let exportData = {};
+
+                var resumeWorkInfo_query = table.render({
                     elem: '#resumeWorkInfo'
                     ,url:'askForLeaveServlet?action=queryALLResumeWorkInfo'
-                    //,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+                    ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+                    ,defaultToolbar: []
                     ,title: '待销假信息表'
                     ,request: {
                         pageName: 'curr' //页码的参数名称，默认：page
@@ -333,10 +346,108 @@
                         ,{fixed: 'right', title:'操作', align:'center',id:"toolbar", toolbar: '#audit',width: 165}
                     ]]
                     ,page : true
+                    ,parseData: function(res) { //res 即为原始返回的数据
+                        //将本次查询的数据赋值给导出数据指定的变量
+                        exportData = res.count;
+                        return {
+                            "code": res.code, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "count": res.count.length, //解析数据长度
+                            "data": res.data //解析数据列表
+                        };
+                    }
                 });
 
+                //监听查询区域的提交按钮事件
+                form.on('submit(resumeWorkInfoQuery)',function (data) {
+                    //获取当前页码
+                    var currentPage = $(".layui-laypage-skip .layui-input").val();
+                    //获取数据
+                    const sourceData = data.field;
+                    //人员基本信息
+                    const name = sourceData.name;
+                    const level = sourceData.level;
+                    const office = sourceData.office;
+                    const phone = sourceData.phone;
+                    const area_class = sourceData.area_class;
+                    //解析解析框中的地址内容
+                    const city = sourceData.city;
+                    const district = sourceData.district;
+                    const province = sourceData.province;
+                    // 通过地址code码获取地址名称
+                    var address = common.getCity({
+                        province,
+                        city,
+                        district
+                    });
+                    let provinceName = address.provinceName;
+                    let cityName = address.cityName;
+                    let districtName = address.districtName;
+                    //解析解析框中的地址内容
+                    const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
 
+                    //请假信息
+                    const depart_location = sourceData.depart_location;
+                    const arrive_location = sourceData.arrive_location;
+                    const approver = sourceData.approver;
+                    //const leave_type = sourceData.leave_type;
 
+                    //处理请假类型复选框数据并封装
+                    var leave_typeSource = [];
+                    $("#leave_type>div.layui-form-checked").each(function(index,ele){
+                        leave_typeSource.push($(ele).find("span").html());
+                    })
+
+                    const end_date_maybe_max = sourceData.end_date_maybe_max;
+                    const end_date_maybe_min = sourceData.end_date_maybe_min;
+                    const start_date_max = sourceData.start_date_max;
+                    const start_date_min = sourceData.start_date_min;
+
+                    table.reload('resumeWorkInfo', {
+                        url: 'askForLeaveServlet?action=querySomeResumeWorkInfo'
+                        ,where: {
+                            //设定异步数据接口的额外参数
+                            //人员信息
+                            name : name,
+                            nativePlace:nativePlace,
+                            office : office,
+                            area_class : area_class,
+                            level : level,
+                            phone : phone,
+                            //请假信息
+                            depart_location : depart_location,
+                            arrive_location : arrive_location,
+                            approver : approver,
+                            leave_type : leave_typeSource.toLocaleString(),
+                            end_date_maybe_max : end_date_maybe_max,
+                            end_date_maybe_min : end_date_maybe_min,
+                            start_date_max : start_date_max,
+                            start_date_min : start_date_min
+                        }
+                        ,page:true
+                        ,request: {
+                            pageName: 'curr' //页码的参数名称，默认：page
+                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                        }
+                        ,page: {
+                            curr: currentPage //重新从第 1 页开始
+                        }
+                        ,parseData: function(res) { //res 即为原始返回的数据
+                            //将本次查询的数据赋值给导出数据指定的变量
+                            exportData = res.count;
+                            return {
+                                "code": res.code, //解析接口状态
+                                "msg": res.msg, //解析提示文本
+                                "count": res.count.length, //解析数据长度
+                                "data": res.data //解析数据列表
+                            };
+                        }
+                    });
+
+                    return false;
+                });
+
+                //行工具栏事件
                 table.on('tool(resumeWorkInfo)', function (obj) {
                     var data = obj.data;
 
@@ -492,83 +603,29 @@
                     }
                 });
 
-                //监听查询区域的提交按钮事件
-                form.on('submit(resumeWorkInfoQuery)',function (data) {
-                    //获取当前页码
-                    var currentPage = $(".layui-laypage-skip .layui-input").val();
-                    //获取数据
-                    const sourceData = data.field;
-                    //人员基本信息
-                    const name = sourceData.name;
-                    const level = sourceData.level;
-                    const office = sourceData.office;
-                    const phone = sourceData.phone;
-                    const area_class = sourceData.area_class;
-                    //解析解析框中的地址内容
-                    const city = sourceData.city;
-                    const district = sourceData.district;
-                    const province = sourceData.province;
-                    // 通过地址code码获取地址名称
-                    var address = common.getCity({
-                        province,
-                        city,
-                        district
-                    });
-                    let provinceName = address.provinceName;
-                    let cityName = address.cityName;
-                    let districtName = address.districtName;
-                    //解析解析框中的地址内容
-                    const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
-
-                    //请假信息
-                    const depart_location = sourceData.depart_location;
-                    const arrive_location = sourceData.arrive_location;
-                    const approver = sourceData.approver;
-                    //const leave_type = sourceData.leave_type;
-
-                    //处理请假类型复选框数据并封装
-                    var leave_typeSource = [];
-                    $("#leave_type>div.layui-form-checked").each(function(index,ele){
-                        leave_typeSource.push($(ele).find("span").html());
-                    })
-
-                    const end_date_maybe_max = sourceData.end_date_maybe_max;
-                    const end_date_maybe_min = sourceData.end_date_maybe_min;
-                    const start_date_max = sourceData.start_date_max;
-                    const start_date_min = sourceData.start_date_min;
-
-                    table.reload('resumeWorkInfo', {
-                        url: 'askForLeaveServlet?action=querySomeResumeWorkInfo'
-                        ,where: {
-                            //设定异步数据接口的额外参数
-                            //人员信息
-                            name : name,
-                            nativePlace:nativePlace,
-                            office : office,
-                            area_class : area_class,
-                            level : level,
-                            phone : phone,
-                            //请假信息
-                            depart_location : depart_location,
-                            arrive_location : arrive_location,
-                            approver : approver,
-                            leave_type : leave_typeSource.toLocaleString(),
-                            end_date_maybe_max : end_date_maybe_max,
-                            end_date_maybe_min : end_date_maybe_min,
-                            start_date_max : start_date_max,
-                            start_date_min : start_date_min
-                        }
-                        ,page:true
-                        ,request: {
-                            pageName: 'curr' //页码的参数名称，默认：page
-                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
-                        }
-                        ,page: {
-                            curr: currentPage //重新从第 1 页开始
-                        }
-                    });
-
-                    return false;
+                //头工具栏事件
+                table.on('toolbar(resumeWorkInfo)', function(obj){
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    switch(obj.event){
+                        case 'batchAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        case 'batchNotAgree':
+                            var data = checkStatus.data;
+                            $.each(data,function (index,ele) {
+                                console.log(ele.serialnumber);
+                            })
+                            //layer.alert(JSON.stringify(data));
+                            break;
+                        //导出数据
+                        case 'export':
+                            table.exportFile(resumeWorkInfo_query.config.id, exportData, 'xls');
+                            break;
+                    };
                 });
             });
 

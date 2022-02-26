@@ -966,7 +966,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         //3.短信发送业务
         //3.1 查询发送对象代码
-        int doesSendSelfCode = SendMsg.querySendMsgObjCode(SendMsg.DOESSENDMSGTOSELF);
+        /*int doesSendSelfCode = SendMsg.querySendMsgObjCode(SendMsg.DOESSENDMSGTOSELF);
         int doesSendLeaderCode = SendMsg.querySendMsgObjCode(SendMsg.DOESSENDMSGTOLEADER);
 
         if(doesSendLeaderCode == 1){
@@ -977,7 +977,8 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         if(doesSendSelfCode == 1){
             //3.1.2 若显示需要给本人发送短信，则调用sendMsgToSelfBySerialnumberWhenResumeWork(int serialnumber)
             sendMsgToSelfBySerialnumberWhenResumeWork(serialnumber);
-        }
+        }*/
+
         //3.2 完成上述操作后返回代码1
         return 1;
     }
@@ -1044,7 +1045,8 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         if(askForLeaveDao.insertAResumeWorkInfo(serialnumber) == 1){
             //2.修改请假审批表中的审批状态为同意
             int updateCounts =askForLeaveDao.updateApprovalStatusAgree(serialnumber);
-            //3.根据发送短信指向（doesSendLeader、doesSendSelf）的代码，给本人和领导发送短信
+
+           /* //3.根据发送短信指向（doesSendLeader、doesSendSelf）的代码，给本人和领导发送短信
             //获取当前发送短信的对象代码
             int doesSendSelfCode = SendMsg.querySendMsgObjCode(SendMsg.DOESSENDMSGTOSELF);
             int doesSendLeaderCode = SendMsg.querySendMsgObjCode(SendMsg.DOESSENDMSGTOLEADER);
@@ -1059,7 +1061,8 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             if(doesSendLeaderCode == 1){
                 sendMsgToLeaderBySerialnumberWhenAskForLeave(serialnumber);
                 //日志记录
-            }
+            }*/
+
         }else {
             return -4;
         }

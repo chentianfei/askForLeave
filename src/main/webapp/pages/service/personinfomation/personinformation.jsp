@@ -202,6 +202,7 @@
         <%--表格上方工具栏--%>
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-primary layui-border-green layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
                 <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增人员</button>
                 <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
                 <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
@@ -247,16 +248,26 @@
                 var laydate = layui.laydate;
                 var laypage = layui.laypage;
                 var upload = layui.upload;
+                var excel=layui.excel
 
                 bindLevelSelectData();
                 bindNationSelectData();
                 bindOfficeSelectData();
+                laydate.render({
+                    elem: '#birthDate'//指定元素
+                    ,type:'date'
+                    ,format: 'yyyy-MM-dd'
+                });
 
-                //表格数据读取参数
+                //定义导出报表的数据
+                let exportData = {};
+
+                //表格初始数据读取参数
                 var personinformation_query = table.render({
                     elem: '#personinformation'
                     ,url:'personServlet?action=queryAllPerson'
                     ,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
+                    ,defaultToolbar: []
                     ,title: '人员信息表'
                     ,request: {
                         pageName: 'curr' //页码的参数名称，默认：page
@@ -278,7 +289,89 @@
                         ,{field:'allow_Leave_Days', title:'允许休假天数',align:"center",width: 120}
                         ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:220}
                     ]]
-                    ,page: true
+                    ,page:true
+                    ,parseData: function(res) { //res 即为原始返回的数据
+                        //将本次查询的数据赋值给导出数据指定的变量
+                        exportData = res.count;
+                        return {
+                            "code": res.code, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "count": res.count.length, //解析数据长度
+                            "data": res.data //解析数据列表
+                        };
+                    }
+                });
+
+                //监听查询模块提交事件
+                form.on('submit(person_info_query)', function(data){
+                    var sourceData = data.field;
+
+                    var area_class = sourceData.area_class;
+                    var birthDate = sourceData.birthDate;
+                    var level = sourceData.level;
+                    var name = sourceData.name;
+                    var nation = sourceData.nation;
+                    var office = sourceData.office;
+                    var phone = sourceData.phone;
+                    var sex = sourceData.sex;
+                    var post = sourceData.post;
+
+                    //解析解析框中的地址内容
+                    var city = sourceData.city;
+                    var district = sourceData.district;
+                    var province = sourceData.province;
+                    // 通过地址code码获取地址名称
+                    var address = common.getCity({
+                        province,
+                        city,
+                        district
+                    });
+                    var provinceName = address.provinceName;
+                    var cityName = address.cityName;
+                    var districtName = address.districtName;
+
+                    //解析解析框中的地址内容
+                    var nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
+
+                    //重载表格
+                    personinformation_query.reload({
+                        url: 'personServlet?action=querySomePersons'
+                        ,where: {
+                            //设定异步数据接口的额外参数
+                            name : name,
+                            sex : sex,
+                            nation : nation,
+                            birthDate : birthDate,
+                            nativePlace:nativePlace,
+                            office : office,
+                            post : post,
+                            area_class : area_class,
+                            level : level,
+                            phone : phone
+                        }
+                        ,page:true
+                        ,request: {
+                            pageName: 'curr' //页码的参数名称，默认：page
+                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                        }
+                        ,page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        ,parseData: function(res) { //res 即为原始返回的数据
+                            //将本次查询的数据赋值给导出数据指定的变量
+                            exportData = res.count;
+                            return {
+                                "code": res.code, //解析接口状态
+                                "msg": res.msg, //解析提示文本
+                                "count": res.count.length, //解析数据长度
+                                "data": res.data //解析数据列表
+                            };
+                        }
+                    });
+
+                    $("#person_info_query_reset").click();
+
+                    return false;
                 });
 
                 /*设定表格工具事件*/
@@ -316,12 +409,14 @@
                                     //return false 开启该代码可禁止点击该按钮关闭
                                 }
                             });
-
                             break;
                         case 'batchAddPerson':
                             /*点击批量添加人员按钮后的操作*/
                             break;
                         case 'uploadBtn':
+                            break;
+                        case 'export':
+                            table.exportFile(personinformation_query.config.id, exportData, 'xls');
                             break;
                     };
                 });
@@ -590,6 +685,7 @@
                     }
                 });
 
+                //上传数据
                 upload.render({
                     elem: '#batchAddPerson' //绑定元素
                     ,method: 'POST'
@@ -665,88 +761,6 @@
                         }
                     }
                 });
-
-                laydate.render({
-                    elem: '#birthDate'//指定元素
-                    ,type:'date'
-                    ,format: 'yyyy-MM-dd'
-                });
-
-                //监听查询模块提交事件
-                //用于保存导出时的查询条件
-                var name;
-                var sex;
-                var nation;
-                var nation;
-                var birthDate;
-                var nativePlace;
-                var office;
-                var post;
-                var area_class;
-                var level;
-                var phone;
-
-                form.on('submit(person_info_query)', function(data){
-                    var sourceData = data.field;
-
-                    area_class = sourceData.area_class;
-                    birthDate = sourceData.birthDate;
-                    level = sourceData.level;
-                    name = sourceData.name;
-                    nation = sourceData.nation;
-                    office = sourceData.office;
-                    phone = sourceData.phone;
-                    sex = sourceData.sex;
-                    post = sourceData.post;
-
-                    //解析解析框中的地址内容
-                    var city = sourceData.city;
-                    var district = sourceData.district;
-                    var province = sourceData.province;
-                    // 通过地址code码获取地址名称
-                    var address = common.getCity({
-                        province,
-                        city,
-                        district
-                    });
-                    var provinceName = address.provinceName;
-                    var cityName = address.cityName;
-                    var districtName = address.districtName;
-
-                    //解析解析框中的地址内容
-                    nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
-
-                    //重载表格
-                    personinformation_query.reload({
-                        url: 'personServlet?action=querySomePersons'
-                        ,where: {
-                            //设定异步数据接口的额外参数
-                            name : name,
-                            sex : sex,
-                            nation : nation,
-                            birthDate : birthDate,
-                            nativePlace:nativePlace,
-                            office : office,
-                            post : post,
-                            area_class : area_class,
-                            level : level,
-                            phone : phone
-                        }
-                        ,page:true
-                        ,request: {
-                            pageName: 'curr' //页码的参数名称，默认：page
-                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
-                        }
-                        ,page: {
-                            curr: 1 //重新从第 1 页开始
-                        }
-                    });
-
-                    $("#person_info_query_reset").click();
-
-                    return false;
-                });
-
 
             });
         </script>
