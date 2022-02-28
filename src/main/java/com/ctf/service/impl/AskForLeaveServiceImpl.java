@@ -58,7 +58,11 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
                     String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
 
-                     //发送前保存时间，写入日志
+                    for(String param:templateParam){
+                        System.out.println(param);
+                    }
+
+                    //发送前保存时间，写入日志
                     Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
                     //发送短信，并获取响应对象
                     SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(
@@ -277,6 +281,10 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     templateParamList.add(new SimpleDateFormat(DATEFORMAT_YMD).format(leaveInfo.getEnd_date_maybe()));
 
                     String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
+
+                    for(String param:templateParam){
+                        System.out.println(param);
+                    }
 
                     //发送前保存时间，写入日志
                     Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
