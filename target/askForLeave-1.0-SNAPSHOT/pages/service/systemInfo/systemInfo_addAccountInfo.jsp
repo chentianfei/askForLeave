@@ -86,7 +86,32 @@
         var index = parent.layer.getFrameIndex(window.name);
 
         form.render();
-        bindRoleInfoSelectData();
+        layui.use(['laydate','form','common'], function() {
+            var form = layui.form;
+            var $ = layui.jquery;
+            $.ajax({
+                url: 'systemDataServlet?action=queryRoleInfo',
+                dataType: 'json',
+                type: 'post',
+                success: function (Data) {
+                    var sourceData = Data.data;
+                    if (sourceData !== null) {
+                        $("#role").empty();
+                        $("#role").append("<option value=''>请选择</option>");
+                        $.each(sourceData, function (index, item) {
+                           if(item.role_name!="超级管理员"){
+                               $('#role').append(new Option(item.role_name+"-"+item.role_description,
+                                   item.id));
+                           }
+                        });
+                    } else {
+                        $("#role").append(new Option("暂无数据", ""));
+                    }
+                    //重新渲染
+                    form.render("select");
+                }
+            });
+        });
         bindOfficeSelectData();
 
         form.on('submit(addAAccountSubmit)', function(data){

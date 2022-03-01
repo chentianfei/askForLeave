@@ -61,7 +61,12 @@
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly_today" id="endOfLeave_quickly_today">快速销假</button>
 
             {{# if(d.send_alertsms_count < 1){ }}
-            <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS_today" id="sendAlertSMS_today">发送提醒短信</button>
+            <button type="button"
+                    class="layui-btn layui-btn-xs layui-btn-danger layui-btn-radius"
+                    lay-event="sendAlertSMS_today"
+                    id="sendAlertSMS_today">
+                发送提醒短信
+            </button>
             {{#  } }}
 
             {{# if(d.send_alertsms_count >= 1){ }}
@@ -75,11 +80,20 @@
             <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly" id="endOfLeave_quickly">快速销假</button>
 
             {{# if(d.send_alertsms_count < 1){ }}
-                <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="sendAlertSMS" id="sendAlertSMS">发送提醒短信</button>
+                <button type="button"
+                        class="layui-btn layui-btn-xs layui-btn-danger layui-btn-radius"
+                        lay-event="sendAlertSMS"
+                        id="sendAlertSMS">
+                    发送提醒短信
+                </button>
             {{#  } }}
 
             {{# if(d.send_alertsms_count >= 1){ }}
-                <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled" disabled="disabled">发送提醒短信</button>
+                <button type="button"
+                        class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled "
+                        disabled="disabled">
+                    发送提醒短信
+                </button>
             {{#  } }}
         </script>
 
@@ -130,6 +144,7 @@
                         ,{field:'start_date',title:'开始日期',align:'center',width:140}
                         ,{field:'leave_days_projected', title:'请假天数', align:'center',width:90}
                         ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
+                        ,{title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_today',width: 250}
                         ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:200}
                         ,{field:'leave_reason', title:'请假事由', align:'center',width:160}
                         ,{field:'approver', title:'批准人', align:'center',width:100}
@@ -137,7 +152,6 @@
                         ,{field:'arrive_location', title:'到达地', align:'center',width:130}
                         ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
                         ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
-                        ,{fixed: 'right', title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_today',width: 250}
                     ]]
                     ,page : true
                    /* ,done : function(res, curr, count){
@@ -191,8 +205,8 @@
                                                     obj.del();
                                                     layer.msg('销假成功', {icon: 1,time: 1000});
                                                     //重载表格
-                                                    table.reload('resumeWorkInfo', {
-                                                        url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
+                                                    table.reload('currentEOLInfo_today', {
+                                                        url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
                                                         ,page: {
                                                             curr: currentPage//重新从第 1 页开始
                                                         }
@@ -276,8 +290,8 @@
                                         obj.del();
                                         layer.msg('销假成功', {icon: 1,time: 1000});
                                         //重载表格
-                                        table.reload('resumeWorkInfo', {
-                                            url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
+                                        table.reload('currentEOLInfo_today', {
+                                            url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
                                             ,page: {
                                                 curr: currentPage//重新从第 1 页开始
                                             }
@@ -315,7 +329,7 @@
                                 layer.closeAll('loading');
                                 if(result.code="ok"){
                                     layer.msg('发送成功', {icon: 1,time: 1000});
-                                    table.reload('personinformation', {
+                                    table.reload('currentEOLInfo_today', {
                                         url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
                                         ,page: {
                                             curr: currentPage //重新从第 1 页开始
@@ -353,25 +367,25 @@
                     ,limits:[5,10,15]
                     , cols: [[
                         {field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
-                        ,{field:'name', title:'姓名', align:'center',width:110}
-                        ,{field:'office', title:'工作单位', align:'center',width:210}
-                        ,{field:'post', title:'现任职务', align:'center',width:210}
-                        ,{field:'phone', title:'联系电话', align:'center',width:130}
-                        ,{field:'leave_type', title:'请假类型', align:'center',width:110}
+                        ,{field:'name', title:'姓名',align:'center',width:110}
+                        ,{field:'office', title:'工作单位',align:'center',width:210}
+                        ,{field:'post', title:'现任职务',align:'center',width:210}
+                        ,{field:'phone', title:'联系电话',align:'center',width:130}
+                        ,{field:'leave_type', title:'请假类型',align:'center',width:110}
                         ,{field:'start_date',title:'开始日期',align:'center',width:140}
-                        ,{field:'leave_days_projected', title:'请假天数', align:'center',width:90}
+                        ,{field:'leave_days_projected', title:'请假天数',align:'center',width:90}
                         ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
+                        ,{title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_all',width: 250}
                         ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:200}
-                        ,{field:'leave_reason', title:'请假事由', align:'center',width:160}
+                        ,{field:'leave_reason', title:'请假事由',align:'center',width:160}
                         ,{field:'approver', title:'批准人', align:'center',width:100}
-                        ,{field:'depart_location', title:'出发地', align:'center',width:130}
-                        ,{field:'arrive_location', title:'到达地', align:'center',width:130}
-                        ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
-                        ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
-                        ,{fixed: 'right', title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_all',width: 250}
+                        ,{field:'depart_location', title:'出发地',align:'center',width:130}
+                        ,{field:'arrive_location', title:'到达地',align:'center',width:130}
+                        ,{field:'start_leave_remark', title:'请假备注',align:'center',width:150}
+                        ,{field:'start_leave_operator', title:'请假操作者',align:'center',width:170}
                     ]]
                     ,page : true
-                    /* ,done : function(res, curr, count){
+                    /*,done : function(res, curr, count){
                          tableList=res.data;
                          $('th').css({'background-color': '#FF5722',color:"#FAFAFA"})
                      }*/
@@ -422,8 +436,8 @@
                                                     obj.del();
                                                     layer.msg('销假成功', {icon: 1,time: 1000});
                                                     //重载表格
-                                                    table.reload('resumeWorkInfo', {
-                                                        url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
+                                                    table.reload('currentEOLInfo_all', {
+                                                        url: 'askForLeaveServlet?action=queryAllCurrentEOLPerson'
                                                         ,page: {
                                                             curr: currentPage//重新从第 1 页开始
                                                         }
@@ -507,8 +521,8 @@
                                         obj.del();
                                         layer.msg('销假成功', {icon: 1,time: 1000});
                                         //重载表格
-                                        table.reload('resumeWorkInfo', {
-                                            url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
+                                        table.reload('currentEOLInfo_all', {
+                                            url: 'askForLeaveServlet?action=queryAllCurrentEOLPerson'
                                             ,page: {
                                                 curr: currentPage//重新从第 1 页开始
                                             }
@@ -546,7 +560,7 @@
                                 layer.closeAll('loading');
                                 if(result.code="ok"){
                                     layer.msg('发送成功', {icon: 1,time: 1000});
-                                    table.reload('personinformation', {
+                                    table.reload('currentEOLInfo_all', {
                                         url: 'askForLeaveServlet?action=queryAllCurrentEOLPerson'
                                         ,page: {
                                             curr: currentPage //重新从第 1 页开始
