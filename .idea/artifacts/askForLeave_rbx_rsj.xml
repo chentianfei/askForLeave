@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="war" name="askForLeave_rbx_rsj">
-    <output-path>$PROJECT_DIR$/out/artifacts/rbx_rsj</output-path>
+    <output-path>$PROJECT_DIR$</output-path>
     <root id="archive" name="askForLeave_rbx_rsj.war">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
