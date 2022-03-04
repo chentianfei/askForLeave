@@ -216,7 +216,7 @@
             {{# if(d.leader.length === 0){ }}
             <a type="button" id="bindLeader"
                class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
-               lay-event="bindLeader">
+               lay-event="showRelatedLeader">
                 暂未绑定领导
             </a>
             {{#  } }}
