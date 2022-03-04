@@ -2,7 +2,6 @@
   <artifact type="war" name="askForLeave">
     <output-path>$PROJECT_DIR$/out/artifacts/zbx-zzb</output-path>
     <root id="archive" name="askForLeave.war">
-      <element id="artifact" artifact-name="askForLeave:war exploded" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="askForLeave" />
