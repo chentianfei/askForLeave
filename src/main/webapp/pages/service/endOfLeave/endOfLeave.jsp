@@ -109,16 +109,6 @@
                                                             </select>
                                                         </div>
                                                     </div>
-
-                                                    <%--请假种类--%>
-                                                    <div class="layui-inline">
-                                                        <label class="layui-form-label">请假种类</label>
-                                                        <div class="layui-input-block" id="leave_type" ></div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="layui-form-item">
                                                     <%--出发地--%>
                                                     <div class="layui-inline">
                                                         <label class="layui-form-label" style="width: 100px">出发地</label>
@@ -142,18 +132,19 @@
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                    <%--假期类型--%>
-                                                    <%-- <div class="layui-inline">
-                                                         <label class="layui-form-label"
-                                                                style="width: 100px">请假种类</label>
-                                                         <div class="layui-input-inline" style="width: 150px">
-                                                             <select id="leave_type" name="leave_type"  lay-search="">
-                                                                 <option value=""></option>
-                                                             </select>
-                                                         </div>
-                                                     </div>--%>
+                                                <div class="layui-form-item">
+                                                    <%--请假种类--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label">请假种类</label>
+                                                        <div class="layui-input-block" id="leave_type" ></div>
+                                                    </div>
 
+                                                </div>
+
+                                                <%--带范围的选择区域--%>
+                                                <div class="layui-form-item">
 
                                                     <%--批准人--%>
                                                     <div class="layui-inline">
@@ -166,11 +157,6 @@
                                                                    class="layui-input">
                                                         </div>
                                                     </div>
-
-                                                </div>
-
-                                                <%--带范围的选择区域--%>
-                                                <div class="layui-form-item">
 
                                                     <%--开始时间 start_date--%>
                                                     <div class="layui-inline">

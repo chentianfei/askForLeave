@@ -36,6 +36,18 @@
                     <li class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
+                            <h3 class="layui-timeline-title">2022年3月4日</h3>
+                            <p>优化与修复</p>
+                            <ul>
+                                <li>修复请假操作中无法对较大数据进行登记的问题</li>
+                                <li>优化了绑定领导的操作逻辑</li>
+                                <li>对“待审批信息查询”、“待销假信息查询”、“历史请销假信息查询”页面布局进行了优化</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="layui-timeline-item">
+                        <i class="layui-icon layui-timeline-axis"></i>
+                        <div class="layui-timeline-content layui-text">
                             <h3 class="layui-timeline-title">2022年3月1日</h3>
                             <p>优化与修复</p>
                             <ul>

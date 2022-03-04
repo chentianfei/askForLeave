@@ -530,6 +530,9 @@
                                         //点击了继续添加
                                         //关闭消息提示
                                         layer.close(index);
+                                        //撤销样式
+                                        $('#addALeaveInfoSubmit').removeClass(DISABLED);
+                                        $('#addALeaveInfoSubmit').removeAttr('disabled');
                                         //点击重置按钮实现重置
                                         $("#resetBtn").click();
                                     }
