@@ -28,7 +28,7 @@
                 <div class="layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-card">
-                            <div class="layui-card-header layui-bg-blue">历史请假记录查询</div>
+                            <div class="layui-card-header layui-bg-blue">历史请销假信息查询</div>
                             <div class="layui-card-body">
                                 <%--查询表单开始--%>
                                 <form class="layui-form layui-form-pane">

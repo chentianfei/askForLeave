@@ -35,7 +35,7 @@
                 <div class="layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-card">
-                            <div class="layui-card-header layui-bg-blue">今日到期未销假人员信息</div>
+                            <div class="layui-card-header layui-bg-blue">待审批信息查询</div>
                             <div class="layui-card-body">
                                 <%--查询表单开始--%>
                                 <form class="layui-form layui-form-pane">
