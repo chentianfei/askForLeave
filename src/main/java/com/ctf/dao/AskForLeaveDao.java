@@ -102,8 +102,8 @@ public class AskForLeaveDao extends BaseDao {
                 //籍贯
                 case "nativePlace":
                     if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and nativePlace = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
                 //工作单位
@@ -308,11 +308,11 @@ public class AskForLeaveDao extends BaseDao {
                         personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
-                //籍贯
+  //籍贯
                 case "nativePlace":
                     if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and nativePlace = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
                 //工作单位
@@ -577,11 +577,11 @@ public class AskForLeaveDao extends BaseDao {
                         personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
-                //籍贯
+  //籍贯
                 case "nativePlace":
                     if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and nativePlace = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
                 //工作单位
@@ -786,11 +786,11 @@ public class AskForLeaveDao extends BaseDao {
                         personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
-                //籍贯
+  //籍贯
                 case "nativePlace":
                     if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and nativePlace = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
                 //工作单位
@@ -1011,6 +1011,434 @@ public class AskForLeaveDao extends BaseDao {
         return queryForList(LeaveInfo.class,sql.toString(),parmas.toArray());
     }
 
+    //按条件查询今日应到假人员信息
+    public List<LeaveInfo> querySomeCurrentEOLPerson(Map<String, String[]> map,Integer pageNo, Integer pageSize) throws ParseException {
+        //有人的属性时，先查询并获取人员编号集合，人员编号整体作为查询的条件之一
+        //没有人的属性时，直接根据请假信息查询
+
+        //查询前设置
+        //本方法日期转换格式
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+        //初始化日期数据
+        Date start_date_min = null;
+        Date start_date_max = null;
+        /*----------------------------------------------------------------------------------------*/
+        //查询请假信息的基础语句
+        StringBuilder leaveInfoSQL = new StringBuilder("select * from resume_work where end_date_maybe = ? ");
+        //用于保存可变参数
+        List<Object> leaveInfoSQLparmas = new ArrayList<Object>();
+        //设置初始参数：以当日为基本查询条件
+        String end_date_maybe = simpleDateFormat.format(new Date());
+        leaveInfoSQLparmas.add(end_date_maybe);
+
+        //查询人员信息的基础语句
+        StringBuilder personInfoSQL = new StringBuilder("select person_id from person_info where 1=1 ");
+        String name;
+        String nativePlace;
+        String phone;
+        String level;
+        String area_class;
+        String office;
+        List<Object> personInfoSQLparmas = new ArrayList<Object>();
+        /*----------------------------------------------------------------------------------------*/
+        //遍历并解析map数据
+        //1.获取人的信息
+        //获取符合条件的人员id：person_id
+        for(Map.Entry<String,String[]> m:map.entrySet()){
+            switch (m.getKey()){
+                //姓名
+                case "name":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and name like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //籍贯
+                case "nativePlace":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //工作单位
+                case "office":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and office = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //类区
+                case "area_class":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and area_class = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //职级
+                case "level":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and level = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //联系电话
+                case "phone":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and phone = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+            }
+        }
+        //根据人员基本信息获取符合条件的人员id集合：personIdList
+        List<Object> personIdList = queryForOneCol(personInfoSQL.toString(), personInfoSQLparmas.toArray());
+
+        //2.获取请假信息
+        for(Map.Entry<String,String[]> m:map.entrySet()){
+            switch (m.getKey()){
+                //人员编号:in(?)
+                //请假起始地
+                case "depart_location":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        leaveInfoSQL.append(" and depart_location like ?");
+                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //请假到达地
+                case "arrive_location":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        leaveInfoSQL.append(" and arrive_location like ?");
+                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //请假批准者
+                case "approver":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        leaveInfoSQL.append(" and approver like ?");
+                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //请假类型
+                case "leave_type":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        String[] leave_typeInfos = m.getValue()[0].trim().split(",");
+                        StringBuilder leave_type = new StringBuilder();
+                        int index = 0;
+                        for(String leave_typeInfo:leave_typeInfos){
+                            if(index == leave_typeInfos.length - 1){
+                                leave_type.append("'"+leave_typeInfo+"'");
+                            }else {
+                                leave_type.append("'"+leave_typeInfo+"',");
+                            }
+                            index++;
+                        }
+                        leaveInfoSQL.append(" and leave_type in("+leave_type+")");
+                    }
+                    break;
+                //请假开始时间最大值
+                case "start_date_max":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        start_date_max = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+                //请假开始时间最小值
+                case "start_date_min":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        start_date_min = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+            }
+
+        }
+        //处理请假起始日期
+        if(start_date_max == null && start_date_min != null){
+            //预计到岗日期有最小值无最大值，即查询大于等于的情况
+            leaveInfoSQL.append(" and start_date >= ?");
+            leaveInfoSQLparmas.add(start_date_min);
+        }
+        else if(start_date_max != null && start_date_min == null){
+            //预计到岗日期有最大值无最小值，即查询小于等于的情况
+            leaveInfoSQL.append(" and start_date <= ?");
+            leaveInfoSQLparmas.add(start_date_max);
+        }
+        else if(start_date_max != null && start_date_min != null){
+            //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
+            leaveInfoSQL.append(" and (start_date between ? and ?)");
+            leaveInfoSQLparmas.add(start_date_min);
+            leaveInfoSQLparmas.add(start_date_max);
+        }
+        //无需处理预计到岗时间，预计到岗时间固定为当天
+
+        //处理人员编号
+        if(personIdList.size() != 0){
+            //有人员的信息筛选过程，即选择了人员的基本信息
+            StringBuilder person_ids = new StringBuilder();
+            int index = 0;
+            for(Object o : personIdList){
+                if(index == personIdList.size() - 1){
+                    person_ids.append("'"+o+"'");
+                }else {
+                    person_ids.append("'"+o+"',");
+                }
+                index++;
+            }
+            leaveInfoSQL.append(" and person_id in("+person_ids+")");
+        }
+        else{
+            leaveInfoSQL.append(" and person_id = -1 ");
+        }
+
+        //设置排序规则
+        leaveInfoSQL.append(" order by end_date_maybe asc ");
+
+        //判断是否分页
+        if(pageNo!=null && pageSize!=null){
+            //需要分页
+            //分页参数：起始值
+            Integer start = (pageNo-1)*pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+
+            leaveInfoSQL.append(" limit ?,?");
+            leaveInfoSQLparmas.add(start);
+            leaveInfoSQLparmas.add(end);
+        }
+
+        return queryForList(LeaveInfo.class,
+                leaveInfoSQL.toString(),
+                leaveInfoSQLparmas.toArray());
+    }
+
+    //按条件查询所有到假未到岗人员
+    public List<LeaveInfo> querySomeAllCurrentEOLPerson(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException {
+        //有人的属性时，先查询并获取人员编号集合，人员编号整体作为查询的条件之一
+        //没有人的属性时，直接根据请假信息查询
+
+        //查询前设置
+        //本方法日期转换格式
+        SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
+        //初始化日期数据
+        Date start_date_min = null;
+        Date start_date_max = null;
+        Date end_date_maybe_min = null;
+        Date end_date_maybe_max = null;
+        /*----------------------------------------------------------------------------------------*/
+        //查询请假信息的基础语句
+        StringBuilder leaveInfoSQL = new StringBuilder("select * from resume_work " +
+                "where end_date_maybe < ? ");
+
+        //用于保存可变参数
+        List<Object> leaveInfoSQLparmas = new ArrayList<Object>();
+        //设置初始参数：以当日为基本查询条件
+        String end_date_maybe = simpleDateFormat.format(new Date());
+        leaveInfoSQLparmas.add(end_date_maybe);
+
+        //查询人员信息的基础语句
+        StringBuilder personInfoSQL = new StringBuilder("select person_id from person_info where 1=1 ");
+        String name;
+        String nativePlace;
+        String phone;
+        String level;
+        String area_class;
+        String office;
+        List<Object> personInfoSQLparmas = new ArrayList<Object>();
+        /*----------------------------------------------------------------------------------------*/
+        //遍历并解析map数据
+        //1.获取人的信息
+        //获取符合条件的人员id：person_id
+        for(Map.Entry<String,String[]> m:map.entrySet()){
+            switch (m.getKey()){
+                //姓名
+                case "name":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and name like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //籍贯
+                case "nativePlace":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //工作单位
+                case "office":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and office = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //类区
+                case "area_class":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and area_class = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //职级
+                case "level":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and level = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //联系电话
+                case "phone":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and phone = ?");
+                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                    }
+                    break;
+            }
+        }
+        //根据人员基本信息获取符合条件的人员id集合：personIdList
+        List<Object> personIdList = queryForOneCol(personInfoSQL.toString(), personInfoSQLparmas.toArray());
+
+        //2.获取请假信息
+        for(Map.Entry<String,String[]> m:map.entrySet()){
+            switch (m.getKey()){
+                //人员编号:in(?)
+                //请假起始地
+                case "depart_location":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        leaveInfoSQL.append(" and depart_location like ?");
+                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //请假到达地
+                case "arrive_location":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        leaveInfoSQL.append(" and arrive_location like ?");
+                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //请假批准者
+                case "approver":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        leaveInfoSQL.append(" and approver like ?");
+                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //请假类型
+                case "leave_type":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        String[] leave_typeInfos = m.getValue()[0].trim().split(",");
+                        StringBuilder leave_type = new StringBuilder();
+                        int index = 0;
+                        for(String leave_typeInfo:leave_typeInfos){
+                            if(index == leave_typeInfos.length - 1){
+                                leave_type.append("'"+leave_typeInfo+"'");
+                            }else {
+                                leave_type.append("'"+leave_typeInfo+"',");
+                            }
+                            index++;
+                        }
+                        leaveInfoSQL.append(" and leave_type in("+leave_type+")");
+                    }
+                    break;
+                //请假预计到岗时间最大值
+                case "end_date_maybe_max":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        end_date_maybe_max = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+                //请假预计到岗时间最小值
+                case "end_date_maybe_min":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        end_date_maybe_min = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+                //请假开始时间最大值
+                case "start_date_max":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        start_date_max = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+                //请假开始时间最小值
+                case "start_date_min":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        start_date_min = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+            }
+
+        }
+        //处理请假起始日期
+        if(start_date_max == null && start_date_min != null){
+            //预计到岗日期有最小值无最大值，即查询大于等于的情况
+            leaveInfoSQL.append(" and start_date >= ?");
+            leaveInfoSQLparmas.add(start_date_min);
+        }
+        else if(start_date_max != null && start_date_min == null){
+            //预计到岗日期有最大值无最小值，即查询小于等于的情况
+            leaveInfoSQL.append(" and start_date <= ?");
+            leaveInfoSQLparmas.add(start_date_max);
+        }
+        else if(start_date_max != null && start_date_min != null){
+            //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
+            leaveInfoSQL.append(" and (start_date between ? and ?)");
+            leaveInfoSQLparmas.add(start_date_min);
+            leaveInfoSQLparmas.add(start_date_max);
+        }
+        //处理预计到岗时间
+        if(end_date_maybe_max == null && end_date_maybe_min != null){
+            //预计到岗日期有最小值无最大值，即查询大于等于的情况
+            leaveInfoSQL.append(" and end_date_maybe >= ?");
+            leaveInfoSQLparmas.add(end_date_maybe_min);
+        }
+        else if(end_date_maybe_max != null && end_date_maybe_min == null){
+            //预计到岗日期有最大值无最小值，即查询小于等于的情况
+            leaveInfoSQL.append(" and end_date_maybe <= ?");
+            leaveInfoSQLparmas.add(end_date_maybe_max);
+        }
+        else if(end_date_maybe_max != null && end_date_maybe_min != null){
+            //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
+            leaveInfoSQL.append(" and (end_date_maybe between ? and ?)");
+            leaveInfoSQLparmas.add(end_date_maybe_min);
+            leaveInfoSQLparmas.add(end_date_maybe_max);
+        }
+
+        //处理人员编号
+        if(personIdList.size() != 0){
+            //有人员的信息筛选过程，即选择了人员的基本信息
+            StringBuilder person_ids = new StringBuilder();
+            int index = 0;
+            for(Object o : personIdList){
+                if(index == personIdList.size() - 1){
+                    person_ids.append("'"+o+"'");
+                }else {
+                    person_ids.append("'"+o+"',");
+                }
+                index++;
+            }
+            leaveInfoSQL.append(" and person_id in("+person_ids+")");
+        }
+        else{
+            leaveInfoSQL.append(" and person_id = -1 ");
+        }
+
+        //设置排序规则
+        leaveInfoSQL.append(" order by end_date_maybe asc ");
+
+        //判断是否分页
+        if(pageNo!=null && pageSize!=null){
+            //需要分页
+            //分页参数：起始值
+            Integer start = (pageNo-1)*pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+
+            leaveInfoSQL.append(" limit ?,?");
+            leaveInfoSQLparmas.add(start);
+            leaveInfoSQLparmas.add(end);
+        }
+
+        return queryForList(LeaveInfo.class,
+                leaveInfoSQL.toString(),
+                leaveInfoSQLparmas.toArray());
+    }
+
     //查询待销假记录表resume_work中指定数据并插入已销假数据表（历史请假记录）history_info及其备份表history_info_backups
     public int insertAHistoryInfo(Integer serialnumber,Integer leaveDaysActual,String end_leave_remarkSTR,
                                   Date end_date, String end_leave_operator){
@@ -1164,18 +1592,8 @@ public class AskForLeaveDao extends BaseDao {
         return queryForList(LeaveInfo.class,sql.toString(),parmas.toArray());
     }
 
-    //按条件查询所有历史请假记录_不分页
-    public List<LeaveInfo> querySomeHistoryInfo(Map<String, String[]> map) throws ParseException {
-        /*根据人员基本信息查询出符合条件的person_id
-        在approval表中查询符合这些person_id的leave_info
-        在这些已查询出来的leave_info中根据请假信息过滤有用信息并作分页显示
-        其中name作模糊查询
-        */
-
-        //String类型的数据，若前端有数据填写处，但是用户可能没填写数据，则该数据在trim后isEmpty == true，或该数据==""
-        //String类型的数据，若前端没有数据填写处，则该数据== null
-        //非String类型的数据，无论前端有无数据填写处，只要没有数据传过来，都是==null
-
+    //按条件查询所有历史请假记录
+    public List<LeaveInfo> querySomeHistoryInfo(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException {
         //遍历并解析map数据
         //初始化日期数据
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1183,6 +1601,8 @@ public class AskForLeaveDao extends BaseDao {
         Date start_date_min = null;
         Date start_date_max = null;
         Date end_date_maybe_min = null;
+        Date end_date_max = null;
+        Date end_date_min = null;
 
         //初始化人员基本信息数据
         StringBuilder personInfoSQL = new StringBuilder("select person_id from person_info where 1=1 ");
@@ -1206,8 +1626,8 @@ public class AskForLeaveDao extends BaseDao {
                 //籍贯
                 case "nativePlace":
                     if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and nativePlace = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
+                        personInfoSQL.append(" and nativePlace like ?");
+                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
                     }
                     break;
                 //工作单位
@@ -1313,8 +1733,19 @@ public class AskForLeaveDao extends BaseDao {
                         start_date_min = simpleDateFormat.parse(m.getValue()[0].trim());
                     }
                     break;
+                //实际到岗时间最大值
+                case "end_date_max":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        end_date_max = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
+                //实际到岗时间最小值
+                case "end_date_min":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        end_date_min = simpleDateFormat.parse(m.getValue()[0].trim());
+                    }
+                    break;
             }
-
         }
 
         //处理预计到岗时间
@@ -1322,11 +1753,13 @@ public class AskForLeaveDao extends BaseDao {
             //预计到岗日期有最小值无最大值，即查询大于等于的情况
             leaveInfoSQL.append(" and end_date_maybe >= ?");
             leaveInfoSQLparmas.add(end_date_maybe_min);
-        }else if(end_date_maybe_max != null && end_date_maybe_min == null){
+        }
+        else if(end_date_maybe_max != null && end_date_maybe_min == null){
             //预计到岗日期有最大值无最小值，即查询小于等于的情况
             leaveInfoSQL.append(" and end_date_maybe <= ?");
             leaveInfoSQLparmas.add(end_date_maybe_max);
-        }else if(end_date_maybe_max != null && end_date_maybe_min != null){
+        }
+        else if(end_date_maybe_max != null && end_date_maybe_min != null){
             //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
             leaveInfoSQL.append(" and (end_date_maybe between ? and ?)");
             leaveInfoSQLparmas.add(end_date_maybe_min);
@@ -1338,15 +1771,35 @@ public class AskForLeaveDao extends BaseDao {
             //预计到岗日期有最小值无最大值，即查询大于等于的情况
             leaveInfoSQL.append(" and start_date >= ?");
             leaveInfoSQLparmas.add(start_date_min);
-        }else if(start_date_max != null && start_date_min == null){
+        }
+        else if(start_date_max != null && start_date_min == null){
             //预计到岗日期有最大值无最小值，即查询小于等于的情况
             leaveInfoSQL.append(" and start_date <= ?");
             leaveInfoSQLparmas.add(start_date_max);
-        }else if(start_date_max != null && start_date_min != null){
+        }
+        else if(start_date_max != null && start_date_min != null){
             //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
             leaveInfoSQL.append(" and (start_date between ? and ?)");
             leaveInfoSQLparmas.add(start_date_min);
             leaveInfoSQLparmas.add(start_date_max);
+        }
+
+        //处理实际到岗时间
+        if(end_date_max == null && end_date_min != null){
+            //实际到岗时间有最小值无最大值，即查询大于等于的情况
+            leaveInfoSQL.append(" and end_date >= ?");
+            leaveInfoSQLparmas.add(end_date_min);
+        }
+        else if(end_date_max != null && end_date_min == null){
+            //实际到岗时间有最大值无最小值，即查询小于等于的情况
+            leaveInfoSQL.append(" and end_date <= ?");
+            leaveInfoSQLparmas.add(end_date_max);
+        }
+        else if(end_date_max != null && end_date_min != null){
+            //实际到岗时间既有最大值又有最小值，即查询介于两者之间的情况
+            leaveInfoSQL.append(" and (end_date between ? and ?)");
+            leaveInfoSQLparmas.add(end_date_min);
+            leaveInfoSQLparmas.add(end_date_max);
         }
 
         //处理人员编号
@@ -1363,224 +1816,24 @@ public class AskForLeaveDao extends BaseDao {
                 index++;
             }
             leaveInfoSQL.append(" and person_id in("+person_ids+")");
-        }else if(leaveInfoSQLparmas.size() == 0){
+        }
+        else{
             leaveInfoSQL.append(" and person_id = -1 ");
         }
 
+        //设置排序规则
         leaveInfoSQL.append(" order by serialnumber desc");
-
-        return queryForList(LeaveInfo.class,leaveInfoSQL.toString(),leaveInfoSQLparmas.toArray());
-    }
-
-    //按条件查询所有历史请假记录_分页
-    public List<LeaveInfo> querySomeHistoryInfoLimit(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException {
-        //分页参数：起始值
-        Integer start = (pageNo-1)*pageSize;
-        //分页参数：结束值
-        Integer end = pageSize;
-
-        /*根据人员基本信息查询出符合条件的person_id
-        在approval表中查询符合这些person_id的leave_info
-        在这些已查询出来的leave_info中根据请假信息过滤有用信息并作分页显示
-        其中name作模糊查询
-        */
-
-        //遍历并解析map数据
-        //初始化日期数据
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date end_date_maybe_max = null;
-        Date start_date_min = null;
-        Date start_date_max = null;
-        Date end_date_maybe_min = null;
-
-        //初始化人员基本信息数据
-        StringBuilder personInfoSQL = new StringBuilder("select person_id from person_info where 1=1 ");
-        String name;
-        String nativePlace;
-        String phone;
-        String level;
-        String area_class;
-        String office;
-        List<Object> personInfoSQLparmas = new ArrayList<Object>();
-        //获取符合条件的人员id：person_id
-        for(Map.Entry<String,String[]> m:map.entrySet()){
-            switch (m.getKey()){
-                //姓名
-                case "name":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and name like ?");
-                        personInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
-                    }
-                    break;
-                //籍贯
-                case "nativePlace":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and nativePlace = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
-                    }
-                    break;
-                //工作单位
-                case "office":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and office = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
-                    }
-                    break;
-                //类区
-                case "area_class":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and area_class = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
-                    }
-                    break;
-                //职级
-                case "level":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and level = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
-                    }
-                    break;
-                //联系电话
-                case "phone":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        personInfoSQL.append(" and phone = ?");
-                        personInfoSQLparmas.add(m.getValue()[0].trim());
-                    }
-                    break;
-            }
-        }
-
-        //根据人员基本信息获取符合条件的人员id集合：personIdList
-        List<Object> personIdList = queryForOneCol(personInfoSQL.toString(), personInfoSQLparmas.toArray());
-
-        //执行请假信息查询
-        StringBuilder leaveInfoSQL = new StringBuilder("select * from history_info where 1=1 ");
-        //用于保存可变参数
-        List<Object> leaveInfoSQLparmas = new ArrayList<Object>();
-        for(Map.Entry<String,String[]> m:map.entrySet()){
-            switch (m.getKey()){
-                //人员编号:in(?)
-                //请假起始地
-                case "depart_location":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        leaveInfoSQL.append(" and depart_location like ?");
-                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
-                    }
-                    break;
-                //请假到达地
-                case "arrive_location":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        leaveInfoSQL.append(" and arrive_location like ?");
-                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
-                    }
-                    break;
-                //请假批准者
-                case "approver":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        leaveInfoSQL.append(" and approver like ?");
-                        leaveInfoSQLparmas.add("%"+m.getValue()[0].trim()+"%");
-                    }
-                    break;
-                //请假类型
-                case "leave_type":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        String[] leave_typeInfos = m.getValue()[0].trim().split(",");
-                        StringBuilder leave_type = new StringBuilder();
-                        int index = 0;
-                        for(String leave_typeInfo:leave_typeInfos){
-                            if(index == leave_typeInfos.length - 1){
-                                leave_type.append("'"+leave_typeInfo+"'");
-                            }else {
-                                leave_type.append("'"+leave_typeInfo+"',");
-                            }
-                            index++;
-                        }
-                        leaveInfoSQL.append(" and leave_type in("+leave_type+")");
-                    }
-                    break;
-                //请假预计到岗时间最大值
-                case "end_date_maybe_max":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        end_date_maybe_max = simpleDateFormat.parse(m.getValue()[0].trim());
-                    }
-                    break;
-                //请假预计到岗时间最小值
-                case "end_date_maybe_min":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        end_date_maybe_min = simpleDateFormat.parse(m.getValue()[0].trim());
-                    }
-                    break;
-                //请假开始时间最大值
-                case "start_date_max":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        start_date_max = simpleDateFormat.parse(m.getValue()[0].trim());
-                    }
-                    break;
-                //请假开始时间最小值
-                case "start_date_min":
-                    if(!m.getValue()[0].trim().isEmpty()){
-                        start_date_min = simpleDateFormat.parse(m.getValue()[0].trim());
-                    }
-                    break;
-            }
-        }
-
-        //处理预计到岗时间
-        if(end_date_maybe_max == null && end_date_maybe_min != null){
-            //预计到岗日期有最小值无最大值，即查询大于等于的情况
-            leaveInfoSQL.append(" and end_date_maybe >= ?");
-            leaveInfoSQLparmas.add(end_date_maybe_min);
-        }else if(end_date_maybe_max != null && end_date_maybe_min == null){
-            //预计到岗日期有最大值无最小值，即查询小于等于的情况
-            leaveInfoSQL.append(" and end_date_maybe <= ?");
-            leaveInfoSQLparmas.add(end_date_maybe_max);
-        }else if(end_date_maybe_max != null && end_date_maybe_min != null){
-            //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
-            leaveInfoSQL.append(" and (end_date_maybe between ? and ?)");
-            leaveInfoSQLparmas.add(end_date_maybe_min);
-            leaveInfoSQLparmas.add(end_date_maybe_max);
-        }
-
-        //处理请假起始日期到岗时间
-        if(start_date_max == null && start_date_min != null){
-            //预计到岗日期有最小值无最大值，即查询大于等于的情况
-            leaveInfoSQL.append(" and start_date >= ?");
-            leaveInfoSQLparmas.add(start_date_min);
-        }else if(start_date_max != null && start_date_min == null){
-            //预计到岗日期有最大值无最小值，即查询小于等于的情况
-            leaveInfoSQL.append(" and start_date <= ?");
-            leaveInfoSQLparmas.add(start_date_max);
-        }else if(start_date_max != null && start_date_min != null){
-            //预计到岗日期既有最大值又有最小值，即查询介于两者之间的情况
-            leaveInfoSQL.append(" and (start_date between ? and ?)");
-            leaveInfoSQLparmas.add(start_date_min);
-            leaveInfoSQLparmas.add(start_date_max);
-        }
-
-        //处理人员编号
-        if(personIdList.size() != 0){
-            //有人员的信息筛选过程，即选择了人员的基本信息
-            StringBuilder person_ids = new StringBuilder();
-            int index = 0;
-            for(Object o : personIdList){
-                if(index == personIdList.size() - 1){
-                    person_ids.append("'"+o+"'");
-                }else {
-                    person_ids.append("'"+o+"',");
-                }
-                index++;
-            }
-            leaveInfoSQL.append(" and person_id in("+person_ids+")");
-        }else if(leaveInfoSQLparmas.size() == 0){
-            leaveInfoSQL.append(" and person_id = -1 ");
-        }
-
 
         //分页操作
-        leaveInfoSQL.append(" order by serialnumber desc");
-        leaveInfoSQL.append(" limit ?,? ");
-        leaveInfoSQLparmas.add(start);
-        leaveInfoSQLparmas.add(end);
+        if(pageSize!=null && pageNo!=null){
+            //分页参数：起始值
+            Integer start = (pageNo-1)*pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+            leaveInfoSQL.append(" limit ?,? ");
+            leaveInfoSQLparmas.add(start);
+            leaveInfoSQLparmas.add(end);
+        }
 
         return queryForList(LeaveInfo.class, leaveInfoSQL.toString(), leaveInfoSQLparmas.toArray());
     }

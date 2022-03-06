@@ -36,6 +36,21 @@
                     <li class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
+                            <h3 class="layui-timeline-title">2022年3月6日</h3>
+                            <p>优化与修复</p>
+                            <ul>
+                                <li>优化了一些显示信息</li>
+                                <li>修复了一些销假信息抓取错误问题</li>
+                                <li>新增了人员信息、待审批信息、今日到期未销假人员信息、以往到期未销假人员信息、历史请销假信息数据导出功能</li>
+                                <li>全局新增了籍贯模糊查询</li>
+                                <li>对“待审批信息查询”、“今日到期未销假人员信息”、“以往到期未销假人员信息”、
+                                    “所有待销假人员”、“历史记录查询”页面布局进行了优化</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="layui-timeline-item">
+                        <i class="layui-icon layui-timeline-axis"></i>
+                        <div class="layui-timeline-content layui-text">
                             <h3 class="layui-timeline-title">2022年3月4日</h3>
                             <p>优化与修复</p>
                             <ul>

@@ -16,12 +16,21 @@
                 </dl>
             </li>
 
-            <li class="layui-nav-item layui-nav-itemed">
+<%--            <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">销假操作</a>
                 <dl class="layui-nav-child">
                     <dd><a href="pages/service/endOfLeave/showCurrentEOLInfo.jsp">到假未到岗人员</a></dd>
                     <dd><a href="pages/service/endOfLeave/endOfLeave.jsp">销假操作</a></dd>
                     <dd></dd>
+                </dl>
+            </li>--%>
+
+            <li class="layui-nav-item layui-nav-itemed">
+                <a href="javascript:;">销假操作</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="pages/service/endOfLeave/currentEOLInfo_today.jsp">今日到期未销假人员</a></dd>
+                    <dd><a href="pages/service/endOfLeave/currentEOLInfo_before.jsp">以往到期未销假人员</a></dd>
+                    <dd><a href="pages/service/endOfLeave/endOfLeave.jsp">所有待销假人员</a></dd>
                 </dl>
             </li>
 

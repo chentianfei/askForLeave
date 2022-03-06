@@ -273,14 +273,11 @@ public class PersonServlet extends BaseServlet{
         //本次查询在进行分页后返回的数据
         List<HashMap<String, Object>> hashMaps = personService.querySomePersonLimit(person,pageNo,pageSize);
 
-        //本次查询条件的全部数据数量
-        Integer count = personService.querySomePerson(person).size();
-
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
         result.put("code",0);
-        result.put("msg","哈哈");
-        result.put("count",count);
+        result.put("msg","");
+        result.put("count",personService.querySomePerson(person));
         result.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -308,8 +305,8 @@ public class PersonServlet extends BaseServlet{
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
-        map.put("msg","哈哈");
-        map.put("count",personService.queryAllPerson(user_office).size());
+        map.put("msg","");
+        map.put("count",personService.queryAllPerson(user_office));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
