@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
-<%--销假审批页面--%>
+<%--应到岗人员--%>
 <head>
     <%--基础引入--%>
     <%@include file="/pages/common/baseinfo.jsp" %>
@@ -8,12 +8,6 @@
         .layui-input-date{
             height: 25px;
             margin-top: 3px;
-        }
-        #endOfLeave {
-            margin-top:3px;
-        }
-        #endOfLeave_quickly{
-            margin-top:3px;
         }
     </style>
 </head>
@@ -27,13 +21,14 @@
 
     <%--主体信息--%>
     <div class="layui-body layui-bg-gray" style="padding: 10px">
+        <%--管理今日到期未销假人员的信息--%>
         <%--信息查询--%>
         <div class="layui-row">
             <div class="layui-bg-gray" style="padding: 10px;">
                 <div class="layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-card">
-                            <div class="layui-card-header layui-bg-blue">待销假信息</div>
+                            <div class="layui-card-header layui-bg-blue">今日到期未销假人员信息</div>
                             <div class="layui-card-body">
                                 <%--查询表单开始--%>
                                 <form class="layui-form layui-form-pane">
@@ -144,7 +139,6 @@
                                                        class="layui-input">
                                             </div>
                                         </div>
-
                                     </div>
 
                                     <div class="layui-form-item">
@@ -197,12 +191,11 @@
                                             </div>
                                         </div>
 
-
                                     </div>
 
                                     <div class="layui-form-item" style="padding-left: 70%">
                                         <div class="layui-input-block">
-                                            <button type="submit" class="layui-btn" lay-submit lay-filter="resumeWorkInfoQuery">查询</button>
+                                            <button type="submit" class="layui-btn" lay-submit lay-filter="currentEOLInfo_today">查询</button>
                                             <button type="reset" class="layui-btn layui-btn-normal" >重置</button>
                                         </div>
                                     </div>
@@ -222,11 +215,12 @@
                     <div class="layui-row">
                         <div class="layui-col-md12">
                             <div class="layui-card">
-                                <div class="layui-card-header layui-bg-blue">待销假信息</div>
+                                <div class="layui-card-header layui-bg-blue">今日到期未销假人员信息</div>
                                 <div class="layui-card-body">
 
-                                    <%--数据展示--%>
-                                    <table class="layui-hide" id="resumeWorkInfo" lay-filter="resumeWorkInfo"></table>
+                                    <%--今日到岗未销假人员表格--%>
+                                    <table class="layui-hide" id="currentEOLInfo_today"
+                                           lay-filter="currentEOLInfo_today"></table>
 
                                 </div>
                             </div>
@@ -235,6 +229,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     <%--底部信息--%>
@@ -252,20 +247,33 @@
     <input  type="hidden" class="layui-input"
             name="table_elem_name"
             style="display:none"
-            id="table_elem_name"  value="resumeWorkInfo"/>
+            id="table_elem_name"  value="currentEOLInfo_today"/>
 
     <%--接受action的值，以便子页面获取，该数据在操作成功后用于重载表格--%>
     <input  type="hidden" class="layui-input"
             name="query_action"
             style="display:none"
-            id="query_action"  value="queryALLResumeWorkInfo"/>
+            id="query_action"  value="queryCurrentEOLPerson"/>
 
 </div>
 
-<%--表格内部工具栏--%>
-<script type="text/html" id="audit">
-    <button type="button" class="layui-btn layui-btn-xs" lay-event="endOfLeave" id="endOfLeave">销假</button>
-    <button type="button" class="layui-btn layui-btn-xs" lay-event="endOfLeave_quickly" id="endOfLeave_quickly">快速销假</button>
+<%--今日到假未到岗人员表格内部工具栏--%>
+<script type="text/html" id="toolbar_currentEOLInfo_today">
+    <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_today" id="endOfLeave_today">销假</button>
+    <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan" lay-event="endOfLeave_quickly_today" id="endOfLeave_quickly_today">快速销假</button>
+
+    {{# if(d.send_alertsms_count < 1){ }}
+    <button type="button"
+            class="layui-btn layui-btn-xs layui-btn-danger layui-btn-radius"
+            lay-event="sendAlertSMS_today"
+            id="sendAlertSMS_today">
+        发送提醒短信
+    </button>
+    {{#  } }}
+
+    {{# if(d.send_alertsms_count >= 1){ }}
+    <button type="button" class="layui-btn layui-btn-xs layui-bg-cyan layui-btn-disabled" disabled="disabled">发送提醒短信</button>
+    {{#  } }}
 </script>
 
 <%--表格上方工具栏--%>
@@ -277,7 +285,6 @@
     </div>
 </script>
 
-
 <script>
     layui.use(['table', 'upload', 'laydate',  'form', 'layer','common'], function () {
         var layer = layui.layer
@@ -286,6 +293,13 @@
         var form = layui.form;
         var laydate = layui.laydate;
         var common = layui.common;
+        var element = layui.element;
+
+        bindLevelSelectData();
+        bindNationSelectData();
+        bindOfficeSelectData();
+        // 初始化请假种类复选框数据
+        bindLeaveTypeCheckboxData();
 
         layer.config({
             skin: 'layui-layer-molv'
@@ -303,27 +317,21 @@
             ,range: ['#end_date_maybe_min', '#end_date_maybe_max']
         });
 
-        bindLevelSelectData();
-        bindNationSelectData();
-        bindOfficeSelectData();
-        // 初始化请假种类复选框数据
-        bindLeaveTypeCheckboxData();
-
         //定义导出报表的数据
         let exportData = {};
 
         //表格数据初始化
-        var resumeWorkInfo_query = table.render({
-            elem: '#resumeWorkInfo'
-            ,url:'askForLeaveServlet?action=queryALLResumeWorkInfo'
+        var currentEOLInfo_today = table.render({
+            elem: '#currentEOLInfo_today'
+            ,url:'askForLeaveServlet?action=queryCurrentEOLPerson'
             ,toolbar: '#toolbar'
             ,defaultToolbar: []
-            ,title: '待销假信息表'+new Date().getTime()
+            ,title: '今日到期未销假人员信息表'+new Date().getTime()
             ,request: {
                 pageName: 'curr' //页码的参数名称，默认：page
                 ,limitName: 'nums' //每页数据量的参数名，默认：limit
             }
-            ,limit:5
+            ,limit:10
             ,limits:[5,10,15]
             , cols: [[
                 {field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
@@ -342,7 +350,7 @@
                 ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:200}
                 ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
                 ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
-                ,{fixed: 'right', title:'操作', align:'center',id:"toolbar", toolbar: '#audit',width: 165}
+                ,{fixed:'right',title:'操作', align:'center',toolbar: '#toolbar_currentEOLInfo_today',width: 250}
             ]]
             ,page : true
             ,parseData: function(res) { //res 即为原始返回的数据
@@ -358,14 +366,14 @@
         });
 
         //行工具栏事件
-        table.on('tool(resumeWorkInfo)', function (obj) {
+        table.on('tool(currentEOLInfo_today)', function (obj) {
             var data = obj.data;
 
             //给隐藏域赋值，方便子页面取值
             var start_date = data.start_date;
             $("#minDate").val(start_date);
 
-            if (obj.event === "endOfLeave") {
+            if (obj.event === "endOfLeave_today") {
                 //获取当前页码
                 let currentPage = $(".layui-laypage-skip .layui-input").val();
                 //获取当前日期
@@ -403,8 +411,8 @@
                                             obj.del();
                                             layer.msg('销假成功', {icon: 1,time: 1000});
                                             //重载表格
-                                            table.reload('resumeWorkInfo', {
-                                                url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
+                                            table.reload('currentEOLInfo_today', {
+                                                url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
                                                 ,page: {
                                                     curr: currentPage//重新从第 1 页开始
                                                 }
@@ -451,17 +459,6 @@
                                 var body = layer.getChildFrame('body', index);
                                 // 找到隐藏的提交按钮模拟点击提交
                                 body.find('#resumeWorkSubmit').click();
-                                //重载表格
-                                table.reload('resumeWorkInfo', {
-                                    url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
-                                    ,page: {
-                                        curr: currentPage//重新从第 1 页开始
-                                    }
-                                    ,request: {
-                                        pageName: 'curr' //页码的参数名称，默认：page
-                                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
-                                    }
-                                });
                             },
                             btn2: function (index, layero) {
                                 //return false;// 开启该代码可禁止点击该按钮关闭
@@ -476,7 +473,7 @@
                 });
 
             }
-            else if(obj.event === "endOfLeave_quickly") {
+            else if(obj.event === "endOfLeave_quickly_today") {
                 //获取当前页码
                 let currentPage = $(".layui-laypage-skip .layui-input").val();
                 //获取当前日期
@@ -499,8 +496,8 @@
                                 obj.del();
                                 layer.msg('销假成功', {icon: 1,time: 1000});
                                 //重载表格
-                                table.reload('resumeWorkInfo', {
-                                    url: 'askForLeaveServlet?action=queryALLResumeWorkInfo'
+                                table.reload('currentEOLInfo_today', {
+                                    url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
                                     ,page: {
                                         curr: currentPage//重新从第 1 页开始
                                     }
@@ -522,10 +519,49 @@
                     layer.alert("当前日期小于起始日期，不能销假");
                 }
             }
+            else if(obj.event === "sendAlertSMS_today") {
+                //弹出提示框
+                layer.load(1);
+                //发送提醒短信
+                $.ajax({
+                    type: "post",
+                    url: "askForLeaveServlet?action=sendAlertSMS",
+                    dataType:"JSON",
+                    data: {
+                        serialnumber: data.serialnumber
+                    },
+                    success: function (result) {
+                        var currentPage = $(".layui-laypage-skip .layui-input").val();
+                        layer.closeAll('loading');
+                        if(result.code="ok"){
+                            layer.msg('发送成功', {icon: 1,time: 1000});
+                            table.reload('currentEOLInfo_today', {
+                                url: 'askForLeaveServlet?action=queryCurrentEOLPerson'
+                                ,page: {
+                                    curr: currentPage //重新从第 1 页开始
+                                }
+                                ,request: {
+                                    pageName: 'curr' //页码的参数名称，默认：page
+                                    ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                }
+                            });
+                        }else {
+                            layer.msg('发送失败，请重试', {icon : 5});
+                        }
+                    },
+                    //请求失败，包含具体的错误信息
+                    error: function (e) {
+                        layer.msg('发送失败，请重试'+e.status, {
+                            icon : 5
+                        });
+                        layer.closeAll('loading');
+                    }
+                });
+            }
         });
 
         //头工具栏事件
-        table.on('toolbar(resumeWorkInfo)', function(obj){
+        table.on('toolbar(currentEOLInfo_today)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'batchAgree':
@@ -544,13 +580,13 @@
                     break;
                 //导出数据
                 case 'export':
-                    table.exportFile(resumeWorkInfo_query.config.id, exportData, 'xls');
+                    table.exportFile(currentEOLInfo_today.config.id, exportData, 'xls');
                     break;
             };
         });
 
         //监听查询区域的提交按钮事件
-        form.on('submit(resumeWorkInfoQuery)',function (data) {
+        form.on('submit(currentEOLInfo_today)',function (data) {
             //获取当前页码
             var currentPage = $(".layui-laypage-skip .layui-input").val();
             //获取数据
@@ -594,8 +630,8 @@
             const start_date_max = sourceData.start_date_max;
             const start_date_min = sourceData.start_date_min;
 
-            table.reload('resumeWorkInfo', {
-                url: 'askForLeaveServlet?action=querySomeResumeWorkInfo'
+            table.reload('currentEOLInfo_today', {
+                url: 'askForLeaveServlet?action=querySomeCurrentEOLPerson'
                 ,where: {
                     //设定异步数据接口的额外参数
                     //人员信息
@@ -637,6 +673,7 @@
 
             return false;
         });
+
     });
 
 </script>

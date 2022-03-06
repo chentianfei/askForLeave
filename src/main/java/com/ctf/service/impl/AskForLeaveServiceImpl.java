@@ -58,10 +58,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
                     String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
 
-                    for(String param:templateParam){
-                        System.out.println(param);
-                    }
-
                     //发送前保存时间，写入日志
                     Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
                     //发送短信，并获取响应对象
@@ -281,10 +277,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     templateParamList.add(new SimpleDateFormat(DATEFORMAT_YMD).format(leaveInfo.getEnd_date_maybe()));
 
                     String[] templateParam = WebUtils.stringListTostringArray(templateParamList);
-
-                    for(String param:templateParam){
-                        System.out.println(param);
-                    }
 
                     //发送前保存时间，写入日志
                     Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
@@ -709,6 +701,68 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
     @Override
     /*
+     * @Description ：根据条件查询所有到假未到岗人员
+     * @Param map
+     * @Param pageNo
+     * @Param pageSize
+     * @Return ：List<HashMap<String,Object>>
+     * @Author: CTF
+     * @Date ：2022/3/4 22:33
+     */
+    public List<HashMap<String, Object>> querySomeAllCurrentEOLPerson(Map<String, String[]> map,Integer pageNo, Integer pageSize) throws ParseException {
+        List<LeaveInfo> leaveInfoList
+                = askForLeaveDao.querySomeAllCurrentEOLPerson(map, pageNo, pageSize);
+
+        List<HashMap<String,Object>> mapList = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+
+        for (LeaveInfo leaveInfo: leaveInfoList){
+            int  person_id = leaveInfo.getPerson_id();
+            Person person = personDao.queryPersonInfoByID(person_id);
+            //封装回显数据
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("person_id", person.getPerson_id());
+            hashMap.put("name",person.getName());
+            hashMap.put("office",person.getOffice());
+            hashMap.put("post",person.getPost());
+            hashMap.put("phone", person.getPhone());
+            hashMap.put("sex", person.getSex());
+            hashMap.put("nation", person.getNation());
+            hashMap.put("nativePlace", person.getNativePlace());
+            hashMap.put("area_class", person.getArea_class());
+            hashMap.put("level", person.getLevel());
+            hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+            if(person.getBirthDate()!=null){
+                hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+            }
+            hashMap.put("leader", person.getLeader());
+            hashMap.put("serialnumber",leaveInfo.getSerialnumber());
+            hashMap.put("leave_type",leaveInfo.getLeave_type());
+            if(leaveInfo.getStart_date()!=null){
+                hashMap.put("start_date",simpleDateFormat.format(leaveInfo.getStart_date()));
+            }
+            hashMap.put("leave_days_projected",leaveInfo.getLeave_days_projected());
+            hashMap.put("work_leader",leaveInfo.getWork_leader());
+            hashMap.put("leave_reason",leaveInfo.getLeave_reason());
+            hashMap.put("approver",leaveInfo.getApprover());
+            hashMap.put("depart_location",leaveInfo.getDepart_location());
+            hashMap.put("arrive_location",leaveInfo.getArrive_location());
+            if(leaveInfo.getEnd_date_maybe()!=null){
+                hashMap.put("end_date_maybe",simpleDateFormat.format(leaveInfo.getEnd_date_maybe()));
+            }
+            hashMap.put("start_leave_remark",leaveInfo.getStart_leave_remark());
+            hashMap.put("start_leave_operator",leaveInfo.getStart_leave_operator());
+            //新增提醒短信发送数据
+            hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_today(leaveInfo.getSerialnumber()));
+
+            mapList.add(hashMap);
+        }
+
+        return mapList;
+    }
+
+    @Override
+    /*
      * @Description ：查询今日应到假人员信息
      * @Param
      * @Return ：List<HashMap<String,Object>>
@@ -765,6 +819,72 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         return mapList;
     }
+
+    @Override
+    /*
+     * @Description ：根据条件查询所有今日应到假人员信息
+     * @Param map
+     * @Param pageNo
+     * @Param pageSize
+     * @Return ：List<HashMap<String,Object>>
+     * @Author: CTF
+     * @Date ：2022/3/4 22:33
+     */
+
+    public List<HashMap<String, Object>> querySomeCurrentEOLPerson(
+            Map<String, String[]> map
+            ,Integer pageNo, Integer pageSize) throws ParseException {
+        List<LeaveInfo> leaveInfoList
+                = askForLeaveDao.querySomeCurrentEOLPerson(map, pageNo, pageSize);
+
+        List<HashMap<String,Object>> mapList = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+
+        for (LeaveInfo leaveInfo: leaveInfoList){
+            int  person_id = leaveInfo.getPerson_id();
+            Person person = personDao.queryPersonInfoByID(person_id);
+            //封装回显数据
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("person_id", person.getPerson_id());
+            hashMap.put("name",person.getName());
+            hashMap.put("office",person.getOffice());
+            hashMap.put("post",person.getPost());
+            hashMap.put("phone", person.getPhone());
+            hashMap.put("sex", person.getSex());
+            hashMap.put("nation", person.getNation());
+            hashMap.put("nativePlace", person.getNativePlace());
+            hashMap.put("area_class", person.getArea_class());
+            hashMap.put("level", person.getLevel());
+            hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+            if(person.getBirthDate()!=null){
+                hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+            }
+            hashMap.put("leader", person.getLeader());
+            hashMap.put("serialnumber",leaveInfo.getSerialnumber());
+            hashMap.put("leave_type",leaveInfo.getLeave_type());
+            if(leaveInfo.getStart_date()!=null){
+                hashMap.put("start_date",simpleDateFormat.format(leaveInfo.getStart_date()));
+            }
+            hashMap.put("leave_days_projected",leaveInfo.getLeave_days_projected());
+            hashMap.put("work_leader",leaveInfo.getWork_leader());
+            hashMap.put("leave_reason",leaveInfo.getLeave_reason());
+            hashMap.put("approver",leaveInfo.getApprover());
+            hashMap.put("depart_location",leaveInfo.getDepart_location());
+            hashMap.put("arrive_location",leaveInfo.getArrive_location());
+            if(leaveInfo.getEnd_date_maybe()!=null){
+                hashMap.put("end_date_maybe",simpleDateFormat.format(leaveInfo.getEnd_date_maybe()));
+            }
+            hashMap.put("start_leave_remark",leaveInfo.getStart_leave_remark());
+            hashMap.put("start_leave_operator",leaveInfo.getStart_leave_operator());
+            //新增提醒短信发送数据
+            hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_today(leaveInfo.getSerialnumber()));
+
+            mapList.add(hashMap);
+        }
+
+        return mapList;
+    }
+
 
     @Override
     /*
@@ -879,29 +999,15 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
     @Override
     /*
-     * @Description ：按条件查询历史请假记录_不分页
+     * @Description ：按条件查询历史请假记录
      * @Param map
      * @Return ：List<HashMap<String,Object>>
      * @Author: CTF
      * @Date ：2021/12/5 12:28
      */
-    public List<HashMap<String, Object>> querySomeHistoryInfo(Map<String, String[]> map) throws ParseException {
-        List<LeaveInfo> historyInfoList =  askForLeaveDao.querySomeHistoryInfo(map);
-        return getLeaveInfo(historyInfoList);
-    }
-
-    @Override
-    /*
-     * @Description ：按条件查询历史请假记录分页
-     * @Param map
-     * @Param pageNo
-     * @Param pageSize
-     * @Return ：List<HashMap<String,Object>>
-     * @Author: CTF
-     * @Date ：2021/12/5 12:28
-     */
-    public List<HashMap<String, Object>> querySomeHistoryInfoLimit(Map<String, String[]> map, Integer pageNo, Integer pageSize) throws ParseException {
-        List<LeaveInfo> historyInfoList = askForLeaveDao.querySomeHistoryInfoLimit(map,pageNo,pageSize);
+    public List<HashMap<String, Object>> querySomeHistoryInfo(Map<String, String[]> map, Integer pageNo, Integer pageSize) throws ParseException {
+        List<LeaveInfo> historyInfoList =  askForLeaveDao
+                .querySomeHistoryInfo(map,pageNo,pageSize);
         return getLeaveInfo(historyInfoList);
     }
 

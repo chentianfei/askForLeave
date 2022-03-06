@@ -258,11 +258,20 @@ public class PersonServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+        //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
+
 
         //获取前端传来的查询参数
         Map<String, String[]> map = request.getParameterMap();
@@ -273,14 +282,12 @@ public class PersonServlet extends BaseServlet{
         //本次查询在进行分页后返回的数据
         List<HashMap<String, Object>> hashMaps = personService.querySomePersonLimit(person,pageNo,pageSize);
 
-        //本次查询条件的全部数据数量
-        Integer count = personService.querySomePerson(person).size();
-
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
         result.put("code",0);
-        result.put("msg","哈哈");
-        result.put("count",count);
+        result.put("msg","");
+        //此处count用来返回不分页时的所有数据，并不是表示数量，通过前端的parseData中的return{}来获取真正的总数
+        result.put("count",personService.querySomePerson(person));
         result.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -294,22 +301,32 @@ public class PersonServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         req.setCharacterEncoding("utf-8");
 
+        //处理页码
+        String curr = req.getParameter("curr");
+        String nums = req.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(req.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(req.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+                pageSize =Integer.valueOf(nums);
+        }
 
         //若非超级用户，则根据单位返回相关信息
         String user_office = req.getParameter("user_office");
 
         //查询本人基本信息获取返回结果
-        List<HashMap<String, Object>> hashMaps = personService.queryAllPersonLimit(pageNo,pageSize,user_office);
+        List<HashMap<String, Object>> hashMaps =
+                personService.queryAllPersonLimit(pageNo,pageSize,user_office);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
-        map.put("msg","哈哈");
-        map.put("count",personService.queryAllPerson(user_office).size());
+        map.put("msg","");
+        map.put("count",personService.queryAllPerson(user_office));
         map.put("data",hashMaps);
 
         //以json格式返回给前端

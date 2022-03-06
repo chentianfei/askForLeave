@@ -30,6 +30,96 @@ public class AskForLeaveServlet extends BaseServlet{
 
     AskForLeaveServiceImpl askForLeaveService = new AskForLeaveServiceImpl();
 
+    /*
+     * @Description ：按条件查询今日到期未销假人员
+     * @Param null
+     * @Return ：null
+     * @Author: CTF
+     * @Date ：2022/3/4 22:28
+     */
+    public void querySomeAllCurrentEOLPerson(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
+        //获取当前页码
+        Integer pageNo = null;
+        //获取每页显示数量
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
+
+        //获取前端传来的查询参数
+        Map<String, String[]> dataMap = request.getParameterMap();
+
+        List<HashMap<String, Object>> hashMaps =
+                askForLeaveService.querySomeAllCurrentEOLPerson(dataMap,pageNo,pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",askForLeaveService
+                .querySomeAllCurrentEOLPerson(dataMap,null,null));
+        map.put("data",hashMaps);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    /*
+     * @Description ：按条件查询以往到期未销假人员
+     * @Param null
+     * @Return ：null
+     * @Author: CTF
+     * @Date ：2022/3/4 22:28
+     */
+    public void querySomeCurrentEOLPerson(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        
+        //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
+        //获取当前页码
+        Integer pageNo = null;
+        //获取每页显示数量
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
+
+        //获取前端传来的查询参数
+        Map<String, String[]> dataMap = request.getParameterMap();
+
+        List<HashMap<String, Object>> hashMaps =
+                askForLeaveService.querySomeCurrentEOLPerson(dataMap,pageNo,pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",askForLeaveService
+                .querySomeCurrentEOLPerson(dataMap,null,null));
+        map.put("data",hashMaps);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
     //发送催促销假警告短信
     public void sendAlertSMS(HttpServletRequest request,HttpServletResponse response)throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -66,10 +156,19 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         List<HashMap<String, Object>> hashMaps =
                 askForLeaveService.queryCurrentEOLPerson(pageNo,pageSize);
@@ -78,7 +177,8 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryCurrentEOLPerson(null,null).size());
+        map.put("count",askForLeaveService
+                .queryCurrentEOLPerson(null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -117,7 +217,7 @@ public class AskForLeaveServlet extends BaseServlet{
         map.put("code",0);
         map.put("msg","");
         map.put("count",askForLeaveService
-                .queryAllCurrentEOLPerson(null,null).size());
+                .queryAllCurrentEOLPerson(null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -148,10 +248,19 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         //获取前端传来的查询参数
         Map<String, String[]> dataMap = request.getParameterMap();
@@ -159,12 +268,11 @@ public class AskForLeaveServlet extends BaseServlet{
         List<HashMap<String, Object>> hashMaps =
                 askForLeaveService.querySomeLeaveInfosLimit(dataMap,pageNo,pageSize);
 
-
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeLeaveInfos(dataMap).size());
+        map.put("count",askForLeaveService.querySomeLeaveInfos(dataMap));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -178,10 +286,19 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         List<HashMap<String, Object>> hashMaps = askForLeaveService.queryAllLeaveInfoLimit(pageNo,pageSize);
 
@@ -189,7 +306,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryAllLeaveInfo().size());
+        map.put("count",askForLeaveService.queryAllLeaveInfo());
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -254,10 +371,19 @@ public class AskForLeaveServlet extends BaseServlet{
                 person_id = Integer.parseInt(personIdSTR);
             }
         }
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         List<LeaveInfoCount> leaveInfoCounts =
                 askForLeaveService.queryThisYearLeaveInfoCountByPersonID(person_id, pageNo, pageSize);
@@ -287,10 +413,19 @@ public class AskForLeaveServlet extends BaseServlet{
                 person_id = Integer.parseInt(personIdSTR);
             }
         }
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         List<HashMap<String, Object>> hashMapList = askForLeaveService.queryOnesHistoryInfoByPersonID(person_id, pageNo, pageSize);
 
@@ -313,10 +448,19 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         List<HashMap<String, Object>> hashMaps = askForLeaveService.queryALLResumeWorkInfoLimit(pageNo,pageSize);
 
@@ -324,7 +468,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryALLResumeWorkInfo().size());
+        map.put("count",askForLeaveService.queryALLResumeWorkInfo());
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -338,10 +482,19 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         //获取前端传来的查询参数
         Map<String, String[]> dataMap = request.getParameterMap();
@@ -353,7 +506,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeResumeWorkInfo(dataMap).size());
+        map.put("count",askForLeaveService.querySomeResumeWorkInfo(dataMap));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -440,10 +593,19 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         //获取用户信息，判断访问资源，若非超级用户，则根据单位返回相关信息
         String user_office = request.getParameter("user_office");
@@ -456,7 +618,7 @@ public class AskForLeaveServlet extends BaseServlet{
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryALLHistoryInfo(user).size());
+        map.put("count",askForLeaveService.queryALLHistoryInfo(user));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -470,22 +632,32 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
+      //处理页码
+        String curr = request.getParameter("curr");
+        String nums = request.getParameter("nums");
         //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
+        Integer pageNo = null;
         //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        Integer pageSize = null;
+        if(!curr.trim().equals("") && curr!=null){
+            pageNo =Integer.valueOf(curr);
+        }
+        if(!nums.trim().equals("") && nums!=null){
+            pageSize =Integer.valueOf(nums);
+        }
 
         //获取前端传来的查询参数
         Map<String, String[]> dataMap = request.getParameterMap();
 
         List<HashMap<String, Object>> hashMaps =
-                askForLeaveService.querySomeHistoryInfoLimit(dataMap,pageNo,pageSize);
+                askForLeaveService.querySomeHistoryInfo(dataMap,pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeHistoryInfo(dataMap).size());
+        map.put("count",askForLeaveService
+                .querySomeHistoryInfo(dataMap,null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
