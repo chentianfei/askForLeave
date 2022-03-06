@@ -217,7 +217,7 @@
             {{# if(d.leader.length === 0){ }}
             <a type="button" id="bindLeader"
                class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
-               lay-event="bindLeader">
+               lay-event="showRelatedLeader">
                 暂未绑定领导
             </a>
             {{#  } }}
@@ -369,7 +369,7 @@
                         }
                     });
 
-                    $("#person_info_query_reset").click();
+                    //$("#person_info_query_reset").click();
 
                     return false;
                 });
@@ -599,53 +599,7 @@
                            });
                         });
                     }
-                    //绑定相关领导
-                    else if(layEvent === 'bindLeader'){
-                        bindLeaderLayer = layer.open({
-                            type: 2,
-                            title: '绑定相关领导',
-                            shadeClose: true,
-                            shade: false,
-                            maxmin: true, //开启最大化最小化按钮
-                            area: ['600px', '400px'],
-                            content: "pages/service/personinfomation/_bindLeader.jsp",
-                            anim:2,
-                            id:'LAY_layuipro',
-                            resize:false,
-                            btn:['提交'],
-                            success: function (layero, index) {
-                                var body = layer.getChildFrame('body', index);
-                                //给隐藏域传值
-                                //body.find("#subordinate_id").val(person_id);
-                            },
-                            yes:function (index, layero) {
-                                var body = layer.getChildFrame('body', index);
-                                // 找到隐藏的提交按钮模拟点击提交
-                                body.find('#bindLeaderSubmit').click();
-                                //重载表格
-                                table.reload('personinformation', {
-                                    url: 'personServlet?action=queryAllPerson'
-                                    ,page: {
-                                        curr: currentPage //重新从第 1 页开始
-                                    }
-                                    ,request: {
-                                        pageName: 'curr' //页码的参数名称，默认：page
-                                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
-                                    }
-                                });
-                                //关闭此页面
-                                layer.close(bindLeaderLayer);
-                            },
-                            cancel: function () {
-                                //关闭此页面
-                                layer.close(bindLeaderLayer);
-                                //右上角关闭回调
-                                //return false 开启该代码可禁止点击该按钮关闭
-                            }
-                        });
-
-                    }
-                    //查看相关领导
+                    //绑定与查看相关领导
                     else if(layEvent === 'showRelatedLeader'){
                         //do something
                         showRelatedLeaderLayer = layer.open({

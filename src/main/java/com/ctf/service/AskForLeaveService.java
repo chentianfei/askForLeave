@@ -53,6 +53,10 @@ public interface AskForLeaveService {
     List<HashMap<String,Object>> queryCurrentEOLPerson(Integer pageNo,Integer pageSize);
     //查询所有到假未到岗人员
     List<HashMap<String,Object>> queryAllCurrentEOLPerson(Integer pageNo,Integer pageSize);
+    //根据条件查询所有今日应到假人员信息
+    List<HashMap<String,Object>> querySomeCurrentEOLPerson(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
+    //根据条件查询所有到假未到岗人员
+    List<HashMap<String,Object>> querySomeAllCurrentEOLPerson(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
     //处理销假业务
      int resumeWork(String serialnumberSTR, String end_leave_remarkSTR,String end_dateSTR,String end_leave_operator) throws ParseException;
 
@@ -61,9 +65,7 @@ public interface AskForLeaveService {
     //分页查询库中所有历史请假记录信息
      List<HashMap<String,Object>>queryALLHistoryInfoLimit(int pageNo,int pageSize,User user);
     //按条件查询历史请假记录_不分页
-     List<HashMap<String,Object>> querySomeHistoryInfo(Map<String, String[]> map) throws ParseException;
-    //按条件查询历史请假记录分页
-     List<HashMap<String,Object>> querySomeHistoryInfoLimit(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
+     List<HashMap<String,Object>> querySomeHistoryInfo(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
     //根据流水号查询一条历史记录，与人员基础数据合并后返回
      HashMap<String, Object> queryAHistoryInfo(int serialnumber);
     //根据流水号删除一条历史记录，并执行相关操作
