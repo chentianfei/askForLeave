@@ -37,6 +37,17 @@
                     <li class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
+                            <h3 class="layui-timeline-title">2022年3月10日</h3>
+                            <p>修复</p>
+                            <ul>
+                                <li>修复了领导绑定中的问题</li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="layui-timeline-item">
+                        <i class="layui-icon layui-timeline-axis"></i>
+                        <div class="layui-timeline-content layui-text">
                             <h3 class="layui-timeline-title">2022年3月6日</h3>
                             <p><br>修复与优化</p>
                             <ul>
