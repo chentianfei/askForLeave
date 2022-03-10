@@ -48,7 +48,38 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Integer bindRelatedLeader(Integer leader_id, Integer subordinate_id) {
-        return personDao.bindRelatedLeaderDao(leader_id,subordinate_id);
+        if(leader_id==null && subordinate_id==null){
+//            return "Leader_id and subordinate_id is null.Please check!";
+            System.out.println("Leader_id and subordinate_id is null.Please check!");
+            return -1;
+        }
+        if(leader_id==null){
+//            return "Leader_id is null.Please check!";
+            System.out.println("Leader_id is null.Please check!");
+            return -2;
+        }
+        if(subordinate_id==null){
+            System.out.println("Subordinate_id is null.Please check!");
+//            return "Subordinate_id is null.Please check!";
+            return -3;
+        }
+        //获取该下属的所有领导
+        List<Person> relatedLeaderList = queryRelatedLeader(subordinate_id);
+        if(relatedLeaderList.size() != 0){
+            //遍历领导信息，确保该领导没有被添加过
+            for(Person leader : relatedLeaderList){
+                if(leader.getPerson_id().equals(leader_id)){
+                    //需要添加的领导信息已经存在，不能重复添加
+//                    return "This leader has been bound to the subordinate.Please change leader";
+                    return -4;
+                }
+            }
+        }
+        if(personDao.bindRelatedLeaderDao(leader_id,subordinate_id) != 1){
+//            return "Fail to update ls_relation!";
+            return -5;
+        }
+        return 200;
     }
 
     @Override

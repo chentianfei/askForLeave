@@ -73,71 +73,73 @@
                     const subordinate_id = parent.$("#person_id").val();
                     const leaderName = sourceData.leaderName;
 
-                    //获取当前页码
-                    var currentPage = parent.$(".layui-laypage-skip .layui-input").val();
+                    console.log(subordinate_id);
+                    console.log(leader_id);
+                    console.log(leaderName);
 
+                    //代表所提交的领导信息还未被提交过
                     $.ajax({
-                        type : 'POST',
-                        url : 'personServlet?action=queryRelatedLeader',
-                        data : {
-                            subordinate_id : subordinate_id
+                        type: 'POST',
+                        url: 'personServlet?action=bindRelatedLeader',
+                        data: {
+                            leader_id: leader_id,
+                            subordinate_id: subordinate_id,
+                            leaderName: leaderName,
                         },
-                        dataType : 'json',
-                        success : function(data) {
-                            //可执行代码，若executeCode=0，则代表需要绑定的领导还未绑定过，>0代表已经被绑定过
-                            var executeCode = 0;
-
-                            $.each(data.data,function (index,item) {
-                                var leaderIdHaved  = item.person_id;
-                                if(leaderIdHaved == leader_id){
-                                    executeCode++;
-                                    //领导已被绑定，不能重复绑定
-                                    $("#leader_id").empty();
-                                }
-                            })
-
-                            if(executeCode == 0){
-                                //代表所提交的领导信息还未被提交过
-                                $.ajax({
-                                    type: 'POST',
-                                    url: 'personServlet?action=bindRelatedLeader',
-                                    data: {
-                                        leader_id: leader_id,
-                                        subordinate_id: subordinate_id,
-                                        leaderName: leaderName,
-                                    },
-                                    dataType: 'json',
-                                    success: function (data) {
-                                        parent.layer.msg('绑定成功', {
-                                            icon: 6
-                                        });
-
-
-
-                                    },
-                                    error : function(data) {
-                                        parent.layer.msg('出现网络故障', {
-                                            icon : 5
-                                        });
-                                    }
-                                })
-                            }else {
-                                parent.layer.msg('该领导已被绑定！', {
-                                    icon: 5,
-                                    time: 3000
+                        dataType: 'json',
+                        success: function (data) {
+                            if(data == 200){
+                                parent.layer.msg('绑定成功', {
+                                    icon: 6,
+                                    time:2000
                                 });
-                            }
+                            }else {
+                                switch (data){
+                                    case -1:
+                                        parent.layer.msg("领导id与下属id为空，请检查网络状态", {
+                                            icon : 5,
+                                            time:2000
+                                        });
+                                        break;
+                                    case -2:
+                                        parent.layer.msg("领导id为空，请检查网络状态", {
+                                            icon : 5,
+                                            time:2000
+                                        });
+                                        break;
+                                    case -3:
+                                        parent.layer.msg("下属id为空，请检查网络状态", {
+                                            icon : 5,
+                                            time:2000
+                                        });
+                                        break;
+                                    case -4:
+                                        parent.layer.msg("该领导已经存在，不能重新绑定，请重新选择", {
+                                            icon : 5,
+                                            time:2000
+                                        });
+                                        //领导已被绑定，不能重复绑定
+                                        $("#leader_id").empty();
+                                        break;
+                                    case -5:
+                                        parent.layer.msg("程序错误，更新关系失败", {
+                                            icon : 5,
+                                            time:2000
+                                        });
+                                        break;
+                                }
 
+                            }
                         },
                         error : function(data) {
                             parent.layer.msg('出现网络故障', {
-                                icon : 5
+                                icon : 5,
+                                time:2000
                             });
                         }
                     })
 
                 });
-
                 //名字输入框onblur后发起数据查询——开始
                 $("#leaderName").blur(function (e) {
                     $.ajax({
