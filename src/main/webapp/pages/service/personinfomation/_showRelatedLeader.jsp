@@ -163,7 +163,10 @@
 
                                     // 找到隐藏的提交按钮模拟点击提交
                                     body.find('#bindLeaderSubmit').click();
-
+                                    layer.load(0, {
+                                        shade: false,
+                                        time:2000
+                                    });
                                     //刷新本页面
                                     self.location.reload();
 

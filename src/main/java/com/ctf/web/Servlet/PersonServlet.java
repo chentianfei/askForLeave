@@ -390,31 +390,28 @@ public class PersonServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
-        int code = 0;
-        if(request.getParameter("leader_id") == ""  || request.getParameter("leader_id") == null){
-            code = -1;
-        }else {
-            //获取参数
-            Integer leader_id = Integer.parseInt( request.getParameter("leader_id"));
-            Integer subordinate_id = Integer.parseInt( request.getParameter("subordinate_id"));
-            if(personService.queryRelatedLeader(subordinate_id).size() != 0){
-                //遍历领导信息，确保该领导没有被添加过
-                for(Person leader : personService.queryRelatedLeader(subordinate_id)){
-                    if(leader.getPerson_id() == leader_id){
-                        //需要添加的领导信息已经存在，不能重复添加
-                        code = -2;
-                    }else {
-                        code = personService.bindRelatedLeader(leader_id,subordinate_id);
-                    }
-                }
-            }else {
-                code = personService.bindRelatedLeader(leader_id,subordinate_id);
+        //获取领导id
+        String leader_id_str = request.getParameter("leader_id");
+        //获取下属id
+        String subordinate_id_str = request.getParameter("subordinate_id");
+        Integer leader_id = null;
+        Integer subordinate_id = null;
+        if(leader_id_str != null){
+            if(!leader_id_str.equals("")){
+                leader_id = Integer.parseInt(leader_id_str);
             }
-
+        }
+        if(subordinate_id_str != null){
+            if(!subordinate_id_str.equals("")){
+                subordinate_id = Integer.parseInt(subordinate_id_str);
+            }
         }
 
+        //获取处理后的状态码
+        Integer statusCode = personService.bindRelatedLeader(leader_id,subordinate_id);
+
         //以json格式返回给前端
-        String result_json = new Gson().toJson(code);
+        String result_json = new Gson().toJson(statusCode);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
