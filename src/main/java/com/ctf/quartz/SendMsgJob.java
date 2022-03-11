@@ -31,7 +31,11 @@ public class SendMsgJob implements Job {
         List<LeaveInfo> leaveInfoList = askForLeaveDao.queryResumeWorkInfoByDate(smsAlertDays);
         //遍历待销假信息，获取“提示短信”的内容
         for (LeaveInfo leaveInfo : leaveInfoList){
-           askForLeaveService.sendMsgToSelfBySerialnumberForAlert(leaveInfo.getSerialnumber());
+            try {
+                askForLeaveService.sendMsgToSelfBySerialnumberForAlert(leaveInfo.getSerialnumber());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

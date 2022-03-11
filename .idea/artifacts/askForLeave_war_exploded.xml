@@ -44,6 +44,20 @@
           <element id="library" level="project" name="Maven: log4j:log4j:1.2.17" />
           <element id="library" level="project" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:9.0.41" />
           <element id="library" level="project" name="Maven: org.apache.tomcat:tomcat-annotations-api:9.0.41" />
+          <element id="library" level="project" name="Maven: com.aliyun:dysmsapi20170525:2.0.9" />
+          <element id="library" level="project" name="Maven: com.aliyun:tea-util:0.2.13" />
+          <element id="library" level="project" name="Maven: com.aliyun:endpoint-util:0.0.6" />
+          <element id="library" level="project" name="Maven: com.aliyun:tea:1.1.14" />
+          <element id="library" level="project" name="Maven: com.squareup.okhttp3:okhttp:3.12.13" />
+          <element id="library" level="project" name="Maven: org.jacoco:org.jacoco.agent:runtime:0.8.4" />
+          <element id="library" level="project" name="Maven: com.aliyun:tea-openapi:0.2.2" />
+          <element id="library" level="project" name="Maven: com.aliyun:credentials-java:0.2.4" />
+          <element id="library" level="project" name="Maven: com.sun.xml.bind:jaxb-core:2.3.0" />
+          <element id="library" level="project" name="Maven: com.sun.xml.bind:jaxb-impl:2.3.0" />
+          <element id="library" level="project" name="Maven: com.aliyun:alibabacloud-gateway-spi:0.0.1" />
+          <element id="library" level="project" name="Maven: com.aliyun:openapiutil:0.1.14" />
+          <element id="library" level="project" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.65" />
+          <element id="library" level="project" name="Maven: org.bouncycastle:bcprov-jdk15on:1.65" />
         </element>
       </element>
       <element id="directory" name="META-INF">

@@ -55,15 +55,15 @@ public class SMSLogDao extends BaseDao{
         String tomorrow = simpleDateFormat.format(DateUtils.addAndSubtractDays(new Date(), 2));
 
         String sql = "select * from sms_sendlog where SerialNo_askforleave_thisSystem=? " +
-                " and SendStatus='Ok'" +
+                " and Code='Ok'" +
                 " and (send_enddate>'"+yesterday+" 23:59:59' and send_enddate<'"+tomorrow+" 00:00:00')" +
-                " and TemplateId="+ SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY;
+                " and TemplateId='"+ SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY+"'";
 
         return queryForList(SMSSendLog.class,sql,SerialNo_askforleave_thisSystem).size();
     }
     //根据请假流水号  查询  向 今天假期到假未销假人员  发送提醒短信的次数
     public int queryCountOfAlertsms_today(int SerialNo_askforleave_thisSystem){
-        String sql = "select * from sms_sendlog where SerialNo_askforleave_thisSystem=? and TemplateId="+ SendMsg.TEMPLATEID_ALERTTORETURN;
+        String sql = "select * from sms_sendlog where SerialNo_askforleave_thisSystem=? and TemplateId='"+ SendMsg.TEMPLATEID_ALERTTORETURN+"'";
         return queryForList(SMSSendLog.class,sql,SerialNo_askforleave_thisSystem).size();
     }
 

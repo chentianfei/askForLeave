@@ -7,8 +7,8 @@ import com.ctf.bean.User;
 import com.ctf.service.impl.AskForLeaveServiceImpl;
 import com.ctf.utils.WebUtils;
 import com.google.gson.Gson;
-import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
-import com.tencentcloudapi.sms.v20210111.models.SendStatus;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -134,16 +134,20 @@ public class AskForLeaveServlet extends BaseServlet{
             }
         }
 
-        SendSmsResponse sendSmsResponse = askForLeaveService.sendAlertSMS(serialnumber);
+        SendSmsResponse sendSmsResponse = null;
+        String send_smg_statusMSG = null;
+        try {
+            sendSmsResponse = askForLeaveService.sendAlertSMS(serialnumber);
+        } catch (Exception e) {
+            send_smg_statusMSG = e.getMessage();
+        }
 
-        //通过发射后的相应对象，获取此次发射的响应状态集数组
-        SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
-        //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
-        SendStatus thisSendStatus = sendStatusSet[0];
+        SendSmsResponseBody body = sendSmsResponse.getBody();
 
         Map<String,Object> sendStatusMap = new HashMap<>();
-        sendStatusMap.put("code",thisSendStatus.getCode());
-        sendStatusMap.put("message",thisSendStatus.getMessage());
+        sendStatusMap.put("code",body.getCode());
+        sendStatusMap.put("message",body.getMessage());
+        sendStatusMap.put("send_smg_statusMSG",send_smg_statusMSG);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(sendStatusMap);
@@ -303,7 +307,7 @@ public class AskForLeaveServlet extends BaseServlet{
     }
 
     //##待审核_同意功能
-    public void agreeLeave(HttpServletRequest request,HttpServletResponse response) throws IOException {
+    public void agreeLeave(HttpServletRequest request,HttpServletResponse response) throws Exception {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
@@ -453,7 +457,7 @@ public class AskForLeaveServlet extends BaseServlet{
     }
 
     //##处理销假到岗
-    public void resumeWork(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
+    public void resumeWork(HttpServletRequest request,HttpServletResponse response) throws Exception {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 

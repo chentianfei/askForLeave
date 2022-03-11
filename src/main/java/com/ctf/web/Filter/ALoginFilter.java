@@ -29,6 +29,7 @@ public class ALoginFilter implements Filter {
         //如果获取到的路径包含这以下几个：登录页面、登录的servlet、css样式、js代码、验证码实现类，则不拦截放行，如果少了哪个的话，页面会显示不完整，过滤器就会把没有写到下面的资源给拦截了
         if(uri.contains("login.jsp")
                 || uri.contains("/loginServlet")
+                || uri.contains("/getAliyunMSGServlet")
                 || uri.contains("/static/")
                 || uri.contains("favicon.ico")
         ){
