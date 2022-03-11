@@ -561,7 +561,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             if(person.getBirthDate()!=null){
                 hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
             }
-            hashMap.put("leader", person.getLeader());
             hashMap.put("serialnumber",leaveInfo.getSerialnumber());
             hashMap.put("leave_type",leaveInfo.getLeave_type());
             if(leaveInfo.getStart_date()!=null){

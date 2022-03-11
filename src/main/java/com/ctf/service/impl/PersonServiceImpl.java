@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description :
@@ -34,52 +35,6 @@ public class PersonServiceImpl implements PersonService {
     public int batchAddPerson(String filePath) throws IOException, SQLException, ParseException {
         List<Person> personList = ExcelToDatabaseUtils.parseExcelToPersonListOBJ(filePath);
         return  personDao.addPersonBatch(personList);
-    }
-
-    @Override
-    public Integer deleteTheLeader(Integer leader_id, Integer subordinate_id) {
-        return personDao.deleteTheLeaderDao(leader_id,subordinate_id);
-    }
-
-    @Override
-    public List<Person> queryRelatedLeader(Integer subordinate_id) {
-        return personDao.queryRelatedLeader(subordinate_id);
-    }
-
-    @Override
-    public Integer bindRelatedLeader(Integer leader_id, Integer subordinate_id) {
-        if(leader_id==null && subordinate_id==null){
-//            return "Leader_id and subordinate_id is null.Please check!";
-            System.out.println("Leader_id and subordinate_id is null.Please check!");
-            return -1;
-        }
-        if(leader_id==null){
-//            return "Leader_id is null.Please check!";
-            System.out.println("Leader_id is null.Please check!");
-            return -2;
-        }
-        if(subordinate_id==null){
-            System.out.println("Subordinate_id is null.Please check!");
-//            return "Subordinate_id is null.Please check!";
-            return -3;
-        }
-        //获取该下属的所有领导
-        List<Person> relatedLeaderList = queryRelatedLeader(subordinate_id);
-        if(relatedLeaderList.size() != 0){
-            //遍历领导信息，确保该领导没有被添加过
-            for(Person leader : relatedLeaderList){
-                if(leader.getPerson_id().equals(leader_id)){
-                    //需要添加的领导信息已经存在，不能重复添加
-//                    return "This leader has been bound to the subordinate.Please change leader";
-                    return -4;
-                }
-            }
-        }
-        if(personDao.bindRelatedLeaderDao(leader_id,subordinate_id) != 1){
-//            return "Fail to update ls_relation!";
-            return -5;
-        }
-        return 200;
     }
 
     @Override
@@ -116,27 +71,13 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<HashMap<String, Object>> queryAllPersonLimit(int pageNo,int pageSize,String user_office) {
-        List<Person> personList = personDao.queryAllPersonLimit(pageNo, pageSize,user_office);
-        return formatInfo(personList);
+    public List<Person> queryAllPerson(Integer pageNo,Integer pageSize,String user_office) {
+        return personDao.queryAllPerson(pageNo, pageSize,user_office);
     }
 
     @Override
-    public List<HashMap<String, Object>> queryAllPerson(String user_office) {
-        List<Person> personList = personDao.queryAllPerson(user_office);
-        return formatInfo(personList);
-    }
-
-    @Override
-    public List<HashMap<String, Object>> querySomePerson(Person person) {
-        List<Person> personList = personDao.querySomePerson(person);
-        return formatInfo(personList);
-    }
-
-    @Override
-    public List<HashMap<String, Object>> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize) {
-        List<Person> personList = personDao.querySomePersonLimit(person,pageNo,pageSize);
-        return formatInfo(personList);
+    public List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize) {
+        return personDao.querySomePerson(map,pageNo,pageSize);
     }
 
     @Override
@@ -148,13 +89,12 @@ public class PersonServiceImpl implements PersonService {
     public List<Person> queryPersonInfoByIdRTNList(Integer person_id) {
         List<Person> peopleList = new ArrayList<>();
         peopleList.add(personDao.queryPersonInfoByID(person_id));
-        return personDao.getNormalResult(peopleList);
+        return peopleList;
     }
 
     public List<HashMap<String,Object>> queryPersonInfoByIdRTNMap(Integer person_id){
         ArrayList<Person> arrayList = new ArrayList<>();
         Person person = queryPersonInfoById(person_id);
-        person.setLeader(personDao.queryRelatedLeader(person_id));
         arrayList.add(person);
         return formatInfo(arrayList);
     }

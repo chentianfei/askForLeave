@@ -115,7 +115,7 @@
                         parent.layui.table.reload(table_elem_name, {
                             url: 'askForLeaveServlet?action='+query_action
                             ,page: {
-                                curr: sourceData.currentPage//重新从第 1 页开始
+                                curr: sourceData.currentPage
                             }
                             ,request: {
                                 pageName: 'curr' //页码的参数名称，默认：page

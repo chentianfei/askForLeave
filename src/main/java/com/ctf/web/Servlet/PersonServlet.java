@@ -267,17 +267,14 @@ public class PersonServlet extends BaseServlet{
         //获取前端传来的查询参数
         Map<String, String[]> map = request.getParameterMap();
 
-        //通过BeanUtils封装成Person类对象
-        Person person = WebUtils.fillBean(map, Person.class);
-
         //本次查询在进行分页后返回的数据
-        List<HashMap<String, Object>> hashMaps = personService.querySomePersonLimit(person,pageNo,pageSize);
+        List<Person> hashMaps = personService.querySomePerson(map,pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
         result.put("code",0);
         result.put("msg","");
-        result.put("count",personService.querySomePerson(person));
+        result.put("count",personService.querySomePerson(map,null,null));
         result.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -300,13 +297,13 @@ public class PersonServlet extends BaseServlet{
         String user_office = req.getParameter("user_office");
 
         //查询本人基本信息获取返回结果
-        List<HashMap<String, Object>> hashMaps = personService.queryAllPersonLimit(pageNo,pageSize,user_office);
+        List<Person> hashMaps = personService.queryAllPerson(pageNo,pageSize,user_office);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",personService.queryAllPerson(user_office));
+        map.put("count",personService.queryAllPerson(null,null,user_office));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -363,81 +360,6 @@ public class PersonServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
 
-    }
-
-    //绑定相关领导
-    public void bindRelatedLeader(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-
-        //获取领导id
-        String leader_id_str = request.getParameter("leader_id");
-        //获取下属id
-        String subordinate_id_str = request.getParameter("subordinate_id");
-        Integer leader_id = null;
-        Integer subordinate_id = null;
-        if(leader_id_str != null){
-            if(!leader_id_str.equals("")){
-                leader_id = Integer.parseInt(leader_id_str);
-            }
-        }
-        if(subordinate_id_str != null){
-            if(!subordinate_id_str.equals("")){
-                subordinate_id = Integer.parseInt(subordinate_id_str);
-            }
-        }
-
-        System.out.println("leader_id:"+leader_id);
-        System.out.println("subordinate_id:"+subordinate_id);
-
-        //获取处理后的状态码
-        Integer statusCode = personService.bindRelatedLeader(leader_id,subordinate_id);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(statusCode);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
-    }
-
-    //查询相关领导
-    public void queryRelatedLeader(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-
-        //获取参数
-        Integer subordinate_id = Integer.parseInt(request.getParameter("subordinate_id"));
-
-        List<Person> leaderList = personService.queryRelatedLeader(subordinate_id);
-
-
-        //封装成json字符串，通过getWriter().write()返回给页面
-        Map<String,Object> map = new HashMap<>();
-        map.put("code",0);
-        map.put("msg","哈哈");
-        //map.put("count",leaderList.size());
-        map.put("count",leaderList.size());
-        map.put("data",leaderList);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(map);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
-    }
-
-    //删除相关领导
-    public void deleteTheLeader(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-        //获取参数
-        Integer leader_id = Integer.parseInt( request.getParameter("leader_id"));
-        Integer subordinate_id = Integer.parseInt( request.getParameter("subordinate_id"));
-
-        Integer code = personService.deleteTheLeader(leader_id,subordinate_id);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(code);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
     }
 
     //更新人员信息

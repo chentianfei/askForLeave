@@ -6,6 +6,7 @@ import com.ctf.bean.Person;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * @Description : 定义与人员基本信息相关的相关操作
@@ -26,14 +27,10 @@ public interface PersonService {
     Long queryPhone(String phoneNum);
     //新增一个人员信息
     Integer addAPerson(Person person);
-    //分页查询库中所有人员信息
-    List<HashMap<String, Object>> queryAllPersonLimit(int pageNo, int pageSize,String user_office);
     //查询库中所有人员信息
-    List<HashMap<String, Object>> queryAllPerson(String user_office);
-    //根据不定条件查询人员信息_不分页
-    List<HashMap<String, Object>> querySomePerson(Person person);
-    //根据不定条件查询人员信息_分页
-    List<HashMap<String, Object>> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize);
+    List<Person>  queryAllPerson(Integer pageNo,Integer pageSize,String user_office);
+    //根据不定条件查询人员信息
+    List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize);
     //根据人员编号查询单个人员信息
     Person queryPersonInfoById(Integer person_id);
     //根据人员编号查询单个人员信息，返回绑定好领导的list
@@ -46,10 +43,5 @@ public interface PersonService {
     List<Person> querySomePersonByConditions(String sql_condition);
     //根据人员姓名查询人员信息（用于查询重名信息）
     List<Person> queryPersonInfoByName(String person_name);
-    //绑定相关领导
-    Integer bindRelatedLeader(Integer leader_id, Integer subordinate_id);
-    //查询相关领导
-    List<Person> queryRelatedLeader(Integer subordinate_id);
-    //删除相关领导
-    Integer deleteTheLeader(Integer leader_id, Integer subordinate_id);
+
 }

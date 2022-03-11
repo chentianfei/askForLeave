@@ -1,5 +1,6 @@
 package com.ctf.dao;
 
+import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 import com.ctf.utils.JDBCUtils;
@@ -11,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description :
@@ -20,6 +22,36 @@ import java.util.List;
  * @Version v1.0
  */
 public class PersonDao extends BaseDao{
+
+    //新增人员
+    public int addAPerson(Person person) {
+        //给出sql模板,为了便于后面添加sql语句
+        String sql ="insert into person_info(person_id," +
+                "NAME,nation,sex,birthdate,start_work_date,nativeplace,marriage_status," +
+                "name_spouse,nativeplace_spouse,office," +
+                "post,level,phone,allow_leave_days,area_class) " +
+                "values(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        parmas.add(person.getName());
+        parmas.add(person.getNation());
+        parmas.add(person.getSex());
+        parmas.add(person.getBirthDate());
+        parmas.add(person.getStart_work_date());
+        parmas.add(person.getNativePlace());
+        parmas.add(person.getMarriage_status());
+        parmas.add(person.getName_spouse());
+        parmas.add(person.getMarriage_status());
+        parmas.add(person.getOffice());
+        parmas.add(person.getPost());
+        parmas.add(person.getLevel());
+        parmas.add(person.getPhone());
+        parmas.add(person.getAllow_Leave_Days());
+        parmas.add(person.getArea_class());
+
+        return update(sql,parmas.toArray());
+    }
 
     //批量新增人员
     public int addPersonBatch(List<Person> personList) throws SQLException {
@@ -39,17 +71,7 @@ public class PersonDao extends BaseDao{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         for(Person person : personList){
-            prest.setString(1,person.getName());
-            prest.setString(2,person.getNation());
-            prest.setString(3,person.getSex());
-            prest.setString(4,sdf.format(person.getBirthDate()));
-            prest.setString(5,person.getNativePlace());
-            prest.setString(6,person.getOffice());
-            prest.setString(7,person.getPost());
-            prest.setString(8,person.getLevel());
-            prest.setString(9,person.getPhone());
-            prest.setInt(10,person.getAllow_Leave_Days());
-            prest.setString(11,person.getArea_class());
+
             prest.addBatch();
         }
 
@@ -59,347 +81,37 @@ public class PersonDao extends BaseDao{
         return insertCounts.length;
     }
 
-    //根据用户单位返回该单位所有人员的人员编号List
-    public List<Object> queryAllPersonIdByOffice(String office){
-        String sql = "select person_id from person_info where office=?";
-        return queryForOneCol(sql,office);
-    }
-
-    public List<Person> queryAllPersonLimit(int pageNo,int pageSize,String user_office)  {
-        //分页参数：起始值
-        Integer start = (pageNo-1)*pageSize;
-        //分页参数：结束值
-        Integer end = pageSize;
-
-        StringBuilder sql = new StringBuilder("select * from person_info where 1=1 ");
-        //用于保存可变参数
-        List<Object> parmas = new ArrayList<Object>();
-        if(user_office != null ){
-            if(!user_office.equals("")){
-                //根据单位查询
-                sql.append(" and office=? ");
-                parmas.add(user_office);
-            }
-        }
-        //查询全部数据，不区分单位
-        sql.append(" order by person_id desc limit ?,? ");
-        parmas.add(start);
-        parmas.add(end);
-        List<Person> personList = queryForList(Person.class, sql.toString(),parmas.toArray());
-        //对查询出来的每个人绑定领导后返回
-        return  getNormalResult(personList);
-    }
-
-    //根据用户属性查询所有人员信息
-    public List<Person> queryAllPerson(String user_office) {
-        StringBuilder sql = new StringBuilder("select * from person_info where 1=1 ");
-        //用于保存可变参数
-        List<Object> parmas = new ArrayList<Object>();
-        if(user_office != null ){
-            if(!user_office.equals("")){
-                //根据单位查询
-                sql.append(" and office=? ");
-                parmas.add(user_office);
-            }
-        }
-        //查询全部数据，不区分单位
-        sql.append(" order by person_id desc");
-
-        List<Person> personList = queryForList(Person.class, sql.toString(),parmas.toArray());
-        //对查询出来的每个人绑定领导后返回
-        return  getNormalResult(personList);
-    }
-
-    //查询相关领导
-    public List<Person> queryRelatedLeader(Integer person_id){
-        String sql = "SELECT * FROM  person_info WHERE person_id IN(" +
-                "SELECT leader_id FROM leader_subordinate " +
-                "WHERE subordinate_id=?)";
-        List<Person> leaderList = queryForList(Person.class, sql,person_id);
-        return leaderList;
-    }
-
-    //多条件查询人员_分页
-    public List<Person> querySomePersonLimit(Person person,Integer pageNo,Integer pageSize) {
-        //分页参数：起始值
-        Integer start = (pageNo-1)*pageSize;
-        //分页参数：结束值
-        Integer end = pageSize;
-
-        //给出sql模板,为了便于后面添加sql语句
-        StringBuilder sql =new StringBuilder("select * from person_info where 1=1");
-
-        //用于保存可变参数
-        List<Object> parmas = new ArrayList<Object>();
-
-        //String类型的数据，若前端有数据填写处，但是用户可能没填写数据，则该数据在trim后isEmpty == true，或该数据==""
-        //String类型的数据，若前端没有数据填写处，则该数据== null
-        //非String类型的数据，无论前端有无数据填写处，只要没有数据传过来，都是==null
-
-        //姓名
-        String name = person.getName();
-        if(name != "" && !name.trim().isEmpty()){
-            sql.append(" and name like ?");
-            parmas.add("%"+name.trim()+"%");
-        }
-
-        //性别
-        String sex = person.getSex();
-        if(sex != "" && !sex.trim().isEmpty()){
-            sql.append(" and sex = ?");
-            parmas.add(Integer.parseInt(sex.trim()));
-        }
-
-        //民族
-        String nation = person.getNation();
-        if(nation != "" && !nation.trim().isEmpty()){
-            sql.append(" and nation = ?");
-            parmas.add(nation.trim());
-        }
-
-        //出生年月
-        Date birthDate = person.getBirthDate();
-        if(birthDate != null){
-            sql.append(" and birthDate = ?");
-            parmas.add(birthDate);
-        }
-
-        //本人籍贯
-        String nativePlace = person.getNativePlace();
-        if(nativePlace != "" && !nativePlace.trim().isEmpty()){
-            sql.append(" and nativePlace like ?");
-            parmas.add("%"+nativePlace.trim()+"%");
-        }
-
-        //工作单位
-        String office = person.getOffice();
-        if(office != "" && !office.trim().isEmpty()){
-            sql.append(" and office = ?");
-            parmas.add(office.trim());
-        }
-
-        //现任职务
-        String post = person.getPost();
-        if(post != "" && !post.trim().isEmpty()){
-            sql.append(" and post like ?");
-            parmas.add(post.trim());
-        }
-
-        //所在类区
-        String area_class = person.getArea_class();
-        if(area_class != "" && !area_class.trim().isEmpty()){
-            sql.append(" and area_class=?");
-            parmas.add(area_class.trim());
-        }
-
-        //职级
-        String level = person.getLevel();
-        if(level != "" && !level.trim().isEmpty()){
-            sql.append(" and level = ?");
-            parmas.add(level.trim());
-
-            // 这里虽然是string类型，但是不要多此一举为他们前后加上双引号，否则查不出来，具体原因还不清楚
-            // parmas.add('"'+level.trim()+'"');
-        }
-
-        //联系电话
-        String phone = person.getPhone();
-        if(phone != "" && !phone.trim().isEmpty()){
-            sql.append(" and phone = ?");
-            parmas.add(phone.trim());
-        }
-
-        //允许休假天数
-        Integer allow_Leave_Days = person.getAllow_Leave_Days();
-        if(allow_Leave_Days != null){
-            sql.append(" and allow_Leave_Days= ?");
-            parmas.add(allow_Leave_Days);
-        }
-
-        //分页操作
-        sql.append(" order by person_id desc limit ?,? ");
-        parmas.add(start);
-        parmas.add(end);
-
-        //先查询
-        List<Person> personList = queryForList(Person.class,sql.toString(),parmas.toArray());
-        //对查询出来的每个人绑定领导后返回
-        return  getNormalResult(personList);
-
-    }
-    //多条件查询人员_不分页（统计数量用）
-    public List<Person> querySomePerson(Person person) {
-
-        //给出sql模板,为了便于后面添加sql语句
-        StringBuilder sql =new StringBuilder("select * from person_info where 1=1");
-
-        //用于保存可变参数
-        List<Object> parmas = new ArrayList<Object>();
-
-
-        //String类型的数据，若前端有数据填写处，但是用户可能没填写数据，则该数据在trim后isEmpty == true，或该数据==""
-        //String类型的数据，若前端没有数据填写处，则该数据== null
-        //非String类型的数据，无论前端有无数据填写处，只要没有数据传过来，都是==null
-
-        /*
-        person_id=null, name=, sex=, nation=,
-         birthDate=null, nativePlace=西藏自治区日喀则市仲巴县&&,
-         office=, post=, area_class=四类区,
-         level=, phone=, allow_Leave_Days=null,
-         leader=null，
-         */
-
-
-        //姓名
-        String name = person.getName();
-        if(name != "" && !name.trim().isEmpty()){
-            sql.append(" and name like ?");
-            parmas.add("%"+name.trim()+"%");
-        }
-
-        //性别
-        String sex = person.getSex();
-        if(sex != "" && !sex.trim().isEmpty()){
-            sql.append(" and sex = ?");
-            parmas.add(Integer.parseInt(sex.trim()));
-        }
-
-        //民族
-        String nation = person.getNation();
-        if(nation != "" && !nation.trim().isEmpty()){
-            sql.append(" and nation = ?");
-            parmas.add(nation.trim());
-        }
-
-        //出生年月
-        Date birthDate = person.getBirthDate();
-        if(birthDate != null){
-            sql.append(" and birthDate = ?");
-            parmas.add(birthDate);
-        }
-
-        //本人籍贯
-        String nativePlace = person.getNativePlace();
-        if(nativePlace != "" && !nativePlace.trim().isEmpty()){
-            sql.append(" and nativePlace like ?");
-            parmas.add("%"+nativePlace.trim()+"%");
-        }
-
-
-        //工作单位
-        String office = person.getOffice();
-        if(office != "" && !office.trim().isEmpty()){
-            sql.append(" and office = ?");
-            parmas.add(office.trim());
-        }
-
-        //现任职务
-        String post = person.getPost();
-        if(post != "" && !post.trim().isEmpty()){
-            sql.append(" and post like ?");
-            parmas.add(post.trim());
-        }
-
-        //所在类区
-        String area_class = person.getArea_class();
-        if(area_class != "" && !area_class.trim().isEmpty()){
-            sql.append(" and area_class=?");
-            parmas.add(area_class.trim());
-        }
-
-        //职级
-        String level = person.getLevel();
-        if(level != "" && !level.trim().isEmpty()){
-            sql.append(" and level = ?");
-            parmas.add(level.trim());
-
-            // 这里虽然是string类型，但是不要多此一举为他们前后加上双引号，否则查不出来，具体原因还不清楚
-            // parmas.add('"'+level.trim()+'"');
-        }
-
-        //联系电话
-        String phone = person.getPhone();
-        if(phone != "" && !phone.trim().isEmpty()){
-            sql.append(" and phone = ?");
-            parmas.add('"'+phone.trim()+'"');
-        }
-
-        //允许休假天数
-        Integer allow_Leave_Days = person.getAllow_Leave_Days();
-        if(allow_Leave_Days != null){
-            sql.append(" and allow_Leave_Days= ?");
-            parmas.add(allow_Leave_Days);
-        }
-
-        //先查询
-        List<Person> personList = queryForList(Person.class, sql.toString(), parmas.toArray());
-        //对查询出来的每个人绑定领导后返回
-        return getNormalResult(personList);
-        //return queryForList(Person.class,sql2,objects);
-
-    }
-
-    //判断手机号是否存在
-    public Long queryPhone(String phoneNumber){
-        String sql = "select count(*) from person_info where phone = ?";
-        return (Long) queryForSingleValue(sql,phoneNumber);
-    }
-
-    //新增人员
-    public Integer addAPerson(Person person) {
-        //给出sql模板,为了便于后面添加sql语句
-        String sql ="insert into person_info(person_id," +
-                "NAME,nation,sex,birthdate,nativeplace,office," +
-                "post,level,phone,allow_leave_days,area_class) " +
-                "values(null,?,?,?,?,?,?,?,?,?,?,?)";
-
-        //用于保存可变参数
-        List<Object> parmas = new ArrayList<Object>();
-        parmas.add(person.getName());
-        parmas.add(person.getNation());
-        parmas.add(person.getSex());
-        parmas.add(person.getBirthDate());
-        parmas.add(person.getNativePlace());
-        parmas.add(person.getOffice());
-        parmas.add(person.getPost());
-        parmas.add(person.getLevel());
-        parmas.add(person.getPhone());
-        parmas.add(person.getAllow_Leave_Days());
-        parmas.add(person.getArea_class());
-
-        int insertCount = update(sql,parmas.toArray());
-
-        return insertCount;
+    //根据人员id删除人员信息
+    public int deletePersonInfoByID(Integer person_id){
+        String sql = "delete from person_info where person_id = ?";
+        return update(sql,person_id);
     }
 
     //根据手机号删除一个人
-    public Integer deleteAPersonByPhone(String phoneNum){
+    public int deleteAPersonByPhone(String phoneNum){
         String sql = "delete from person_info where phone = ?";
         return update(sql,phoneNum);
     }
 
-    //根据手机号查找一个人的id
-    public Integer queryIdByPhone(String phoneNum){
-        String sql = "select person_id from person_info where phone = ?";
-        Long id = (Long)queryForSingleValue(sql,phoneNum);
-        return id.intValue();
-    }
-
     //更新人员信息
-    public Integer updatePersonInfo(Person newPersonInfo){
-         String updatePerson_InfoSQL = "update person_info set " +
-                 "`NAME`=?," +
-                 "nation=?," +
-                 "sex=?," +
-                 "birthdate=?," +
-                 "nativeplace=?," +
-                 "office=?," +
-                 "post=?," +
-                 "`level`=?," +
-                 "phone=?," +
-                 "allow_leave_days=?," +
-                 "area_class=? "+
-                 "where person_id=?";
+    public int updatePersonInfo(Person newPersonInfo){
+        String updatePerson_InfoSQL = "update person_info set " +
+                "`NAME`=?," +
+                "nation=?," +
+                "sex=?," +
+                "birthdate=?," +
+                "start_work_date=?," +
+                "nativeplace=?," +
+                "marriage_status=?," +
+                "name_spouse=?," +
+                "nativeplace_spouse=?," +
+                "office=?," +
+                "post=?," +
+                "level=?," +
+                "phone=?," +
+                "allow_leave_days=?," +
+                "area_class=? "+
+                "where person_id=?";
 
         //用于保存可变参数
         List<Object> parmas = new ArrayList<Object>();
@@ -407,7 +119,11 @@ public class PersonDao extends BaseDao{
         parmas.add(newPersonInfo.getNation());
         parmas.add(newPersonInfo.getSex());
         parmas.add(newPersonInfo.getBirthDate());
+        parmas.add(newPersonInfo.getStart_work_date());
         parmas.add(newPersonInfo.getNativePlace());
+        parmas.add(newPersonInfo.getMarriage_status());
+        parmas.add(newPersonInfo.getName_spouse());
+        parmas.add(newPersonInfo.getNativeplace_spouse());
         parmas.add(newPersonInfo.getOffice());
         parmas.add(newPersonInfo.getPost());
         parmas.add(newPersonInfo.getLevel());
@@ -419,49 +135,202 @@ public class PersonDao extends BaseDao{
         return update(updatePerson_InfoSQL,parmas.toArray());
     }
 
+    //根据用户单位返回该单位所有人员的人员编号List
+    public List<Object> queryAllPersonIdByOffice(String office){
+        String sql = "select person_id from person_info where office=?";
+        return queryForOneCol(sql,office);
+    }
+
+    //查询所有人员信息
+    public List<Person> queryAllPerson(Integer pageNo,Integer pageSize,String user_office)  {
+        StringBuilder sql = new StringBuilder("select * from person_info where 1=1 ");
+        //用于保存可变参数
+        List<Object> params = new ArrayList<Object>();
+        if(user_office != null ){
+            if(!user_office.equals("")){
+                //根据单位查询
+                sql.append(" and office=? ");
+                params.add(user_office);
+            }
+        }
+
+        //设置排序规则
+        sql.append(" order by person_id desc ");
+
+        //判断是否分页
+        if (pageNo != null && pageSize != null) {
+            //需要分页
+            //分页参数：起始值
+            Integer start = (pageNo - 1) * pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+            sql.append(" limit ?,?");
+            params.add(start);
+            params.add(end);
+        }
+
+        return  queryForList(Person.class, sql.toString(),params.toArray());
+    }
+
+    //根据条件查询人员
+    public List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize) {
+        //查询人员信息的基础语句
+        StringBuilder personInfoSQL = new StringBuilder("select person_id from person_info where 1=1 ");
+        //用于保存可变参数
+        List<Object> params = new ArrayList<Object>();
+        /*----------------------------------------------------------------------------------------*/
+        //遍历并解析map数据
+        for(Map.Entry<String,String[]> m:map.entrySet()){
+            switch (m.getKey()){
+                //姓名
+                case "name":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and name like ?");
+                        params.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //本人籍贯
+                case "nativePlace":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and nativePlace like ?");
+                        params.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //工作单位
+                case "office":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and office = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //类区
+                case "area_class":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and area_class = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //职级
+                case "level":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and level = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //联系电话
+                case "phone":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and phone = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //性别
+                case "sex":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and sex = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //民族
+                case "nation":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and nation = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //出生年月
+                case "birthDate":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and birthDate = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //参公年月【2022年新系统新增】
+                case "start_work_date":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and start_work_date = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //配偶姓名【2022年新系统新增】
+                case "name_spouse":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and name_spouse like ?");
+                        params.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //婚姻状态【2022年新系统新增】
+                case "marriage_status":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and marriage_status = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+                //配偶籍贯【2022年新系统新增】
+                case "nativeplace_spouse":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and nativeplace_spouse like ?");
+                        params.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //现任职务
+                case "post":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and post like ?");
+                        params.add("%"+m.getValue()[0].trim()+"%");
+                    }
+                    break;
+                //允许休假天数
+                case "allow_Leave_Days":
+                    if(!m.getValue()[0].trim().isEmpty()){
+                        personInfoSQL.append(" and allow_Leave_Days = ?");
+                        params.add(m.getValue()[0].trim());
+                    }
+                    break;
+            }
+        }
+
+        //设置排序规则
+        personInfoSQL.append(" order by person_id desc ");
+
+        //判断是否分页
+        if (pageNo != null && pageSize != null) {
+            //需要分页
+            //分页参数：起始值
+            Integer start = (pageNo - 1) * pageSize;
+            //分页参数：结束值
+            Integer end = pageSize;
+            personInfoSQL.append(" limit ?,?");
+            params.add(start);
+            params.add(end);
+        }
+
+        return queryForList(Person.class, personInfoSQL.toString(), params.toArray());
+    }
+
+    //判断手机号是否存在
+    public Long queryPhone(String phoneNumber){
+        String sql = "select count(*) from person_info where phone = ?";
+        return (Long) queryForSingleValue(sql,phoneNumber);
+    }
+
+    //根据手机号查找一个人的id
+    public Integer queryIdByPhone(String phoneNum){
+        String sql = "select person_id from person_info where phone = ?";
+        Long id = (Long)queryForSingleValue(sql,phoneNum);
+        return id.intValue();
+    }
+
     //根据人员编号person_id查找一个人的信息
     public Person queryPersonInfoByID(Integer person_id){
         String sql = "select * from person_info where person_id = ?";
-        Person person = queryForOne(Person.class, sql,person_id);
-        //绑定领导
-        person.setLeader(queryRelatedLeader(person_id));
-        return person;
-    }
-
-    //根据人员id删除人员信息
-    public Integer deletePersonInfoByID(Integer person_id){
-        String sql = "delete from person_info where person_id = ?";
-        return update(sql,person_id);
-    }
-
-    //将数据库获取的原始数据重新定义格式
-    public List<Person> getNormalResult(List<Person> personList) {
-        Integer person_id;
-        for (Person p:personList){
-            //绑定相关领导
-            person_id = queryIdByPhone(p.getPhone());
-            List<Person> leaderList = queryRelatedLeader(person_id);
-            p.setLeader(leaderList);
-        }
-        return personList;
+        return queryForOne(Person.class, sql,person_id);
     }
 
     //根据人员姓名查询人员信息（用于查询重名信息）
     public List<Person> queryPersonInfoByName(String person_name) {
         String sql = "select person_id,`NAME`,phone,office,post from person_info where `NAME`=?";
         return queryForList(Person.class, sql,person_name);
-    }
-
-    //绑定相关领导
-    public Integer bindRelatedLeaderDao(Integer leader_id, Integer subordinate_id) {
-        String sql = "insert into leader_subordinate(leader_id,subordinate_id) values(?,?)";
-        return update(sql, leader_id, subordinate_id);
-    }
-
-    //删除相关领导
-    public Integer deleteTheLeaderDao(Integer leader_id, Integer subordinate_id) {
-        String sql = "delete from leader_subordinate where leader_id = ? and subordinate_id = ?";
-        return update(sql, leader_id, subordinate_id);
     }
 
 
