@@ -37,8 +37,20 @@
                     <li class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
+                            <h3 class="layui-timeline-title">2022年3月11日</h3>
+                            <p>修复以下问题</p>
+                            <ul>
+                                <li>修复了所有待销假人员、今日到期未销假人员、以往到期未销假人员、历史记录查询
+                                    页面中通过条件搜索时偶尔出现的无数据问题</li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="layui-timeline-item">
+                        <i class="layui-icon layui-timeline-axis"></i>
+                        <div class="layui-timeline-content layui-text">
                             <h3 class="layui-timeline-title">2022年3月10日</h3>
-                            <p>修复</p>
+                            <p>修复以下问题</p>
                             <ul>
                                 <li>修复了领导绑定中的问题</li>
                             </ul>

@@ -658,7 +658,7 @@
                         ,limitName: 'nums' //每页数据量的参数名，默认：limit
                     }
                     ,page: {
-                        curr: currentPage //重新从第 1 页开始
+                        curr: 1 //重新从第 1 页开始
                     }
                     ,parseData: function(res) { //res 即为原始返回的数据
                         //将本次查询的数据赋值给导出数据指定的变量
