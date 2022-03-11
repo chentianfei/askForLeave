@@ -639,11 +639,15 @@ public class AskForLeaveServlet extends BaseServlet{
         Integer pageNo = null;
         //获取每页显示数量
         Integer pageSize = null;
-        if(!curr.trim().equals("") && curr!=null){
-            pageNo =Integer.valueOf(curr);
+        if(curr!=null){
+            if(!curr.trim().equals("")){
+                pageNo =Integer.valueOf(curr);
+            }
         }
-        if(!nums.trim().equals("") && nums!=null){
-            pageSize =Integer.valueOf(nums);
+        if(nums!=null){
+            if(!nums.trim().equals("")){
+                pageSize =Integer.valueOf(nums);
+            }
         }
 
         //获取前端传来的查询参数
