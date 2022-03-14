@@ -60,6 +60,20 @@
                     <li class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
+                            <h3 class="layui-timeline-title">2022年3月3日</h3>
+                            <p>新增以下功能</p>
+                            <ul>
+                                <li>显示所有到期未销假人员</li>
+                                <li>可为今日到期未销假人员、所有到期未销假人员发送提醒短信</li>
+                                <li>其中所有到期未销假人员发送提醒短信频率为一日一次</li>
+                                <li>若发送失败，则可再次发送；发送成功后，按钮自动置灰</li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="layui-timeline-item">
+                        <i class="layui-icon layui-timeline-axis"></i>
+                        <div class="layui-timeline-content layui-text">
                             <h3 class="layui-timeline-title">2022年3月2日</h3>
                             <p>首次上线</p>
                             <ul>
