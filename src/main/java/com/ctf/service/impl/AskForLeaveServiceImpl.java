@@ -62,7 +62,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
                     //发送短信，并获取响应对象
                     SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(
-                            SendMsg.SENDMSGSDKAPPID, SendMsg.SIGNNAME_ZBXWZZB,
+                            SendMsg.SENDMSGSDKAPPID, SendMsg.SIGNNAME_ZBXWJYJ,
                             SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK,
                             new String[]{leader.getPhone()},
                             templateParam
@@ -89,7 +89,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
                     params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
                     params.add(SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK);//TemplateId
-                    params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+                    params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
                     params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK,templateParam));//SmsContent
 
                     params.add(thisSendStatus.getCode());//SendStatus,from res
@@ -136,7 +136,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         //发送前保存时间，写入日志
         Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
         //发送短信，并获取响应对象
-        SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,SendMsg.SIGNNAME_ZBXWZZB,
+        SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,SendMsg.SIGNNAME_ZBXWJYJ,
                 SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK,phoneNumberSet,templateParam);
         //通过发射后的相应对象，获取此次发射的响应状态集数组
         SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
@@ -160,7 +160,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
         params.add(SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK);//TemplateId
-        params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+        params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
         params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK,templateParam));//SmsContent
 
         params.add(thisSendStatus.getCode());//SendStatus,from res
@@ -204,7 +204,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         //发送短信，并获取响应对象
         SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(
                 SendMsg.SENDMSGSDKAPPID,
-                SendMsg.SIGNNAME_ZBXWZZB,
+                SendMsg.SIGNNAME_ZBXWJYJ,
                 SendMsg.TEMPLATEID_TOSELFFORALERT,phoneNumberSet,templateParam);
         //通过发射后的相应对象，获取此次发射的响应状态集数组
         SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
@@ -228,7 +228,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
         params.add(SendMsg.TEMPLATEID_TOSELFFORALERT);//TemplateId
-        params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+        params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
         params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOSELFFORALERT,templateParam));//SmsContent
 
         params.add(thisSendStatus.getCode());//SendStatus,from res
@@ -282,7 +282,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
                     //发送短信，并获取响应对象
                     SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
-                            SendMsg.SIGNNAME_ZBXWZZB,
+                            SendMsg.SIGNNAME_ZBXWJYJ,
                             SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE, new String[]{leader.getPhone()},
                             templateParam);
                     //通过发射后的相应对象，获取此次发射的响应状态集数组
@@ -307,7 +307,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
                     params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
                     params.add(SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE);//TemplateId
-                    params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+                    params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
                     params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE,templateParam));//SmsContent
 
                     params.add(thisSendStatus.getCode());//SendStatus,from res
@@ -359,7 +359,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
         //发送短信，并获取响应对象
         SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
-                SendMsg.SIGNNAME_ZBXWZZB,
+                SendMsg.SIGNNAME_ZBXWJYJ,
                 SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE, phoneNumberSet, templateParams);
         //通过发射后的相应对象，获取此次发射的响应状态集数组
         SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
@@ -383,7 +383,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
         params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
         params.add(SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE);//TemplateId
-        params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+        params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
         params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE,templateParams));//SmsContent
 
         params.add(thisSendStatus.getCode());//SendStatus,from res
@@ -435,7 +435,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
             //发送短信，并获取响应对象
             SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
-                    SendMsg.SIGNNAME_ZBXWZZB,
+                    SendMsg.SIGNNAME_ZBXWJYJ,
                     SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY, phoneNumberSet, templateParams);
             //通过发射后的相应对象，获取此次发射的响应状态集数组
             SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
@@ -459,7 +459,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
             params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
             params.add(SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY);//TemplateId
-            params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+            params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
             params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY,templateParams));//SmsContent
 
             params.add(thisSendStatus.getCode());//SendStatus,from res
@@ -486,7 +486,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             Date start_time = DateUtils.timestampToDate_YMDHMS(new Date());
             //发送短信，并获取响应对象
             SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
-                    SendMsg.SIGNNAME_ZBXWZZB,
+                    SendMsg.SIGNNAME_ZBXWJYJ,
                     SendMsg.TEMPLATEID_ALERTTORETURN, phoneNumberSet, templateParams);
             //通过发射后的相应对象，获取此次发射的响应状态集数组
             SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
@@ -510,7 +510,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
             params.add(SendMsg.SENDMSGSDKAPPID);//SmsSdkAppId
             params.add(SendMsg.TEMPLATEID_ALERTTORETURN);//TemplateId
-            params.add(SendMsg.SIGNNAME_ZBXWZZB);//SignName
+            params.add(SendMsg.SIGNNAME_ZBXWJYJ);//SignName
             params.add(SendMsg.getSMSContent(SendMsg.TEMPLATEID_ALERTTORETURN,templateParams));//SmsContent
 
             params.add(thisSendStatus.getCode());//SendStatus,from res

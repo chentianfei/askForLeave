@@ -461,7 +461,7 @@ public class SystemDataServlet extends BaseServlet{
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
-        map.put("msg","哈哈");
+        map.put("msg","");
         map.put("count",systemDataService.queryLeaveType(null, null).size());
         map.put("data",leaveTypes);
 

@@ -30,7 +30,7 @@ public class SendMsg {
     //短信应用id
     public static final String SENDMSGSDKAPPID = "1400582408";
     //短信签名
-    public static final String SIGNNAME_ZBXWZZB = "中共仲巴县委组织部";
+    public static final String SIGNNAME_ZBXWJYJ = "仲巴县教育局";
     //请假审批同意后请假者本人收到的短信提醒模板ID
     public static final String TEMPLATEID_TOSELFWHENASKFORLEAVE = "1225831";
     //请假审批同意后请假者领导收到的短信提醒模板ID

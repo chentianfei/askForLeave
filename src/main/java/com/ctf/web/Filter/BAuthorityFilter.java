@@ -26,7 +26,7 @@ public class BAuthorityFilter implements Filter {
         Role roleInfo = userDao.queryRoleInfoByUserId(user.getId());
 
         //判断是否是超级管理员
-        if(!roleInfo.getRole_name().equals("超级管理员") && !roleInfo.getRole_name().equals("组织部")){
+        if(!roleInfo.getRole_name().equals("超级管理员") && !roleInfo.getRole_name().equals("教育局")){
             //不是超级管理员
             req.getRequestDispatcher("/ordinaryPages/service/personinfomation/personinformation.jsp").forward(request,response);
         }
