@@ -37,7 +37,7 @@ public interface AskForLeaveService {
     //根据请假信息解析人员编号，并返回此编号对应的人员信息
      List<HashMap<String,Object>> queryPersonInfoByIdRTNMap(int serialnumber) throws ParseException;
     //处理请假审批中同意业务
-     int agreeLeave(int serialnumber);
+     int agreeLeave(int serialnumber) throws Exception;
     //处理请假审批中不同意业务
      int notAgreeLeave(int serialnumber,String approval_reason);
 
@@ -58,7 +58,7 @@ public interface AskForLeaveService {
     //根据条件查询所有到假未到岗人员
     List<HashMap<String,Object>> querySomeAllCurrentEOLPerson(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
     //处理销假业务
-     int resumeWork(String serialnumberSTR, String end_leave_remarkSTR,String end_dateSTR,String end_leave_operator) throws ParseException;
+     int resumeWork(String serialnumberSTR, String end_leave_remarkSTR,String end_dateSTR,String end_leave_operator) throws Exception;
 
     //查询全部历史请假记录
      List<HashMap<String,Object>> queryALLHistoryInfo(User user);

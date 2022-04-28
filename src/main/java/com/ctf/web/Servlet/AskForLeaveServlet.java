@@ -1,5 +1,7 @@
 package com.ctf.web.Servlet;
 
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
 import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.LeaveInfoCount;
 import com.ctf.bean.LeaveType;
@@ -7,7 +9,6 @@ import com.ctf.bean.User;
 import com.ctf.service.impl.AskForLeaveServiceImpl;
 import com.ctf.utils.WebUtils;
 import com.google.gson.Gson;
-import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.tencentcloudapi.sms.v20210111.models.SendStatus;
 
 import javax.servlet.ServletException;
@@ -134,16 +135,20 @@ public class AskForLeaveServlet extends BaseServlet{
             }
         }
 
-        SendSmsResponse sendSmsResponse = askForLeaveService.sendAlertSMS(serialnumber);
+        SendSmsResponse sendSmsResponse = null;
+        String send_smg_statusMSG = null;
+        try {
+            sendSmsResponse = askForLeaveService.sendAlertSMS(serialnumber);
+        } catch (Exception e) {
+            send_smg_statusMSG = e.getMessage();
+        }
 
-        //通过发射后的相应对象，获取此次发射的响应状态集数组
-        SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
-        //由于每次只会有一个集合，故取sendStatusSet[0]即可获取此次发射的响应状态集合
-        SendStatus thisSendStatus = sendStatusSet[0];
+        SendSmsResponseBody body = sendSmsResponse.getBody();
 
         Map<String,Object> sendStatusMap = new HashMap<>();
-        sendStatusMap.put("code",thisSendStatus.getCode());
-        sendStatusMap.put("message",thisSendStatus.getMessage());
+        sendStatusMap.put("code",body.getCode());
+        sendStatusMap.put("message",body.getMessage());
+        sendStatusMap.put("send_smg_statusMSG",send_smg_statusMSG);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(sendStatusMap);
@@ -337,7 +342,12 @@ public class AskForLeaveServlet extends BaseServlet{
         int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
         //通过序列号给service发送短信，给dao做增删操作，并返回短信发送情况\
 
-        int code = askForLeaveService.agreeLeave(serialnumber);
+        int code = 0;
+        try {
+            code = askForLeaveService.agreeLeave(serialnumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(code);
@@ -525,8 +535,13 @@ public class AskForLeaveServlet extends BaseServlet{
         String end_dateSTR = request.getParameter("end_date");
         String end_leave_operator = request.getParameter("end_leave_operator");
 
-        int code = askForLeaveService.resumeWork(serialnumberSTR,end_leave_remarkSTR,
-                end_dateSTR,end_leave_operator);
+        int code = 0;
+        try {
+            code = askForLeaveService.resumeWork(serialnumberSTR,end_leave_remarkSTR,
+                    end_dateSTR,end_leave_operator);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
