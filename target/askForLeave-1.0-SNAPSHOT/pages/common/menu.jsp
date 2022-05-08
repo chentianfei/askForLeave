@@ -10,7 +10,6 @@
                 <a href="javascript:;">请假操作</a>
                 <dl class="layui-nav-child">
                     <dd><a href="pages/service/askForLeave/askForLeave.jsp">常规请假登记</a></dd>
-                    <dd><a href="pages/service/rest/rest.jsp">调休登记</a></dd>
                     <dd><a href="pages/service/approvalLeave/approvalLeave.jsp">请假审批</a></dd>
                     <dd></dd>
                 </dl>
@@ -19,9 +18,9 @@
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">销假操作</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="pages/service/endOfLeave/showCurrentEOLInfo.jsp">到假未到岗人员</a></dd>
-                    <dd><a href="pages/service/endOfLeave/endOfLeave.jsp">销假操作</a></dd>
-                    <dd></dd>
+                    <dd><a href="pages/service/endOfLeave/currentEOLInfo_today.jsp">今日到期未销假人员</a></dd>
+                    <dd><a href="pages/service/endOfLeave/currentEOLInfo_before.jsp">以往到期未销假人员</a></dd>
+                    <dd><a href="pages/service/endOfLeave/endOfLeave.jsp">所有待销假人员</a></dd>
                 </dl>
             </li>
 

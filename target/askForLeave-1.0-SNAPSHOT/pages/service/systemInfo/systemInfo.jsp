@@ -128,7 +128,6 @@
                 bindSendObjSwitchStatus();
                 bindCurrentSmsAlertDays();
 
-
                 form.on('submit(updateSmsAlert)', function(data){
                     var sourceData = data.field;
                     var smsAlertDays = sourceData.smsAlertDays;

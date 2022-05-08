@@ -112,15 +112,6 @@
                                                         </div>
                                                     </div>
 
-                                                    <%--请假种类--%>
-                                                    <div class="layui-inline">
-                                                        <label class="layui-form-label">请假种类</label>
-                                                        <div class="layui-input-block" id="leave_type" ></div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div class="layui-form-item">
                                                     <%--出发地--%>
                                                     <div class="layui-inline">
                                                         <label class="layui-form-label" style="width: 100px">出发地</label>
@@ -145,28 +136,26 @@
                                                         </div>
                                                     </div>
 
-                                                    <%--假期类型--%>
-                                                   <%-- <div class="layui-inline">
-                                                        <label class="layui-form-label"
-                                                               style="width: 100px">请假种类</label>
-                                                        <div class="layui-input-inline" style="width: 150px">
-                                                            <select id="leave_type" name="leave_type"  lay-search="">
-                                                                <option value=""></option>
-                                                            </select>
-                                                        </div>
-                                                    </div>--%>
-
-
                                                     <%--批准人--%>
                                                     <div class="layui-inline">
                                                         <label class="layui-form-label"
                                                                style="width: 100px">批准人</label>
                                                         <div class="layui-input-inline" style="width: 150px">
                                                             <input type="text" name="approver"
-                                                                   autocomplete="off" 
+                                                                   autocomplete="off"
                                                                    id="approver" placeholder=""
                                                                    class="layui-input">
                                                         </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="layui-form-item">
+
+                                                    <%--请假种类--%>
+                                                    <div class="layui-inline">
+                                                        <label class="layui-form-label">请假种类</label>
+                                                        <div class="layui-input-block" id="leave_type" ></div>
                                                     </div>
 
                                                 </div>
@@ -216,7 +205,8 @@
 
                                                 <div class="layui-form-item" style="padding-left: 70%">
                                                     <div class="layui-input-block">
-                                                        <button type="submit" class="layui-btn" lay-submit lay-filter="leave_info_query">查询</button>
+                                                        <button type="submit" class="layui-btn" lay-submit
+                                                                lay-filter="leave_info_query">查询</button>
                                                         <button type="reset" class="layui-btn layui-btn-normal" >重置</button>
                                                     </div>
                                                 </div>
@@ -263,8 +253,9 @@
         <%--表格上方工具栏--%>
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
-                <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>
+                <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
+                <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+                <button class="layui-btn layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
             </div>
         </script>
 
@@ -317,11 +308,15 @@
                     ,range: ['#end_date_maybe_min', '#end_date_maybe_max']
                 });
 
-                table.render({
+                //定义导出报表的数据
+                let exportData = {};
+
+                var approvalInfo_query = table.render({
                     elem: '#approval'
                     ,url:'askForLeaveServlet?action=queryAllLeaveInfo'
-                    //,toolbar: '#toolbar' //开启头部工具栏，并为其绑定左侧模板
-                    ,title: '待审核信息表'
+                    ,toolbar: '#toolbar'
+                    ,defaultToolbar: []
+                    ,title: '请假信息审核数据表'+new Date().getTime()
                     ,request: {
                         pageName: 'curr' //页码的参数名称，默认：page
                         ,limitName: 'nums' //每页数据量的参数名，默认：limit
@@ -350,6 +345,16 @@
                         ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: 250}
                     ]]
                     ,page:true
+                    ,parseData: function(res) { //res 即为原始返回的数据
+                        //将本次查询的数据赋值给导出数据指定的变量
+                        exportData = res.count;
+                        return {
+                            "code": res.code, //解析接口状态
+                            "msg": res.msg, //解析提示文本
+                            "count": res.count.length, //解析数据长度
+                            "data": res.data //解析数据列表
+                        };
+                    }
                 });
 
                 //行工具栏事件
@@ -532,11 +537,10 @@
                             $.each(data,function (index,ele) {
                                 console.log(ele.serialnumber);
                             })
-                            //layer.alert(JSON.stringify(data));
                             break;
-                        //自定义头工具栏右侧图标 - 提示
-                        case 'LAYTABLE_TIPS':
-                            layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        //导出数据
+                        case 'export':
+                            table.exportFile(approvalInfo_query.config.id, exportData, 'xls');
                             break;
                     };
                 });
@@ -585,11 +589,6 @@
                     const start_date_max = sourceData.start_date_max;
                     const start_date_min = sourceData.start_date_min;
 
-                    /*const birthDate = sourceData.birthDate;
-                    const nation = sourceData.nation;
-                    const sex = sourceData.sex;
-                    const post = sourceData.post;*/
-
                     //使用layui直接重载表格（兼有数据查询）：
                     table.reload('approval', {
                         url: 'askForLeaveServlet?action=querySomeLeaveInfos'
@@ -619,6 +618,16 @@
                         }
                         ,page: {
                             curr: 1 //重新从第 1 页开始
+                        }
+                        ,parseData: function(res) { //res 即为原始返回的数据
+                            //将本次查询的数据赋值给导出数据指定的变量
+                            exportData = res.count;
+                            return {
+                                "code": res.code, //解析接口状态
+                                "msg": res.msg, //解析提示文本
+                                "count": res.count.length, //解析数据长度
+                                "data": res.data //解析数据列表
+                            };
                         }
                     });
                     return false;

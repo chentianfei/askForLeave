@@ -100,7 +100,7 @@
 
         <%--单位信息表格内部工具栏--%>
         <script type="text/html" id="officeInfoTableBaseInfo">
-            {{# if(d.office_name !== "县委组织部"){ }}
+            {{# if(d.office_name !== "县教育局"){ }}
             <a class="layui-btn layui-btn-xs" lay-event="updateOfficeInfo" >修改单位信息</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteAOfficeInfo">删除该单位</a>
             {{#  } }}
@@ -110,7 +110,6 @@
         <script type="text/html" id="levelInfoTableToolbar">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-sm" lay-event="addALevelInfo" id="addALevelInfo">新增职级信息</button>
-
             </div>
         </script>
 
@@ -129,10 +128,8 @@
 
         <%--假期类型表格内部工具栏--%>
         <script type="text/html" id="leaveTypeTableBaseInfo">
-            {{# if(d.leave_type !== "调休"){ }}
             <a class="layui-btn layui-btn-xs" lay-event="updateLeaveType" >修改假期名称</a>
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteLeaveType">删除该假期类型</a>
-            {{#  } }}
         </script>
 
         <script>

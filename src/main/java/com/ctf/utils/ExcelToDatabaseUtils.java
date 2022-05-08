@@ -86,7 +86,6 @@ public class ExcelToDatabaseUtils {
                             case 2:
                                 String birthdate2 = cell.getStringCellValue();
                                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                                System.out.println(birthdate2);
                                 person.setBirthDate(sdf.parse(birthdate2));
                                 break;
                             case 3:

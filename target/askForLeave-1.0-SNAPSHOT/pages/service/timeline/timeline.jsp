@@ -33,50 +33,15 @@
                 </fieldset>
 
                 <ul class="layui-timeline">
+
                     <li class="layui-timeline-item">
                         <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
-                            <h3 class="layui-timeline-title">2022年3月1日</h3>
-                            <p>优化与修复</p>
+                            <h3 class="layui-timeline-title">2022年5月6日</h3>
+                            <p>首次上线</p>
                             <ul>
-                                <li>对操作逻辑进行了优化</li>
-                                <li>修复了发送提醒短信后刷新失效的问题</li>
+                                <li>按照设计方案完成系统部署上线</li>
                             </ul>
-                        </div>
-                    </li>
-                    <li class="layui-timeline-item">
-                        <i class="layui-icon layui-timeline-axis"></i>
-                        <div class="layui-timeline-content layui-text">
-                            <h3 class="layui-timeline-title">2022年2月25日</h3>
-                            <p>修复以下问题</p>
-                            <ul>
-                                <li>在所有面向领导发送的短信内容中，
-                                    对单位数据的抓取由原来抓取领导所在单位
-                                    变成现在抓取请假者所在单位
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="layui-timeline-item">
-                        <i class="layui-icon layui-timeline-axis"></i>
-                        <div class="layui-timeline-content layui-text">
-                            <h3 class="layui-timeline-title">2022年2月23日</h3>
-                            <p>新增以下功能</p>
-                            <ul>
-                                <li>显示所有到期未销假人员</li>
-                                <li>可为今日到期未销假人员、所有到期未销假人员发送提醒短信</li>
-                                <li>其中所有到期未销假人员发送提醒短信频率为一日一次</li>
-                                <li>若发送失败，则可再次发送；发送成功后，按钮自动置灰</li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="layui-timeline-item">
-                        <i class="layui-icon layui-timeline-axis"></i>
-                        <div class="layui-timeline-content layui-text">
-                            <h3 class="layui-timeline-title">2021年12月13日</h3>
-                            <p>
-                                <br>按照设计方案完成系统部署上线
-                            </p>
                         </div>
                     </li>
                 </ul>

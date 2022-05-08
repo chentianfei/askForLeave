@@ -63,7 +63,7 @@ public class PersonServlet extends BaseServlet{
                     String path = "E:"+File.separator+"uploadFiles"
                             +File.separator+"AskForLeave"
                             +File.separator+"zbx-jyj";
-                    //String path = File.separator+"Users"+File.separator+"tianfeichen"+File.separator+"Desktop";
+                    /*String path = File.separator+"Users"+File.separator+"tianfeichen"+File.separator+"Desktop";*/
                     //定义上传文件的完整路径
                     filePath = String.format("%s"+File.separator+"%s", path, fileName);
 
@@ -156,7 +156,8 @@ public class PersonServlet extends BaseServlet{
             result.put("status","ok");
             String result_json = gson.toJson(result);
             response.getWriter().write(result_json);
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             //封装成json字符串，通过getWriter().write()返回给页面
             Map<String,Object> result = new HashMap<>();
             result.put("status","fail");
@@ -167,7 +168,8 @@ public class PersonServlet extends BaseServlet{
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables) {
             throwables.printStackTrace();
             int errorCode = throwables.getErrorCode();
             String errorMessage = ErrorCode.returnCHNMessageByErrorCode(errorCode);
@@ -182,7 +184,8 @@ public class PersonServlet extends BaseServlet{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             //封装成json字符串，通过getWriter().write()返回给页面
             Map<String,Object> result = new HashMap<>();
             result.put("status","fail");
@@ -193,7 +196,8 @@ public class PersonServlet extends BaseServlet{
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        }  catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             //封装成json字符串，通过getWriter().write()返回给页面
             Map<String,Object> result = new HashMap<>();

@@ -207,7 +207,9 @@
                                                         "<option selected value="+item.id+">"+item.role_name+"-"+item.role_description+"</option>>"
                                                     );
                                                 } else {
-                                                    body.find('[id=role]').append($("<option>").attr("value", item.id).text(item.role_name+"-"+item.role_description));
+                                                    if(item.id!=1){
+                                                        body.find('[id=role]').append($("<option>").attr("value", item.id).text(item.role_name+"-"+item.role_description));
+                                                    }
                                                 }
                                             });
 

@@ -28,6 +28,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
 
     private static UserDao userDao = new UserDao();
     private SMSLogDao smsLogDao = new SMSLogDao();
+
     //请假审批后根据请假流水号给本人发送短信
     private SendSmsResponse sendMsgToSelfBySerialnumberWhenAskForLeave(int serialnumber) throws Exception {
         /*
