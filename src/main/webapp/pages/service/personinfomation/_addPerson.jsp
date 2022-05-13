@@ -45,6 +45,63 @@
                 </div>
 
                 <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">参公年月</label>
+                    <div class="layui-input-inline" style="width:400px" >
+                        <input type="text" class="layui-input" placeholder="请点击"
+                               autocomplete=“off”
+                               id="start_work_date" name="start_work_date"
+                               lay-verify="required">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">婚姻状态</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="marriage_status" value="未婚" title="未婚" checked="">
+                        <input type="radio" name="marriage_status" value="已婚" title="已婚">
+                        <input type="radio" name="marriage_status" value="丧偶" title="丧偶">
+                        <input type="radio" name="marriage_status" value="离异" title="离异">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">配偶姓名</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <input type="text" name="name_spouse" placeholder="请输入"
+                               autocomplete=“off”
+                               lay-verify="required" id="name_spouse"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item" id="area_spouce">
+                    <div class="layui-inline">
+                        <label class="layui-form-label" style="width: 150px">配偶籍贯</label>
+                        <div class="layui-input-inline" style="width: 120px">
+                            <select name="province" data-area="西藏自治区"
+                                    lay-verify="required"
+                                    lay-filter="province" lay-search>
+                                <option value="">选择省</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline" style="width: 120px">
+                            <select name="city" data-area="日喀则市"
+                                    lay-verify="required"
+                                    lay-filter="city" lay-search>
+                                <option value="">选择市</option>
+                            </select>
+                        </div>
+                        <div class="layui-input-inline" style="width: 120px">
+                            <select name="district" lay-filter="district"
+                                    lay-verify="required"
+                                    lay-search>
+                                <option value="">选择区</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">民族</label>
                     <div class="layui-input-inline" style="width:400px">
                         <select id="nation" name="nation" lay-verify="required" lay-search>
@@ -54,7 +111,7 @@
                 </div>
 
 
-                <div class="layui-form-item">
+                <div class="layui-form-item" id="area_self">>
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width: 150px">本人籍贯</label>
                         <div class="layui-input-inline" style="width: 120px">
@@ -83,7 +140,7 @@
 
 
                 <div class="layui-form-item">
-                          <label class="layui-form-label" style="width:150px">工作单位</label>
+                    <label class="layui-form-label" style="width:150px">工作单位</label>
                     <div class="layui-input-inline" style="width:400px">
                         <select id="office" name="office" lay-verify="required" lay-search>
                             <option value=""></option>

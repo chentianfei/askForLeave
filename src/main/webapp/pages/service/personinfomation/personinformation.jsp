@@ -213,23 +213,6 @@
 <script type="text/html" id="baseInfo">
     <a class="layui-btn layui-btn-xs" lay-event="update" >修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
-
-    {{# if(d.leader.length === 0){ }}
-    <a type="button" id="bindLeader"
-       class="layui-btn  layui-btn-xs layui-btn-primary layui-border-red layui-btn-radius"
-       lay-event="showRelatedLeader">
-        暂未绑定领导
-    </a>
-    {{#  } }}
-
-    {{#  if(d.leader.length >0 ){ }}
-    <a type="button" id="showRelatedLeader"
-       class="layui-btn  layui-btn-xs layui-btn-primary layui-border-green  layui-btn-radius"
-       lay-event="showRelatedLeader">
-        已绑定{{ d.leader.length }}位领导
-    </a>
-    {{#  } }}
-
 </script>
 
 <script>
@@ -524,44 +507,6 @@
                             });
                         }
                     });
-                });
-            }
-            //查看与绑定相关领导
-            else if(layEvent === 'showRelatedLeader'){
-                //do something
-                showRelatedLeaderLayer = layer.open({
-                    type: 2,
-                    title: '查看相关领导',
-                    fixed: true,
-                    maxmin: true, //开启最大化最小化按钮
-                    area: ['1500px', '600px'],
-                    id: "LAY_layuipro",
-                    content: "pages/service/personinfomation/_showRelatedLeader.jsp",
-                    anim:2,
-                    resize:false,
-                    success: function (layero, index) {
-                        /*不要用body.find("#subordinate_id").val(subordinate_id)获取下属id值
-                          会出现父页面将值赋给子页面有延迟，子页面获取值时，父页面还没赋值完，导致获取到空值
-                          这里直接采用获取父页面隐藏域的值的方式，父页面的值随时都有，子页面难以读取就能读取出来
-                          */
-                    },
-                    cancel: function () {
-                        //重载表格
-                        table.reload('personinformation', {
-                            url: 'personServlet?action=queryAllPerson'
-                            ,page: {
-                                curr: currentPage //重新从第 1 页开始
-                            }
-                            ,request: {
-                                pageName: 'curr' //页码的参数名称，默认：page
-                                ,limitName: 'nums' //每页数据量的参数名，默认：limit
-                            }
-                        });
-                        //关闭此页面
-                        layer.close(showRelatedLeaderLayer);
-                        //右上角关闭回调
-                        //return false 开启该代码可禁止点击该按钮关闭
-                    }
                 });
             }
         });

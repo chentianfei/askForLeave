@@ -1,9 +1,6 @@
 package com.ctf.service.impl;
 
-import com.ctf.bean.LeaveInfo;
-import com.ctf.bean.LeaveInfoCount;
-import com.ctf.bean.Person;
-import com.ctf.bean.User;
+import com.ctf.bean.*;
 import com.ctf.dao.*;
 import com.ctf.service.AskForLeaveService;
 import com.ctf.utils.DateUtils;
@@ -43,14 +40,14 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         Person person = personDao.queryPersonInfoByID(person_id);
 
         //根据人员编号获取领导列表，并解析领导手机号
-        List<Person> leaderList = personDao.queryRelatedLeader(person_id);
+        List<Leader> leaderList = personDao.queryRelatedLeader(person_id);
         if(leaderList != null){
             if(leaderList.size()!=0){
                 int sendStatus = 0;
-                for(Person leader : leaderList){
+                for(Leader leader : leaderList){
                     //封装短信模板参数数据
                     List<String> templateParamList = new ArrayList<>();
-                    templateParamList.add(leader.getName());
+                    templateParamList.add(leader.getOffice_leader_name());
                     templateParamList.add(person.getOffice());
                     templateParamList.add(person.getName());
                     templateParamList.add(new SimpleDateFormat(DATEFORMAT_YMD).format(leaveInfo.getEnd_date()));
@@ -68,7 +65,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(
                             SendMsg.SENDMSGSDKAPPID, SendMsg.SIGNNAME_ZBXWZZB,
                             SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK,
-                            new String[]{leader.getPhone()},
+                            new String[]{leader.getOffice_leader_phone()},
                             templateParam
                     );
                     //通过发射后的相应对象，获取此次发射的响应状态集数组
@@ -85,7 +82,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                             "?,?,?,?,?,?,?)";
 
                     List<Object> params = new ArrayList<>();
-                    params.add(leader.getPhone());//PhoneNumber
+                    params.add(leader.getOffice_leader_phone());//PhoneNumber
                     params.add(serialnumber);//SerialNo_askforleave_thisSystem
                     params.add(person_id);//person_id
 
@@ -264,15 +261,15 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         Person person = personDao.queryPersonInfoByID(person_id);
 
         //根据人员编号获取领导列表，并解析领导手机号
-        List<Person> leaderList = personDao.queryRelatedLeader(person_id);
+        List<Leader> leaderList = personDao.queryRelatedLeader(person_id);
 
         if(leaderList != null){
             if(leaderList.size()!=0){
                 int sendStatus = 0;
-                for(Person leader : leaderList){
+                for(Leader leader : leaderList){
                     //封装短信模板参数数据
                     List<String> templateParamList = new ArrayList<>();
-                    templateParamList.add(leader.getName());
+                    templateParamList.add(leader.getOffice_leader_name());
                     templateParamList.add(person.getOffice());
                     templateParamList.add(person.getName());
                     templateParamList.add(leaveInfo.getLeave_type());
@@ -291,7 +288,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                     //发送短信，并获取响应对象
                     SendSmsResponse sendSmsResponse = SendMsg.sendMsgByPhoneNum(SendMsg.SENDMSGSDKAPPID,
                             SendMsg.SIGNNAME_ZBXWZZB,
-                            SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE, new String[]{leader.getPhone()},
+                            SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE, new String[]{leader.getOffice_leader_phone()},
                             templateParam);
                     //通过发射后的相应对象，获取此次发射的响应状态集数组
                     SendStatus[] sendStatusSet = sendSmsResponse.getSendStatusSet();
@@ -307,7 +304,7 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
                             "?,?,?,?,?,?,?)";
 
                     List<Object> params = new ArrayList<>();
-                    params.add(leader.getPhone());//PhoneNumber
+                    params.add(leader.getOffice_leader_phone());//PhoneNumber
                     params.add(serialnumber);//SerialNo_askforleave_thisSystem
                     params.add(person_id);//person_id
 
@@ -612,12 +609,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
         if(person.getBirthDate()!=null){
             hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
         }
-        if(person.getLeader()!=null){
-
-            hashMap.put("leader", person.getLeader());
-        }else {
-            hashMap.put("leader", new ArrayList<>());
-        }
         hashMap.put("serialnumber",leaveInfo.getSerialnumber());
         hashMap.put("leave_type",leaveInfo.getLeave_type());
         if(leaveInfo.getStart_date()!=null){
@@ -680,7 +671,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             if(person.getBirthDate()!=null){
                 hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
             }
-            hashMap.put("leader", person.getLeader());
             hashMap.put("serialnumber",leaveInfo.getSerialnumber());
             hashMap.put("leave_type",leaveInfo.getLeave_type());
             if(leaveInfo.getStart_date()!=null){
@@ -742,7 +732,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             if(person.getBirthDate()!=null){
                 hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
             }
-            hashMap.put("leader", person.getLeader());
             hashMap.put("serialnumber",leaveInfo.getSerialnumber());
             hashMap.put("leave_type",leaveInfo.getLeave_type());
             if(leaveInfo.getStart_date()!=null){
@@ -801,7 +790,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             if(person.getBirthDate()!=null){
                 hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
             }
-            hashMap.put("leader", person.getLeader());
             hashMap.put("serialnumber",leaveInfo.getSerialnumber());
             hashMap.put("leave_type",leaveInfo.getLeave_type());
             if(leaveInfo.getStart_date()!=null){
@@ -866,7 +854,6 @@ public class AskForLeaveServiceImpl implements AskForLeaveService {
             if(person.getBirthDate()!=null){
                 hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
             }
-            hashMap.put("leader", person.getLeader());
             hashMap.put("serialnumber",leaveInfo.getSerialnumber());
             hashMap.put("leave_type",leaveInfo.getLeave_type());
             if(leaveInfo.getStart_date()!=null){

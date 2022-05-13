@@ -38,15 +38,6 @@ public class PersonDaoTest {
     @Test
     public void querySomePerson() {
 
-        Person person = new Person(
-                null,"测试","",
-                "",null,"",
-                "","","四类区","",
-                "",null,null
-        );
-        System.out.println(personDao.querySomePersonLimit(person,1,2));
-
-
     }
 
     @Test

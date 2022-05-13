@@ -49,7 +49,6 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Integer updatePersonInfo(Person person) {
-
         return personDao.updatePersonInfo(person);
     }
 
@@ -133,7 +132,6 @@ public class PersonServiceImpl implements PersonService {
             hashMap.put("level", person.getLevel());
             hashMap.put("phone", person.getPhone());
             hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
-            hashMap.put("leader", person.getLeader());
             mapList.add(hashMap);
         }
         return mapList;

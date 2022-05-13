@@ -1,5 +1,6 @@
 package com.ctf.dao;
 
+import com.ctf.bean.Leader;
 import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.Office;
 import com.ctf.bean.Person;
@@ -22,6 +23,8 @@ import java.util.Map;
  * @Version v1.0
  */
 public class PersonDao extends BaseDao{
+
+    OfficeLeaderDao officeLeaderDao = new OfficeLeaderDao();
 
     //新增人员
     public int addAPerson(Person person) {
@@ -306,6 +309,19 @@ public class PersonDao extends BaseDao{
         }
 
         return queryForList(Person.class, personInfoSQL.toString(), params.toArray());
+    }
+
+    public List<Leader> queryRelatedLeader(Integer person_id){
+        if(null != person_id){
+            //找到人员所在的单位
+            Person person = queryPersonInfoByID(person_id);
+            String office = person.getOffice();
+
+            //根据所在单位名称获取该单位的领导，并封装为person对象
+            List<Leader> leaders = officeLeaderDao.queryLeaderByOfficeName(office);
+            return leaders;
+        }
+        return null;
     }
 
     //判断手机号是否存在
