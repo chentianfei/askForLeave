@@ -65,43 +65,6 @@
                 </div>
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label" style="width:150px">配偶姓名</label>
-                    <div class="layui-input-inline" style="width:400px">
-                        <input type="text" name="name_spouse" placeholder="请输入"
-                               autocomplete=“off”
-                               lay-verify="required" id="name_spouse"
-                               class="layui-input">
-                    </div>
-                </div>
-
-                <div class="layui-form-item" id="area_spouce">
-                    <div class="layui-inline">
-                        <label class="layui-form-label" style="width: 150px">配偶籍贯</label>
-                        <div class="layui-input-inline" style="width: 120px">
-                            <select name="province" data-area="西藏自治区"
-                                    lay-verify="required"
-                                    lay-filter="province" lay-search>
-                                <option value="">选择省</option>
-                            </select>
-                        </div>
-                        <div class="layui-input-inline" style="width: 120px">
-                            <select name="city" data-area="日喀则市"
-                                    lay-verify="required"
-                                    lay-filter="city" lay-search>
-                                <option value="">选择市</option>
-                            </select>
-                        </div>
-                        <div class="layui-input-inline" style="width: 120px">
-                            <select name="district" lay-filter="district"
-                                    lay-verify="required"
-                                    lay-search>
-                                <option value="">选择区</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">民族</label>
                     <div class="layui-input-inline" style="width:400px">
                         <select id="nation" name="nation" lay-verify="required" lay-search>
@@ -199,6 +162,18 @@
                     </div>
                 </div>
 
+                <%--接受子页面传来的nativeplace_spouse的值，以便后续发送--%>
+                <input  type="hidden" class="layui-input"
+                        name="nativeplace_spouse"
+                        style="display:none"
+                        id="nativeplace_spouse"  />
+
+                <%--接受name_spouse的值，以便后续发送--%>
+                <input  type="hidden" class="layui-input"
+                        name="name_spouse"
+                        style="display:none"
+                        id="name_spouse"  />
+
                 <button type="submit" class="layui-btn" style="display:none"
                         id="addPersonSubmit" lay-submit lay-filter="addPersonSubmit"></button>
                 <button type="reset" class="layui-btn" style="display:none"
@@ -208,6 +183,40 @@
         </div>
 
         <script type="text/javascript">
+
+            function hasMarried() {
+                /*点击新增单个人员按钮后的弹窗*/
+                layer.open({
+                    type: 2,
+                    title: '填写配偶信息',
+                    shadeClose: true,
+                    shade: false,
+                    maxmin: true, //开启最大化最小化按钮
+                    area: ['600px', '680px'],
+                    content: "pages/service/personinfomation/_addSpouse.jsp",
+                    anim:2,
+                    resize:false,
+                    id:'LAY_layuipro',
+                    btn:['提交','重置'],
+                    yes:function (index, layero) {
+                        //提交按钮的回调
+                        var body = layer.getChildFrame('body', index);
+                        // 找到隐藏的提交按钮模拟点击提交
+                        body.find('#addSpouseSubmit').click();
+                    },
+                    btn2: function (index, layero) {
+                        //重置按钮的回调
+                        var body = layer.getChildFrame('body', index);
+                        // 找到隐藏的提交按钮模拟点击提交
+                        body.find('#addSpouseReset').click();
+                        return false;// 开启该代码可禁止点击该按钮关闭
+                    },
+                    cancel: function () {
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    }
+                });
+            }
 
             layui.use(['laydate','form','common','table'], function() {
                 var laydate = layui.laydate;

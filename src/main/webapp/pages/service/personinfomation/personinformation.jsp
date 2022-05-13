@@ -318,7 +318,6 @@
                             //return false 开启该代码可禁止点击该按钮关闭
                         }
                     });
-
                     break;
                 case 'batchAddPerson':
                     /*点击批量添加人员按钮后的操作*/
@@ -523,7 +522,6 @@
                 //上传完毕回调
                 var filepath = res.filepath;
                 layer.msg("开始解析信息，请稍候！");
-
                 $.ajax({
                     url: 'personServlet?action=batchAddPerson',
                     type : 'get',
