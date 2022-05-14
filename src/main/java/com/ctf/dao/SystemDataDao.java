@@ -142,6 +142,13 @@ public class SystemDataDao extends BaseDao{
         return queryForList(LeaveType.class, sql.toString(),parmas.toArray());
     }
 
+    //根据工作单位id查询工作单位内容
+    public Office queryOfficeByOfficeId(Integer office_id){
+        String sql = "select * from office_info_leader" +
+                " where Integer office_id=? ";
+        return queryForOne(Office.class,sql,office_id);
+    }
+
     //查询工作单位内容（常用于下拉框）
     public List<Office> queryOffice(Integer pageNo,Integer pageSize){
 
@@ -183,4 +190,9 @@ public class SystemDataDao extends BaseDao{
         return nations;
     }
 
+    //根据单位id查询单位领导信息
+    public List<Leader> queryOfficeLeaderByOfficeId(Integer office_id) {
+        String sql = "select * from office_info_leader where office_id=?";
+        return queryForList(Leader.class, sql,office_id);
+    }
 }

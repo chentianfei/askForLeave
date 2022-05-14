@@ -23,6 +23,8 @@ public interface SystemDataService {
     int updateOfficeInfo(Office office);
     //查询office 单位名单
     List<Office> queryOffice(Integer pageNo,Integer pageSize);
+    //查询office 单位名单
+    Office queryOfficeByOfficeId(Integer office_id);
 
     //新增职级
     int addALevelInfo(String level_name);
@@ -58,4 +60,6 @@ public interface SystemDataService {
     List<Role> queryRoleInfo(Integer pageNo, Integer pageSize);
     //查询短信提醒天数
     int querySmsAlertDays();
+    //根据单位id查询单位领导信息
+    List<Leader> queryOfficeLeaderByOfficeId(Integer office_id);
 }

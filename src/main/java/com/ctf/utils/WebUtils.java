@@ -110,6 +110,8 @@ public class WebUtils {
         return bean ;
     }
 
+
+
     //将String类型的List转换为String[]
     public static String[] stringListTostringArray(List<String> stringList){
         String[] strings = new String[stringList.size()];

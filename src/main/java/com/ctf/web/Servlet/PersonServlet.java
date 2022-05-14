@@ -243,6 +243,8 @@ public class PersonServlet extends BaseServlet{
         Map<String, String[]> personInfo = request.getParameterMap();
         Person person = WebUtils.fillBean(personInfo, Person.class);
 
+        System.out.println(person);
+
         //调用personService的addAPerson往数据库新增数据
         Integer code = personService.addAPerson(person);
 

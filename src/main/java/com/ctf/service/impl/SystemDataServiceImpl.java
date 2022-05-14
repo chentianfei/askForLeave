@@ -72,16 +72,20 @@ public class SystemDataServiceImpl implements SystemDataService {
      * @Date ：2021/12/8 20:14
      */
     public int addAOffice(String office_name) {
-
-        List<Office> offices = queryOffice(null, null);
-        //遍历查找该名称是否已被登记，如果被登记返回-2
-        for(Office office:offices){
-            if(office.getOffice_name().equals(office_name)){
-                return -2;
+        int code = 0;
+        if(office_name!=null){
+            if(!office_name.equals("")){
+                //遍历查找该名称是否已被登记，如果被登记返回-2
+                List<Office> offices = queryOffice(null, null);
+                for(Office office:offices){
+                    if(office.getOffice_name().equals(office_name)){
+                        return -2;
+                    }
+                }
+                code = systemDataDao.addAOffice(office_name);
             }
         }
-
-        return systemDataDao.addAOffice(office_name);
+        return code;
     }
 
     @Override
@@ -106,6 +110,17 @@ public class SystemDataServiceImpl implements SystemDataService {
      */
     public int updateOfficeInfo(Office office) {
         return systemDataDao.updateOfficeInfo(office);
+    }
+
+    @Override
+    public Office queryOfficeByOfficeId(Integer office_id) {
+        return systemDataDao.queryOfficeByOfficeId(office_id);
+    }
+
+    @Override
+    public List<Leader> queryOfficeLeaderByOfficeId(Integer office_id) {
+        return systemDataDao.queryOfficeLeaderByOfficeId(office_id);
+
     }
 
     @Override

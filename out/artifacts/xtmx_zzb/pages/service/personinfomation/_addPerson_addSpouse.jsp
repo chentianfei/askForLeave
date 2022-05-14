@@ -18,8 +18,8 @@
             <form class="layui-form layui-form-pane">
 
                 <div class="layui-form-item">
-                    <label class="layui-form-label" style="width:150px">配偶姓名</label>
-                    <div class="layui-input-inline" style="width:400px">
+                    <label class="layui-form-label" style="width:120px">配偶姓名</label>
+                    <div class="layui-input-inline" style="width:320px">
                         <input type="text" name="name_spouse" placeholder="请输入"
                                autocomplete=“off”
                                lay-verify="required" id="name_spouse"
@@ -29,22 +29,22 @@
 
                 <div class="layui-form-item">
                     <div class="layui-inline">
-                        <label class="layui-form-label" style="width: 150px">配偶籍贯</label>
-                        <div class="layui-input-inline" style="width: 120px">
+                        <label class="layui-form-label" style="width: 120px">配偶籍贯</label>
+                        <div class="layui-input-inline" style="width: 100px">
                             <select name="province" data-area="西藏自治区"
                                     lay-verify="required"
                                     lay-filter="province" lay-search>
                                 <option value="">选择省</option>
                             </select>
                         </div>
-                        <div class="layui-input-inline" style="width: 120px">
+                        <div class="layui-input-inline" style="width: 100px">
                             <select name="city" data-area="日喀则市"
                                     lay-verify="required"
                                     lay-filter="city" lay-search>
                                 <option value="">选择市</option>
                             </select>
                         </div>
-                        <div class="layui-input-inline" style="width: 120px">
+                        <div class="layui-input-inline" style="width: 100px">
                             <select name="district" lay-filter="district"
                                     lay-verify="required"
                                     lay-search>
@@ -97,6 +97,8 @@
                     parent.$("#name_spouse").val(name_spouse);
                     //给父页面的nativeplace_spouse赋值
                     parent.$("#nativeplace_spouse").val(nativeplace_spouse);
+                    //关闭此页面
+                    parent.layer.close(index);
                     return false;
                 });
             });

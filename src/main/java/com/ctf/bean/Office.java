@@ -8,7 +8,7 @@ package com.ctf.bean;
  * @Date：2021/11/10 21:26
  */
 
-public class Office {
+public class Office extends Person {
     private String office_name;//工作单位名称
     private int id;//工作单位id
 

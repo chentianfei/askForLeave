@@ -472,9 +472,7 @@
                             $("#leave_type").empty();
                             $("#leave_type").append("<option value=''>请选择</option>");
                             $.each(sourceData, function (index, item) {
-                                if(item.leave_type !== "调休"){
-                                    $('#leave_type').append(new Option(item.leave_type,item.leave_type));
-                                }
+                                $('#leave_type').append(new Option(item.leave_type,item.leave_type));
                             });
                         } else {
                             $("#leave_type").append(new Option("暂无数据", ""));

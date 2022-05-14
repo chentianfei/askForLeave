@@ -256,14 +256,14 @@
                 {field:'name', title:'姓名',align:"center",width: 100}
                 ,{field:'sex', title:'性别',align:"center",width: 60}
                 ,{field:'birthDate',title:'出生日期',align:"center",width: 140}
-                ,{field:'area_class', title:'所在类区',align:"center",width: 85}
-                ,{field:'start_work_date', title:'参公年月',align:"center",width: 85}
-                ,{field:'marriage_status', title:'婚姻状态',align:"center",width: 85}
-                ,{field:'name_spouse', title:'配偶姓名',align:"center",width: 85}
-                ,{field:'nativeplace_spouse', title:'配偶籍贯',align:"center",width: 85}
+                ,{field:'area_class', title:'所在类区',align:"center",width: 140}
+                ,{field:'start_work_date', title:'参公年月',align:"center",width: 140}
+                ,{field:'marriage_status', title:'婚姻状态',align:"center",width: 140}
+                ,{field:'name_spouse', title:'配偶姓名',align:"center",width: 140}
+                ,{field:'nativeplace_spouse', title:'配偶籍贯',align:"center",width: 140}
                 ,{field:'nation', title:'民族',align:"center",width: 80}
                 ,{field:'nativePlace', title:'本人籍贯',align:"center",width: 240}
-                ,{field:'office', title:'工作单位',align:"center"}
+                ,{field:'office', title:'工作单位',align:"center",width: 240}
                 ,{field:'post', title:'现任职务',align:"center",width: 160}
                 ,{field:'level', title:'职级',align:"center",width: 120}
                 ,{field:'phone', title:'联系电话',align:"center",width: 125}
@@ -291,8 +291,6 @@
                     layer.open({
                         type: 2,
                         title: '新增人员',
-                        shadeClose: true,
-                        shade: false,
                         maxmin: true, //开启最大化最小化按钮
                         area: ['600px', '680px'],
                         content: "pages/service/personinfomation/_addPerson.jsp",

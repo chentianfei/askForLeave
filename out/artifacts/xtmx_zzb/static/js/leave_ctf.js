@@ -24,6 +24,40 @@ layui.use(['form','common'], function () {
 
 });
 
+/**
+ * 遍历表格内容返回数组
+ * @param  Int   id 表格id
+ * @return Array
+ */
+function getTableContent(id){
+    var mytable = document.getElementById(id);
+    var data = [];
+    for(var i=0,rows=mytable.rows.length; i<rows; i++){
+        for(var j=0,cells=mytable.rows[i].cells.length; j<cells; j++){
+            if(!data[i]){
+                data[i] = new Array();
+            }
+            data[i][j] = mytable.rows[i].cells[j].innerHTML;
+        }
+    }
+    return data;
+}
+
+function getLeaderInfoFromLeaderTable(){
+    var mytable = document.getElementById("leader_table");
+    var data = [];
+    for(var i=0,rows=mytable.rows.length; i<rows; i++){
+        /*mytable.rows[i].cells.length-1:不需要最后一个操作的innerhtml*/
+        for(var j=0,cells=mytable.rows[i].cells.length-1; j<cells; j++){
+            if(!data[i]){
+                data[i] = new Array();
+            }
+            data[i][j] = mytable.rows[i].cells[j].innerHTML;
+        }
+    }
+    return data;
+}
+
 layer.config({
     skin:'layui-layer-molv'
 })

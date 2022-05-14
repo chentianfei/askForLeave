@@ -4,6 +4,8 @@ import com.ctf.bean.*;
 import com.ctf.service.impl.SystemDataServiceImpl;
 import com.ctf.utils.WebUtils;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.reflect.TypeToken;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,18 +149,30 @@ public class SystemDataServlet extends BaseServlet{
         //获取前端传来的参数
         String office_name = request.getParameter("office_name");
 
-        Integer code = -1;
-        if(office_name!=null){
-            if(!office_name.equals("")){
-                code = systemDataService.addAOffice(office_name);
-            }
-        }
+        int code = systemDataService.addAOffice(office_name);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(code);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+
+    //绑定领导
+    public void bindOfficeLeader(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        String office_name = request.getParameter("office_name");
+
+        int code = systemDataService.addAOffice(office_name);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+
     // 删除单位
     public void deleteAOfficeByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -197,6 +212,55 @@ public class SystemDataServlet extends BaseServlet{
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //根据单位id查询单位信息
+    public void queryOfficeByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        Integer office_id = Integer.parseInt( request.getParameter("office_id"));
+
+        //本次查询在进行分页后返回的数据
+        Office office = systemDataService.queryOfficeByOfficeId(office_id);
+        List<Office> officeList = new ArrayList<>();
+        officeList.add(office);
+
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> result = new HashMap<>();
+        result.put("code",0);
+        result.put("msg","");
+        result.put("count",officeList.size());
+        result.put("data",officeList);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(result);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //根据单位id查询单位领导信息
+    public void queryOfficeLeaderByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        Integer office_id = Integer.parseInt( request.getParameter("office_id"));
+
+        //本次查询在进行分页后返回的数据
+        List<Leader> leaderList = systemDataService.queryOfficeLeaderByOfficeId(office_id);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> result = new HashMap<>();
+        result.put("code",0);
+        result.put("msg","");
+        result.put("count",leaderList.size());
+        result.put("data",leaderList);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(result);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
