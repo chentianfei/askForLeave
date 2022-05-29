@@ -9,22 +9,12 @@
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">请假操作</a>
                 <dl class="layui-nav-child">
-                    <dd><a href="pages/service/askForLeave/askForLeave.jsp">常规请假登记</a></dd>
-                    <dd><a href="pages/service/rest/rest.jsp">调休登记</a></dd>
-                    <dd><a href="pages/service/approvalLeave/approvalLeave.jsp">请假审批</a></dd>
+                    <dd><a href="pages/service/askForLeave/askForLeave.jsp">请假登记</a></dd>
+                    <dd><a href="pages/service/approvalLeave/approvalLeave.jsp">已请假信息</a></dd>
                     <dd></dd>
                 </dl>
             </li>
-
-<%--            <li class="layui-nav-item layui-nav-itemed">
-                <a href="javascript:;">销假操作</a>
-                <dl class="layui-nav-child">
-                    <dd><a href="pages/service/endOfLeave/showCurrentEOLInfo.jsp">到假未到岗人员</a></dd>
-                    <dd><a href="pages/service/endOfLeave/endOfLeave.jsp">销假操作</a></dd>
-                    <dd></dd>
-                </dl>
-            </li>--%>
-
+、
             <li class="layui-nav-item layui-nav-itemed">
                 <a href="javascript:;">销假操作</a>
                 <dl class="layui-nav-child">
@@ -39,7 +29,16 @@
             </li>
 
             <li class="layui-nav-item layui-nav-itemed">
-                <a href="javascript:;">系统参数</a>
+                <a href="javascript:;">短信数据</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="pages/service/sms/sendlog.jsp">发送记录</a></dd>
+                 <%--   <dd><a href="pages/service/sms/upData.jsp">回执数据</a></dd>--%>
+                    <dd><a href="pages/service/sms/upData404.jsp">回执数据(未上线)</a></dd>
+                </dl>
+            </li>
+
+            <li class="layui-nav-item layui-nav-itemed">
+                <a href="javascript:;">系统设置</a>
                 <dl class="layui-nav-child">
                     <dd><a href="pages/service/systemInfo/systemInfo.jsp">业务参数</a></dd>
                     <dd><a href="pages/service/systemInfo/setWords.jsp">系统字段</a></dd>

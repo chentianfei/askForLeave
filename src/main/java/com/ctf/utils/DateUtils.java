@@ -42,6 +42,20 @@ public class DateUtils {
         return sdf.format(date);
     }
 
+    //返回当前年份的字符串
+    public static String getCurrentMonth(){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM");
+        Date date = new Date();
+        return sdf.format(date);
+    }
+
+    //返回当前年份的字符串
+    public static String getCurrentDay(){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd");
+        Date date = new Date();
+        return sdf.format(date);
+    }
+
     //date对象转calendar对象
     public static Calendar DateToCalendar(Date date) {
         Calendar cal = Calendar.getInstance();

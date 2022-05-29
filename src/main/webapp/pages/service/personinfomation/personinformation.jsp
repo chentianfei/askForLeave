@@ -129,21 +129,61 @@
                                         </div>
 
                                         <div class="layui-inline">
-                                            <label class="layui-form-label" style="width: 100px">本人籍贯</label>
+                                            <label class="layui-form-label" style="width:100px">本人籍贯</label>
                                             <div class="layui-input-inline" style="width: 135px">
-                                                <select name="province" <%--data-area="西藏自治区"--%> lay-filter="province">
+                                                <select name="province" &lt;%&ndash;data-area="西藏自治区"&ndash;%&gt; lay-filter="province">
                                                     <option value="">选择省</option>
                                                 </select>
                                             </div>
                                             <div class="layui-input-inline" style="width: 135px">
-                                                <select name="city" <%--data-area="日喀则市"--%> lay-filter="city">
+                                                <select name="city" &lt;%&ndash;data-area="日喀则市"&ndash;%&gt; lay-filter="city">
                                                     <option value="">选择市</option>
                                                 </select>
                                             </div>
                                             <div class="layui-input-inline" style="width: 135px">
-                                                <select name="district" <%--data-area="仲巴县" --%>lay-filter="district">
+                                                <select name="district" &lt;%&ndash;data-area="仲巴县" &ndash;%&gt;lay-filter="district">
                                                     <option value="">选择区</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label" style="width:100px">参公年月</label>
+                                            <div class="layui-input-inline" style="width:150px">
+                                                <input type="text" class="layui-input" placeholder="请点击"
+                                                       autocomplete=“off”
+                                                       id="start_work_date" name="start_work_date">
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label" style="width:100px">婚姻状态</label>
+                                            <div class="layui-input-inline" style="width:150px">
+                                                <select name="marriage_status" lay-filter="marriage_status" lay-search >
+                                                    <option value="">请选择</option>
+                                                    <option value="未婚">未婚</option>
+                                                    <option value="已婚">已婚</option>
+                                                    <option value="丧偶">丧偶</option>
+                                                    <option value="离异">离异</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label" style="width:100px">配偶姓名</label>
+                                            <div class="layui-input-inline" style="width:150px">
+                                                <input type="tel" id="name_spouse" name="name_spouse" disabled
+                                                       autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label" style="width:100px">配偶籍贯</label>
+                                            <div class="layui-input-inline" style="width:300px">
+                                                <input type="tel" id="nativeplace_spouse" name="nativeplace_spouse" disabled
+                                                       autocomplete="off" class="layui-input">
                                             </div>
                                         </div>
 
@@ -197,6 +237,12 @@
             style="display:none"
             id="person_id"  />
 
+    <%--接受nativeType的值，获取需要向父页面赋值的元素名称--%>
+    <input  type="hidden" class="layui-input"
+            name="nativeType"
+            style="display:none"
+            id="nativeType"  />
+
 </div>
 
 <%--表格上方工具栏--%>
@@ -204,8 +250,8 @@
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-primary layui-border-green layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
         <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增人员</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
-        <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
+        <%--<button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
+        <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>--%>
     </div>
 </script>
 
@@ -239,6 +285,43 @@
         //定义导出报表的数据
         let exportData = {};
 
+        form.on('select(marriage_status)', function(data){
+            const select_info = data.value;
+            switch (select_info){
+                case "已婚":
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("");
+                    $("#nativeplace_spouse").val("");
+                    layer.open({
+                        type: 2,
+                        title: '填写配偶信息',
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['500px', '300px'],
+                        content: "pages/service/personinfomation/_addPerson_addSpouse.jsp",
+                        anim:2,
+                        resize:false,
+                        id:'LAY_layuipro',
+                        btn:['提交'],
+                        yes:function (index, layero) {
+                            //提交按钮的回调
+                            var body = layer.getChildFrame('body', index);
+                            // 找到隐藏的提交按钮模拟点击提交
+                            body.find('#addSpouseSubmit').click();
+                        },
+                        cancel: function () {
+                            //右上角关闭回调
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
+                    });
+                    break;
+                default:
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("");
+                    $("#nativeplace_spouse").val("");
+            }
+
+        });
+
         //表格数据读取参数
         var personinformation_query = table.render({
             elem: '#personinformation'
@@ -255,20 +338,20 @@
             ,cols: [[
                 {field:'name', title:'姓名',align:"center",width: 100}
                 ,{field:'sex', title:'性别',align:"center",width: 60}
+                ,{field:'nation', title:'民族',align:"center",width: 80}
                 ,{field:'birthDate',title:'出生日期',align:"center",width: 140}
                 ,{field:'area_class', title:'所在类区',align:"center",width: 140}
+                ,{field:'office', title:'工作单位',align:"center",width: 240}
+                ,{field:'post', title:'现任职务',align:"center",width: 160}
+                ,{field:'nativePlace', title:'本人籍贯',align:"center",width: 240}
                 ,{field:'start_work_date', title:'参公年月',align:"center",width: 140}
                 ,{field:'marriage_status', title:'婚姻状态',align:"center",width: 140}
                 ,{field:'name_spouse', title:'配偶姓名',align:"center",width: 140}
                 ,{field:'nativeplace_spouse', title:'配偶籍贯',align:"center",width: 140}
-                ,{field:'nation', title:'民族',align:"center",width: 80}
-                ,{field:'nativePlace', title:'本人籍贯',align:"center",width: 240}
-                ,{field:'office', title:'工作单位',align:"center",width: 240}
-                ,{field:'post', title:'现任职务',align:"center",width: 160}
                 ,{field:'level', title:'职级',align:"center",width: 120}
                 ,{field:'phone', title:'联系电话',align:"center",width: 125}
                 ,{field:'allow_Leave_Days', title:'允许休假天数',align:"center",width: 120}
-                ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:220}
+                ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:140}
             ]]
             ,page: true
             ,parseData: function(res) { //res 即为原始返回的数据
@@ -359,20 +442,30 @@
                         var body = layer.getChildFrame('body', index);
                         //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
                         var iframeWin = window[layero.find('iframe')[0]['name']];
-                        //console.log(body.html()) //得到iframe页的body内容
-
                         //初始化表单数据的值
+                        /*配偶信息*/
+                        body.find("input[name=marriage_status][value=未婚]").attr("checked", data.marriage_status == "未婚" ? true : false);
+                        body.find("input[name=marriage_status][value=已婚]").attr("checked", data.marriage_status == "已婚" ? true : false);
+                        body.find("input[name=marriage_status][value=丧偶]").attr("checked", data.marriage_status == "丧偶" ? true : false);
+                        body.find("input[name=marriage_status][value=离异]").attr("checked", data.marriage_status == "离异" ? true : false);
+                        body.find("#name_spouse").val(data.name_spouse);
+                        body.find("#nativeplace_spouse").val(data.nativeplace_spouse);
+                        /*本人信息*/
                         body.find("input[name=sex][value=男]").attr("checked", data.sex == "男" ? true : false);
                         body.find("input[name=sex][value=女]").attr("checked", data.sex == "女" ? true : false);
                         body.find("#name").val(data.name);
-                        body.find("#birthDate").val(data.birthDate);
+                        body.find("#nativaPlaceForAlert").val(data.nativePlace);
+                        body.find("#nativeplaceSpouseForAlert").val(data.nativeplace_spouse);
+                        body.find("#birthDate").val(replaceYMDChinese(data.birthDate));
+                        body.find("#start_work_date").val(replaceYMDChinese(data.start_work_date));
                         body.find("#post").val(data.post);
                         body.find("#phone").val(data.phone);
                         body.find("#allow_Leave_Days").val(data.allow_Leave_Days);
                         //为工作类区绑定下拉框
                         body.find("#area_class option[value='" + data.area_class+"']")
                             .attr("selected", "selected");
-                        body.find("#person_id").val(data.person_id)
+                        body.find("#person_id:hidden").val(data.person_id);
+
                         //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
                         $.ajax({
                             url: 'systemDataServlet?action=queryLevelInfo',
@@ -476,6 +569,7 @@
                         url : 'personServlet?action=deleteThePerson',
                         data : {
                             person_id : data.person_id,
+                            operator :"${sessionScope.user.operator}"
                         },
                         dataType : 'json',
                         success : function(data) {
@@ -589,6 +683,12 @@
             ,format: 'yyyy-MM-dd'
         });
 
+        laydate.render({
+            elem: '#start_work_date'//指定元素
+            ,type:'date'
+            ,format: 'yyyy-MM-dd'
+        });
+
         //监听查询模块提交事件
         form.on('submit(person_info_query)', function(data){
             var sourceData = data.field;
@@ -603,6 +703,11 @@
             var sex = sourceData.sex;
             var post = sourceData.post;
 
+            var marriage_status = sourceData.marriage_status;
+            var nativeplace_spouse = sourceData.nativeplace_spouse;
+            var name_spouse = sourceData.name_spouse;
+            var start_work_date = sourceData.start_work_date;
+
             //解析解析框中的地址内容
             var city = sourceData.city;
             var district = sourceData.district;
@@ -616,7 +721,6 @@
             var provinceName = address.provinceName;
             var cityName = address.cityName;
             var districtName = address.districtName;
-
             //解析解析框中的地址内容
             var nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
 
@@ -629,7 +733,11 @@
                     sex : sex,
                     nation : nation,
                     birthDate : birthDate,
-                    nativePlace:nativePlace,
+                    nativePlace : nativePlace,
+                    marriage_status : marriage_status,
+                    name_spouse : name_spouse,
+                    nativeplace_spouse : nativeplace_spouse,
+                    start_work_date : start_work_date,
                     office : office,
                     post : post,
                     area_class : area_class,

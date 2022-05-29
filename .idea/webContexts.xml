@@ -3,11 +3,13 @@
   <component name="WebContextManager">
     <option name="state">
       <map>
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/askForLeave/askForLeave.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service/askForLeave" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation/_addPerson.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation/_bindLeader.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation/_showRelatedLeader.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation/personinformation.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinfomation" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/personinformation.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/pages/service/systemInfo/setWords_minageLeaderInfo.jsp" value="file://$PROJECT_DIR$/src/main/webapp/pages/service/systemInfo" />
       </map>
     </option>
   </component>

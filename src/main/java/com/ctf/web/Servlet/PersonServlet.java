@@ -243,7 +243,6 @@ public class PersonServlet extends BaseServlet{
         Map<String, String[]> personInfo = request.getParameterMap();
         Person person = WebUtils.fillBean(personInfo, Person.class);
 
-        System.out.println(person);
 
         //调用personService的addAPerson往数据库新增数据
         Integer code = personService.addAPerson(person);
@@ -258,8 +257,8 @@ public class PersonServlet extends BaseServlet{
     public void deleteThePerson(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         Integer person_id = Integer.parseInt(request.getParameter("person_id"));
-
-        Integer code = personService.deletePersonInfoByID(person_id);
+        String operator = request.getParameter("operator");
+        Integer code = personService.deletePersonInfoByID(person_id,operator);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(code);
@@ -298,7 +297,7 @@ public class PersonServlet extends BaseServlet{
          String user_office = req.getParameter("user_office");
 
          //查询本人基本信息获取返回结果
-         List<Person> hashMaps = personService.queryAllPerson(pageNo,pageSize,user_office);
+         List<HashMap<String,Object>> hashMaps = personService.queryAllPerson(pageNo,pageSize,user_office);
 
          //封装成json字符串，通过getWriter().write()返回给页面
          Map<String,Object> map = new HashMap<>();
@@ -327,14 +326,15 @@ public class PersonServlet extends BaseServlet{
         Map<String, String[]> map = request.getParameterMap();
 
         //本次查询在进行分页后返回的数据
-        List<Person> hashMaps = personService.querySomePerson(map,pageNo,pageSize);
+        List<Person> personList = personService.querySomePerson(map,pageNo,pageSize);
+
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
         result.put("code",0);
         result.put("msg","");
         result.put("count",personService.querySomePerson(map,null,null));
-        result.put("data",hashMaps);
+        result.put("data",personList);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(result);
@@ -351,39 +351,14 @@ public class PersonServlet extends BaseServlet{
 
         //本次查询在进行分页后返回的数据
         Person people = personService.queryPersonInfoById(person_id);
-        List<Person> peopleList = new ArrayList<>();
-        peopleList.add(people);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
-        result.put("code",0);
-        result.put("msg","");
-        result.put("count",peopleList.size());
-        result.put("data",peopleList);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(result);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
-
-    }
-
-    //根据人员编号查询单个人员信息，返回绑定好领导的list
-    public void queryPersonInfoByIdRTNList(HttpServletRequest request,HttpServletResponse response) throws IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-        //获取前端传来的参数
-        Integer person_id = Integer.parseInt( request.getParameter("person_id"));
-
-        //本次查询在进行分页后返回的数据
-        List<Person> peopleList = personService.queryPersonInfoByIdRTNList(person_id);
-
-        //封装成json字符串，通过getWriter().write()返回给页面
-        Map<String,Object> result = new HashMap<>();
-        result.put("code",0);
-        result.put("msg","");
-        result.put("count",peopleList.size());
-        result.put("data",peopleList);
+        result.put("birthDate",simpleDateFormat.format(people.getBirthDate()));
+        result.put("start_work_date",simpleDateFormat.format(people.getStart_work_date()));
+        result.put("peopleBase",people);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(result);
@@ -420,4 +395,27 @@ public class PersonServlet extends BaseServlet{
         //返回
     }
 
+    //封装数据，主要为了前台显示的日期格式
+    public List<HashMap<String,Object>> formatInfo(List<Person> personList){
+     List<HashMap<String,Object>> mapList = new ArrayList<>();
+     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
+     for (Person person: personList){
+         //封装回显数据
+         HashMap<String,Object> hashMap = new HashMap<>();
+         hashMap.put("person_id",person.getPerson_id());
+         hashMap.put("name",person.getName());
+         hashMap.put("sex", person.getSex());
+         hashMap.put("nation", person.getNation());
+         hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+         hashMap.put("nativePlace", person.getNativePlace());
+         hashMap.put("office", person.getOffice());
+         hashMap.put("post", person.getPost());
+         hashMap.put("area_class", person.getArea_class());
+         hashMap.put("level", person.getLevel());
+         hashMap.put("phone", person.getPhone());
+         hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+         mapList.add(hashMap);
+     }
+     return mapList;
+    }
 }

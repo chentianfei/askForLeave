@@ -6,7 +6,10 @@ import com.ctf.dao.SystemDataDao;
 import com.ctf.dao.UserDao;
 import com.ctf.service.SystemDataService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SystemDataServiceImpl implements SystemDataService {
 
@@ -76,14 +79,41 @@ public class SystemDataServiceImpl implements SystemDataService {
         if(office_name!=null){
             if(!office_name.equals("")){
                 //遍历查找该名称是否已被登记，如果被登记返回-2
-                List<Office> offices = queryOffice(null, null);
-                for(Office office:offices){
-                    if(office.getOffice_name().equals(office_name)){
-                        return -2;
+                List<HashMap<String, Object>> hashMapList = queryOffice(null, null);
+                for(HashMap<String, Object> hashMap : hashMapList){
+                    for(Map.Entry<String,Object> entry:hashMap.entrySet()){
+                        if(entry.getKey().equals("office_name")){
+                            if(entry.getValue().equals(office_name)){
+                                return -2;
+                            }
+                        }
                     }
                 }
                 code = systemDataDao.addAOffice(office_name);
             }
+        }
+        return code;
+    }
+
+    @Override
+    /*
+     * @Description :根据单位id绑定领导
+     * @param: leader 需要新增的领导信息，封装为Leader对象
+     * @return int 操作码
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:17
+     **/
+    public int bindLeaderForOfficeByOfficeId(Leader leader) {
+        int code = 0;
+        if(leader!=null){
+            //遍历查找该领导是否已经被绑定，如果被登记返回-2
+            List<Leader> leaders = systemDataDao.queryOfficeLeaderByOfficeId(leader.getOffice_id());
+            for(Leader leader_have:leaders){
+                if(leader_have.getOffice_leader_phone().equals(leader.getOffice_leader_phone())){
+                    return -2;
+                }
+            }
+            code = systemDataDao.bindLeaderForOfficeByOfficeId(leader);
         }
         return code;
     }
@@ -113,11 +143,49 @@ public class SystemDataServiceImpl implements SystemDataService {
     }
 
     @Override
+    /*
+     * @Description : 修改单位领导信息
+     * @param: leader
+     * @return int
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:34
+     **/
+    public int updateOfficeLeaderInfo(Leader leader) {
+        return systemDataDao.updateOfficeLeaderInfo(leader);
+    }
+
+    @Override
+    /*
+     * @Description :删除单位领导
+     * @param: id
+     * @return int
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:49
+     **/
+    public int deleteOfficeLeaderByLeaderId(String idStr) {
+        int id = -1;
+        if(idStr!=null){
+            if(!idStr.trim().equals("")){
+                id = Integer.parseInt(idStr);
+                return systemDataDao.deleteOfficeLeaderByLeaderId(id);
+            }
+        }
+        return -2;
+    }
+
+    @Override
     public Office queryOfficeByOfficeId(Integer office_id) {
         return systemDataDao.queryOfficeByOfficeId(office_id);
     }
 
     @Override
+    /*
+     * @Description :
+     * @param: office_id
+     * @return java.util.List<com.ctf.bean.Leader>
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:26
+     **/
     public List<Leader> queryOfficeLeaderByOfficeId(Integer office_id) {
         return systemDataDao.queryOfficeLeaderByOfficeId(office_id);
 
@@ -329,8 +397,29 @@ public class SystemDataServiceImpl implements SystemDataService {
      * @Author: CTF
      * @Date ：2021/12/8 20:16
      */
-    public List<Office> queryOffice(Integer pageNo,Integer pageSize) {
-        return systemDataDao.queryOffice(pageNo,pageSize);
+    public List<HashMap<String,Object>> queryOffice(Integer pageNo, Integer pageSize) {
+
+        //查询单位信息
+        List<Office> offices = systemDataDao.queryOffice(pageNo, pageSize);
+        List<HashMap<String,Object>>  hashMapList= new ArrayList<>();
+        for(Office office : offices){
+            HashMap<String,Object> hashMap = new HashMap<>();
+            hashMap.put("id",office.getId());
+            hashMap.put("office_name",office.getOffice_name());
+            //封装领导回显格式
+            List<Leader> leaders = systemDataDao.queryOfficeLeaderByOfficeId(office.getId());
+            StringBuilder leaderInfo = new StringBuilder();
+            for(int i = 1; i < leaders.size()+1; i++){
+                String info = "领导"+i+":"+leaders.get(i-1).getOffice_leader_name()
+                        +","+leaders.get(i-1).getOffice_leader_type()
+                        +",联系电话:"+leaders.get(i-1).getOffice_leader_phone()+";"+"\r\n";
+                leaderInfo.append(info);
+            }
+            hashMap.put("leader",leaderInfo);
+            hashMapList.add(hashMap);
+        }
+
+        return hashMapList;
     }
 
     @Override

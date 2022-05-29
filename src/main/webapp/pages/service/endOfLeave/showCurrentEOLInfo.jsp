@@ -237,7 +237,7 @@
                                     title: '请输入正确参数',
                                     maxmin: true, //开启最大化最小化按钮
                                     area:['500px', '500px'],
-                                    content: "pages/service/endOfLeave/_endLeaveDate.jsp",
+                                    content: "pages/service/endOfLeave/_endLeaveInfo.jsp",
                                     anim:2,
                                     resize:false,
                                     id:'LAY_layuipro',
@@ -468,7 +468,7 @@
                                     title: '请输入正确参数',
                                     maxmin: true, //开启最大化最小化按钮
                                     area:['500px', '500px'],
-                                    content: "pages/service/endOfLeave/_endLeaveDate.jsp",
+                                    content: "pages/service/endOfLeave/_endLeaveInfo.jsp",
                                     anim:2,
                                     resize:false,
                                     id:'LAY_layuipro',

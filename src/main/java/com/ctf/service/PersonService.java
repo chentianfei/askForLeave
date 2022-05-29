@@ -19,7 +19,7 @@ public interface PersonService {
     //批量新增人员
     int batchAddPerson(String filePath) throws Exception;
     //根据人员id删除人员信息
-    Integer deletePersonInfoByID(Integer person_id);
+    Integer deletePersonInfoByID(Integer person_id,String operator);
     //更新人员信息
     Integer updatePersonInfo(Person person);
     //根据手机号删除人员信息
@@ -28,7 +28,7 @@ public interface PersonService {
     //新增一个人员信息
     Integer addAPerson(Person person);
     //查询库中所有人员信息
-    List<Person>  queryAllPerson(Integer pageNo,Integer pageSize,String user_office);
+    List<HashMap<String,Object>>  queryAllPerson(Integer pageNo,Integer pageSize,String user_office);
     //根据不定条件查询人员信息
     List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize);
     //根据人员编号查询单个人员信息

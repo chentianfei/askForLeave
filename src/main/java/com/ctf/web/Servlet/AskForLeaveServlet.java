@@ -1,20 +1,18 @@
 package com.ctf.web.Servlet;
 
-import com.ctf.bean.LeaveInfo;
-import com.ctf.bean.LeaveInfoCount;
-import com.ctf.bean.LeaveType;
-import com.ctf.bean.User;
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
+import com.ctf.bean.*;
 import com.ctf.service.impl.AskForLeaveServiceImpl;
 import com.ctf.utils.WebUtils;
 import com.google.gson.Gson;
-import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
-import com.tencentcloudapi.sms.v20210111.models.SendStatus;
+import com.google.gson.JsonArray;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -38,47 +36,91 @@ public class AskForLeaveServlet extends BaseServlet{
         //获取前端传来的参数
         Map<String, String[]> leaveInfo = request.getParameterMap();
         LeaveInfo leave = WebUtils.fillBean(leaveInfo, LeaveInfo.class);
-
-        int code = askForLeaveService.addLeaveInfo(leave);
+        System.out.println(leave);
+        //处理并获取存入数据库的对象
+        Map<String, Object> stringObjectMap = askForLeaveService.addLeaveInfo(leave);
 
         //以json格式返回给前端
-        String result_json = new Gson().toJson(code);
+        String result_json = new Gson().toJson(stringObjectMap);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
 
-    //待审核_同意功能
-    public void agreeLeave(HttpServletRequest request,HttpServletResponse response) throws IOException {
-    //解决post请求方式获取请求参数的中文乱码问题
-    request.setCharacterEncoding("utf-8");
+     //根据序列号查询一条请假数据
+     public void queryALeaveInfoForPrintBySerialnumber(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
 
-    int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
-    //通过序列号给service发送短信，给dao做增删操作，并返回短信发送情况\
+         String serialnumber_str = request.getParameter("serialnumber");
+         Integer serialnumber = null;
+         if(serialnumber_str!=null){
+             if(!serialnumber_str.trim().equals("")){
+                 serialnumber = Integer.parseInt(serialnumber_str);
+             }
+         }
 
-    int code = askForLeaveService.agreeLeave(serialnumber);
+         HashMap<String, Object> hashMapList = askForLeaveService.queryALeaveInfoForPrintBySerialnumber(serialnumber);
 
-    //以json格式返回给前端
-    String result_json = new Gson().toJson(code);
-    response.setContentType("text/html;charset=utf-8");
-    response.getWriter().write(result_json);
-    }
 
-    //待审核_不同意功能
-    public void notAgreeLeave(HttpServletRequest request,HttpServletResponse response) throws IOException {
-    //解决post请求方式获取请求参数的中文乱码问题
-    request.setCharacterEncoding("utf-8");
-    String approval_reason = request.getParameter("approval_reason");
-    int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
-    //通过序列号给service发送短信，给dao做增删操作，并返回短信发送情况\
-    int code = askForLeaveService.notAgreeLeave(serialnumber,approval_reason);
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(hashMapList);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
 
-    //以json格式返回给前端
-    String result_json = new Gson().toJson(code);
-    response.setContentType("text/html;charset=utf-8");
-    response.getWriter().write(result_json);
-    }
+     //更新请假数据
+     public void  updateLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+         //获取前端传来的参数
+         Map<String, String[]> newLeaveInfo = request.getParameterMap();
+         LeaveInfo leaveInfo = WebUtils.fillBean(newLeaveInfo, LeaveInfo.class);
 
-    //处理销假到岗
+         int code = 0;
+         String message = "修改成功";
+         try {
+             code = askForLeaveService.updateLeaveInfo(leaveInfo);
+         } catch (Exception e) {
+             message = e.getMessage();
+         }
+
+         Map<String,Object> result = new HashMap<>();
+         result.put("code",code);
+         result.put("message",message);
+
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(result);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
+
+     //更新历史数据
+     public void  updateHistoryInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+         //获取前端传来的参数
+         Map<String, String[]> newLeaveInfo = request.getParameterMap();
+         LeaveInfo leaveInfo = WebUtils.fillBean(newLeaveInfo, LeaveInfo.class);
+
+         int code = 0;
+         String message = "修改成功";
+         try {
+             code = askForLeaveService.updateAHistoryInfoBySerialnumber(leaveInfo);
+         } catch (Exception e) {
+             message = e.getMessage();
+         }
+
+         Map<String,Object> result = new HashMap<>();
+         result.put("code",code);
+         result.put("message",message);
+
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(result);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
+
+     //处理销假到岗
     public void resumeWork(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
     //解决post请求方式获取请求参数的中文乱码问题
     request.setCharacterEncoding("utf-8");
@@ -87,47 +129,167 @@ public class AskForLeaveServlet extends BaseServlet{
     String end_leave_remarkSTR = request.getParameter("end_leave_remark");
     String end_dateSTR = request.getParameter("end_date");
     String end_leave_operator = request.getParameter("end_leave_operator");
+    String person_id_str = request.getParameter("person_id");
 
-    int code = askForLeaveService.resumeWork(serialnumberSTR,end_leave_remarkSTR,
-         end_dateSTR,end_leave_operator);
 
-    //封装成json字符串，通过getWriter().write()返回给页面
-    Map<String,Object> map = new HashMap<>();
-    map.put("code",0);
-    map.put("msg","");
-    map.put("count",code);
-    map.put("data",code);
+    Map<String, Object> stringObjectMap = askForLeaveService.resumeWork(serialnumberSTR, end_leave_remarkSTR,
+                end_dateSTR, end_leave_operator);
+
 
     //以json格式返回给前端
-    String result_json = new Gson().toJson(map);
+    String result_json = new Gson().toJson(stringObjectMap);
     response.setContentType("text/html;charset=utf-8");
     response.getWriter().write(result_json);
     }
 
+    //根据序列号删除一条请假记录
+    public void deleteALeaveInfoBySerialnumber(HttpServletRequest request,HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
+        String delete_reason = request.getParameter("delete_reason");
+        String delete_operator = request.getParameter("delete_operator");
+
+        int code = 0;
+        String message = "删除成功";
+        try {
+            code = askForLeaveService.deleteALeaveInfoBySerialnumber(serialnumber,delete_reason,"已废除", delete_operator);
+        }catch (Exception e){
+            message = e.getMessage();
+        }
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",code);
+        map.put("message",message);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+     //批量删除请假记录
+     public void batchDeleteALeaveInfoBySerialnumber(HttpServletRequest request,HttpServletResponse response) throws IOException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+
+         String serialnumber_set_str = request.getParameter("serialnumber_set");
+         String[] serialnumber_set = serialnumber_set_str
+                 .replace("[", "")
+                 .replace("]", "")
+                 .split(",");
+         List<Integer> serialnumberList = new ArrayList<>();
+         for(String serialnumber : serialnumber_set){
+             serialnumberList.add(Integer.parseInt(serialnumber));
+         }
+         String delete_reason = request.getParameter("delete_reason");
+         String delete_operator = request.getParameter("delete_operator");
+
+         int count = askForLeaveService.batchDeleteALeaveInfoBySerialnumber(serialnumberList,delete_reason, delete_operator);
+         String message = "完成，需要删除【"+serialnumberList.size()+"】条，成功删除【"+count+"】条";
+
+         //封装成json字符串，通过getWriter().write()返回给页面
+         Map<String,Object> map = new HashMap<>();
+         map.put("code",count);
+         map.put("message",message);
+
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(map);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
+
+     //批量删除历史记录
+     public void batchDeleteHistoryInfoBySerialnumber(HttpServletRequest request,HttpServletResponse response) throws IOException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+
+         String serialnumber_set_str = request.getParameter("serialnumber_set");
+         String[] serialnumber_set = serialnumber_set_str
+                 .replace("[", "")
+                 .replace("]", "")
+                 .replace("\"", "")
+                 .split(",");
+         List<Integer> serialnumberList = new ArrayList<>();
+         for(String serialnumber : serialnumber_set){
+             serialnumberList.add(Integer.parseInt(serialnumber));
+         }
+         String delete_reason = request.getParameter("delete_reason");
+         String delete_operator = request.getParameter("delete_operator");
+
+         int count = askForLeaveService.batchDeleteHistoryInfoBySerialnumber(serialnumberList,delete_reason, delete_operator);
+         String message = "完成，需要删除【"+serialnumberList.size()+"】条，成功删除【"+count+"】条";
+
+         //封装成json字符串，通过getWriter().write()返回给页面
+         Map<String,Object> map = new HashMap<>();
+         map.put("code",count);
+         map.put("message",message);
+
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(map);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
+
+     //批量执行销假操作
+     public void batchResumeWork(HttpServletRequest request,HttpServletResponse response) throws IOException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+
+         //获取序列号集合
+         String serialnumber_set_str = request.getParameter("serialnumber_set");
+         String[] serialnumber_set = serialnumber_set_str
+                 .replace("\"", "")
+                 .split(",");
+         //获取销假备注
+         String end_leave_remark = request.getParameter("end_leave_remark");
+         //获取销假时间
+         String end_date = request.getParameter("end_date");
+         //获取销假操作者
+         String end_leave_operator = request.getParameter("end_leave_operator");
+         /*String[] serialnumber_set2 = new String[0];*/
+         int count = askForLeaveService.batchResumeWork(serialnumber_set,end_leave_remark, end_date,end_leave_operator);
+         String message = "完成，需要销假【"+serialnumber_set.length+"】条，成功销假【"+count+"】条";
+
+         //封装成json字符串，通过getWriter().write()返回给页面
+         Map<String,Object> map = new HashMap<>();
+         map.put("count",count);
+         map.put("message",message);
+
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(map);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
+
     //删除某一条请假记录
-    public void deleteAHistoryInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
-    //解决post请求方式获取请求参数的中文乱码问题
-    request.setCharacterEncoding("utf-8");
+    public void deleteAHistoryInfoBySerialnumber(HttpServletRequest request,HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
 
-    int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
-    String delete_reason = request.getParameter("delete_reason");
-    Date delete_date = new Date();
-    String delete_operator = request.getParameter("delete_operator");
+        int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
+        String delete_reason = request.getParameter("delete_reason");
+        String delete_operator = request.getParameter("delete_operator");
 
-    int code = askForLeaveService.deleteAHistoryInfo(serialnumber,delete_reason,
-         delete_date,delete_operator);
+        int code = 0;
+        String msg = "删除成功";
+        try {
+            code = askForLeaveService.deleteAHistoryInfoBySerialnumber(serialnumber,delete_reason, delete_operator);
+        } catch (Exception e) {
+            msg = e.getMessage();
+        }
 
-    //封装成json字符串，通过getWriter().write()返回给页面
-    Map<String,Object> map = new HashMap<>();
-    map.put("code",0);
-    map.put("msg","");
-    map.put("count",code);
-    map.put("data",code);
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",code);
+        map.put("msg",msg);
 
-    //以json格式返回给前端
-    String result_json = new Gson().toJson(map);
-    response.setContentType("text/html;charset=utf-8");
-    response.getWriter().write(result_json);
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
     }
 
     /*
@@ -229,7 +391,7 @@ public class AskForLeaveServlet extends BaseServlet{
     * @Author: CTF
     * @Date ：2022/5/12 21:06
     */
-    public void sendAlertSMS(HttpServletRequest request,HttpServletResponse response)throws IOException {
+    /*public void sendAlertSMS(HttpServletRequest request,HttpServletResponse response)throws IOException {
     //解决post请求方式获取请求参数的中文乱码问题
     request.setCharacterEncoding("utf-8");
 
@@ -267,30 +429,41 @@ public class AskForLeaveServlet extends BaseServlet{
     * @Author: CTF
     * @Date ：2022/5/12 21:06
     */
+
     public void queryCurrentEOLPerson(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
          //解决post请求方式获取请求参数的中文乱码问题
-         request.setCharacterEncoding("utf-8");
+        request.setCharacterEncoding("utf-8");
 
-         //获取当前页码
-         Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-         //获取每页显示数量
-         Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        String pageNoStr = request.getParameter("curr");
+        String pageSizeStr = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize =null;
+        //获取当前页码
+        if(pageNoStr!=null){
+            if(!pageNoStr.trim().equals("")){
+                pageNo =Integer.valueOf(pageNoStr);
+            }
+        }
+        //获取每页显示数量
+        if(pageSizeStr!=null){
+            if(!pageSizeStr.trim().equals("")){
+                pageSize = Integer.valueOf(pageSizeStr);
+            }
+        }
 
-         List<HashMap<String, Object>> hashMaps =
-                 askForLeaveService.queryCurrentEOLPerson(pageNo,pageSize);
+        List<HashMap<String, Object>> hashMaps = askForLeaveService.queryCurrentEOLPerson(pageNo,pageSize);
 
-         //封装成json字符串，通过getWriter().write()返回给页面
-         Map<String,Object> map = new HashMap<>();
-         map.put("code",0);
-         map.put("msg","");
-         map.put("count",askForLeaveService
-                 .queryCurrentEOLPerson(null,null));
-         map.put("data",hashMaps);
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",askForLeaveService.queryCurrentEOLPerson(null,null));
+        map.put("data",hashMaps);
 
-         //以json格式返回给前端
-         String result_json = new Gson().toJson(map);
-         response.setContentType("text/html;charset=utf-8");
-         response.getWriter().write(result_json);
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
      }
 
      //查询所有到假未到岗人员
@@ -336,24 +509,35 @@ public class AskForLeaveServlet extends BaseServlet{
     public void querySomeLeaveInfos(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
-
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        String curr_str = request.getParameter("curr");
+         String nums_str = request.getParameter("nums");
+         Integer pageNo = null;
+         Integer pageSize = null;
+         if(curr_str!=null){
+             if(!curr_str.trim().equals("")){
+                 //获取当前页码
+                 pageNo =Integer.valueOf(curr_str);
+             }
+         }
+         if(nums_str!=null){
+             if(!nums_str.trim().equals("")){
+                 //获取每页显示数量
+                 pageSize = Integer.valueOf(nums_str);
+             }
+         }
 
         //获取前端传来的查询参数
         Map<String, String[]> dataMap = request.getParameterMap();
 
         List<HashMap<String, Object>> hashMaps =
-                askForLeaveService.querySomeLeaveInfosLimit(dataMap,pageNo,pageSize);
+                askForLeaveService.querySomeLeaveInfos(dataMap,pageNo,pageSize);
 
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeLeaveInfos(dataMap));
+        map.put("count",askForLeaveService.querySomeLeaveInfos(dataMap,null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -366,19 +550,30 @@ public class AskForLeaveServlet extends BaseServlet{
     public void queryAllLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
+        String curr_str = request.getParameter("curr");
+         String nums_str = request.getParameter("nums");
+         Integer pageNo = null;
+         Integer pageSize = null;
+         if(curr_str!=null){
+             if(!curr_str.trim().equals("")){
+                 //获取当前页码
+                 pageNo =Integer.valueOf(curr_str);
+             }
+         }
+         if(nums_str!=null){
+             if(!nums_str.trim().equals("")){
+                 //获取每页显示数量
+                 pageSize = Integer.valueOf(nums_str);
+             }
+         }
 
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
-
-        List<HashMap<String, Object>> hashMaps = askForLeaveService.queryAllLeaveInfoLimit(pageNo,pageSize);
+        List<HashMap<String, Object>> hashMaps = askForLeaveService.queryAllLeaveInfo(pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryAllLeaveInfo());
+        map.put("count",askForLeaveService.queryAllLeaveInfo(null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -412,10 +607,22 @@ public class AskForLeaveServlet extends BaseServlet{
                 person_id = Integer.parseInt(personIdSTR);
             }
         }
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+       String curr_str = request.getParameter("curr");
+         String nums_str = request.getParameter("nums");
+         Integer pageNo = null;
+         Integer pageSize = null;
+         if(curr_str!=null){
+             if(!curr_str.trim().equals("")){
+                 //获取当前页码
+                 pageNo =Integer.valueOf(curr_str);
+             }
+         }
+         if(nums_str!=null){
+             if(!nums_str.trim().equals("")){
+                 //获取每页显示数量
+                 pageSize = Integer.valueOf(nums_str);
+             }
+         }
 
         List<LeaveInfoCount> leaveInfoCounts =
                 askForLeaveService.queryThisYearLeaveInfoCountByPersonID(person_id, pageNo, pageSize);
@@ -434,6 +641,97 @@ public class AskForLeaveServlet extends BaseServlet{
 
     }
 
+    //查询一个人所在单位的正在请假情况统计数据
+    public void queryOfficeLeaveInfoByPersonId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        String personIdSTR = request.getParameter("person_id");
+        Integer person_id = null;
+        if(personIdSTR!=null){
+            if(!personIdSTR.equals("")){
+                person_id = Integer.parseInt(personIdSTR);
+            }
+        }
+
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+            if(!curr_str.trim().equals("")){
+                //获取当前页码
+                pageNo =Integer.valueOf(curr_str);
+            }
+        }
+        if(nums_str!=null){
+            if(!nums_str.trim().equals("")){
+                //获取每页显示数量
+                pageSize = Integer.valueOf(nums_str);
+            }
+        }
+
+        HashMap<String, Object> hashMap = askForLeaveService.queryOfficeLeaveInfoByPersonId(person_id, pageNo, pageSize);
+
+        List<HashMap<String, Object>> hashMapList = new ArrayList<>();
+        hashMapList.add(hashMap);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",hashMapList.size());
+        map.put("data",hashMapList);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+     //查询一个人所在单位的正在请假情况详情
+     public void queryOfficeCurrentLeaveInfoByPersonId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+         String personIdSTR = request.getParameter("person_id");
+         Integer person_id = null;
+         if(personIdSTR!=null){
+             if(!personIdSTR.equals("")){
+                 person_id = Integer.parseInt(personIdSTR);
+             }
+         }
+
+         String curr_str = request.getParameter("curr");
+         String nums_str = request.getParameter("nums");
+         Integer pageNo = null;
+         Integer pageSize = null;
+         if(curr_str!=null){
+             if(!curr_str.trim().equals("")){
+                 //获取当前页码
+                 pageNo =Integer.valueOf(curr_str);
+             }
+         }
+         if(nums_str!=null){
+             if(!nums_str.trim().equals("")){
+                 //获取每页显示数量
+                 pageSize = Integer.valueOf(nums_str);
+             }
+         }
+
+         List<HashMap<String, Object>> hashMapList = askForLeaveService.queryOfficeCurrentLeaveInfoByPersonId(person_id, pageNo, pageSize);
+
+         //封装成json字符串，通过getWriter().write()返回给页面
+         Map<String,Object> map = new HashMap<>();
+         map.put("code",0);
+         map.put("msg","");
+         map.put("count",askForLeaveService.queryOfficeCurrentLeaveInfoByPersonId(person_id, null, null));
+         map.put("data",hashMapList);
+
+         //以json格式返回给前端
+         String result_json = new Gson().toJson(map);
+         response.setContentType("text/html;charset=utf-8");
+         response.getWriter().write(result_json);
+     }
+
     //查询本年度请假信息详情数据
     public void queryThisYearLeaveInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -445,10 +743,23 @@ public class AskForLeaveServlet extends BaseServlet{
                 person_id = Integer.parseInt(personIdSTR);
             }
         }
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+             if(!curr_str.trim().equals("")){
+                 //获取当前页码
+                 pageNo =Integer.valueOf(curr_str);
+             }
+        }
+        if(nums_str!=null){
+             if(!nums_str.trim().equals("")){
+                 //获取每页显示数量
+                 pageSize = Integer.valueOf(nums_str);
+             }
+        }
 
         List<HashMap<String, Object>> hashMapList = askForLeaveService.queryOnesHistoryInfoByPersonID(person_id, pageNo, pageSize);
 
@@ -463,26 +774,36 @@ public class AskForLeaveServlet extends BaseServlet{
         String result_json = new Gson().toJson(map);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
-
     }
 
     //查询全部待销假数据
     public void queryALLResumeWorkInfo (HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+            if(!curr_str.trim().equals("")){
+                 //获取当前页码
+                 pageNo =Integer.valueOf(curr_str);
+            }
+        }
+        if(nums_str!=null){
+            if(!nums_str.trim().equals("")){
+                 //获取每页显示数量
+                 pageSize = Integer.valueOf(nums_str);
+            }
+        }
 
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
-
-        List<HashMap<String, Object>> hashMaps = askForLeaveService.queryALLResumeWorkInfoLimit(pageNo,pageSize);
+        List<HashMap<String, Object>> hashMaps = askForLeaveService.queryALLResumeWorkInfo(pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryALLResumeWorkInfo());
+        map.put("count",askForLeaveService.queryALLResumeWorkInfo(null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -495,23 +816,34 @@ public class AskForLeaveServlet extends BaseServlet{
     public void querySomeResumeWorkInfo(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
-
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+            if(!curr_str.trim().equals("")){
+                //获取当前页码
+                pageNo =Integer.valueOf(curr_str);
+            }
+        }
+        if(nums_str!=null){
+            if(!nums_str.trim().equals("")){
+                //获取每页显示数量
+                pageSize = Integer.valueOf(nums_str);
+            }
+        }
 
         //获取前端传来的查询参数
         Map<String, String[]> dataMap = request.getParameterMap();
 
         List<HashMap<String, Object>> hashMaps =
-                askForLeaveService.querySomeResumeWorkInfosLimit(dataMap,pageNo,pageSize);
+                askForLeaveService.querySomeResumeWorkInfo(dataMap,pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.querySomeResumeWorkInfo(dataMap));
+        map.put("count",askForLeaveService.querySomeResumeWorkInfo(dataMap,null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -525,7 +857,14 @@ public class AskForLeaveServlet extends BaseServlet{
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
 
-        int serialnumber = Integer.parseInt(request.getParameter("serialnumber"));
+        String serialnumber_str = request.getParameter("serialnumber");
+        int serialnumber = 0;
+        if(serialnumber_str!=null){
+            if(!serialnumber_str.equals("")){
+                serialnumber = Integer.parseInt(serialnumber_str);
+            }
+        }
+
         HashMap<String, Object> hashMapList = askForLeaveService.queryAHistoryInfo(serialnumber);
 
         //封装成json字符串，通过getWriter().write()返回给页面
@@ -545,24 +884,35 @@ public class AskForLeaveServlet extends BaseServlet{
     public void queryALLHistoryInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
-
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+            if(!curr_str.trim().equals("")){
+                //获取当前页码
+                pageNo =Integer.valueOf(curr_str);
+            }
+        }
+        if(nums_str!=null){
+            if(!nums_str.trim().equals("")){
+                //获取每页显示数量
+                pageSize = Integer.valueOf(nums_str);
+            }
+        }
 
         //获取用户信息，判断访问资源，若非超级用户，则根据单位返回相关信息
         String user_office = request.getParameter("user_office");
         User user = (User) request.getSession().getAttribute("user");
 
         List<HashMap<String, Object>> hashMaps =
-                askForLeaveService.queryALLHistoryInfoLimit(pageNo,pageSize,user);
+                askForLeaveService.queryALLHistoryInfo(user,pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> map = new HashMap<>();
         map.put("code",0);
         map.put("msg","");
-        map.put("count",askForLeaveService.queryALLHistoryInfo(user));
+        map.put("count",askForLeaveService.queryALLHistoryInfo(user,null,null));
         map.put("data",hashMaps);
 
         //以json格式返回给前端
@@ -575,11 +925,22 @@ public class AskForLeaveServlet extends BaseServlet{
     public void querySomeHistoryLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException, ParseException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
-
-        //获取当前页码
-        Integer pageNo =Integer.valueOf(request.getParameter("curr"));
-        //获取每页显示数量
-        Integer pageSize = Integer.valueOf(request.getParameter("nums"));
+        String curr_str = request.getParameter("curr");
+        String nums_str = request.getParameter("nums");
+        Integer pageNo = null;
+        Integer pageSize = null;
+        if(curr_str!=null){
+            if(!curr_str.trim().equals("")){
+             //获取当前页码
+             pageNo =Integer.valueOf(curr_str);
+            }
+        }
+        if(nums_str!=null){
+            if(!nums_str.trim().equals("")){
+             //获取每页显示数量
+             pageSize = Integer.valueOf(nums_str);
+            }
+        }
 
         //获取前端传来的查询参数
         Map<String, String[]> dataMap = request.getParameterMap();

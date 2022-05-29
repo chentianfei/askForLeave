@@ -31,14 +31,14 @@
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width: 120px">配偶籍贯</label>
                         <div class="layui-input-inline" style="width: 100px">
-                            <select name="province" data-area="西藏自治区"
+                            <select name="province" data-area=""
                                     lay-verify="required"
                                     lay-filter="province" lay-search>
                                 <option value="">选择省</option>
                             </select>
                         </div>
                         <div class="layui-input-inline" style="width: 100px">
-                            <select name="city" data-area="日喀则市"
+                            <select name="city" data-area=""
                                     lay-verify="required"
                                     lay-filter="city" lay-search>
                                 <option value="">选择市</option>

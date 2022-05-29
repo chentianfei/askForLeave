@@ -82,78 +82,7 @@
 
         <script type="text/javascript">
 
-            function bind_leader() {
-                layer.open({
-                    type: 2,
-                    title: '填写领导信息',
-                    maxmin: true, //开启最大化最小化按钮
-                    area: ['500px', '300px'],
-                    content: "pages/service/systemInfo/setWords_addAOfficeInfo_bindLeader.jsp",
-                    anim:2,
-                    resize:false,
-                    id:'LAY_layuipro',
-                    btn:['提交','重置'],
-                    yes:function (index, layero) {
-                        //提交按钮的回调
-                        var body = layer.getChildFrame('body', index);
-                        // 找到隐藏的提交按钮模拟点击提交
-                        body.find('#addOfficeLeaderInfoSubmit').click();
-/*
-                        //获取元素值
-                        var office_leader_name = $("#office_leader_name").val();
-                        var office_leader_phone = $("#office_leader_phone").val()
-                        var office_leader_type;
-                        switch ($("#office_leader_type").val()) {
-                            case "chief":
-                                office_leader_type = "正职";
-                                break;
-                            case "deputy":
-                                office_leader_type = "副职";
-                                break;
-                            case "preside":
-                                office_leader_type = "主持工作的副职";
-                                break;
-                        }
-                        //添加一行
-                        var tr = $([
-                            '<tr id="leader'+ index +'">'
 
-                                ,'<td style="text-align:center"> ' + office_leader_name +
-                                '</td>'
-
-                                ,'<td style="text-align:center">'+ office_leader_type +
-                                '</td>'
-
-                                ,'<td style="text-align:center">' + office_leader_phone +
-                                '</td>'
-
-                                ,'<td style="text-align:center">'
-                                    ,'<button class="layui-btn layui-btn-xs layui-btn-danger demo-delete">删除</button>'
-                                ,'</td>'
-
-                            ,'</tr>'
-                        ].join(''));
-
-                        //删除
-                        tr.find('.demo-delete').on('click', function(){
-                            tr.remove();
-                        });
-
-                        $("#leader_table").append(tr);*/
-                    },
-                    btn2: function (index, layero) {
-                        //重置按钮的回调
-                        var body = layer.getChildFrame('body', index);
-                        // 找到隐藏的提交按钮模拟点击提交
-                        body.find('#addSpouseReset').click();
-                        return false;// 开启该代码可禁止点击该按钮关闭
-                    },
-                    cancel: function () {
-                        //右上角关闭回调
-                        //return false 开启该代码可禁止点击该按钮关闭
-                    }
-                });
-            }
 
             layui.use(['laydate','form','common','table'], function() {
                 var form = layui.form;

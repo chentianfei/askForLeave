@@ -24,9 +24,95 @@ layui.use(['form','common'], function () {
 
 });
 
+/**
+ * 遍历表格内容返回数组
+ * @param  Int   id 表格id
+ * @return Array
+ */
+function getTableContent(id){
+    var mytable = document.getElementById(id);
+    var data = [];
+    for(var i=0,rows=mytable.rows.length; i<rows; i++){
+        for(var j=0,cells=mytable.rows[i].cells.length; j<cells; j++){
+            if(!data[i]){
+                data[i] = new Array();
+            }
+            data[i][j] = mytable.rows[i].cells[j].innerHTML;
+        }
+    }
+    return data;
+}
+
+function getLeaderInfoFromLeaderTable(){
+    var mytable = document.getElementById("leader_table");
+    var data = [];
+    for(var i=0,rows=mytable.rows.length; i<rows; i++){
+        /*mytable.rows[i].cells.length-1:不需要最后一个操作的innerhtml*/
+        for(var j=0,cells=mytable.rows[i].cells.length-1; j<cells; j++){
+            if(!data[i]){
+                data[i] = new Array();
+            }
+            data[i][j] = mytable.rows[i].cells[j].innerHTML;
+        }
+    }
+    return data;
+}
+
 layer.config({
     skin:'layui-layer-molv'
 })
+//通过弹窗设置各种人员的籍贯信息
+function setNative(nativeType) {
+    layui.use(['table','upload','laydate','common','element','form',
+        'layer', 'util','laypage'], function(){
+        var common = layui.common;
+        var element = layui.element;
+        var layer = layui.layer;
+        var util = layui.util;
+        var $ = layui.jquery;
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var laypage = layui.laypage;
+        var upload = layui.upload;
+
+        layer.open({
+            type: 2,
+            title: '填写配偶信息',
+            maxmin: true, //开启最大化最小化按钮
+            area: ['500px', '300px'],
+            content: "pages/service/personinfomation/_setNative.jsp",
+            anim:2,
+            resize:false,
+            id:'LAY_layuipro',
+            btn:['提交'],
+            success:function () {
+                $("nativeType:hidden").val(nativeType);
+            },
+            yes:function (index, layero) {
+                //提交按钮的回调
+                var body = layer.getChildFrame('body', index);
+                // 找到隐藏的提交按钮模拟点击提交
+                body.find('#setNativeSubmit').click();
+            },
+            cancel: function () {
+                //右上角关闭回调
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        });
+
+    })
+
+}
+
+//功能未启用提示
+function thisFunctionDoesntStartTips(obj) {
+    layui.use(['layer'], function () {
+            var layer = layui.layer;
+            layer.tips('该功能未启用',obj);
+        }
+    )
+}
 
 //日期字符串中更换年月日为-
 function replaceYMDChinese(YMDChineseStr){

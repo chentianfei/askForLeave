@@ -35,32 +35,7 @@ public class WebUtilsTest {
 
     @Test
     public void stringListTostringArray(){
-        //根据流水号解析请假信息，返回LeaveInfo对象
-        LeaveInfo leaveInfo = askForLeaveDao.queryLeaveInfoBySerialnumber(9);
-        Integer person_id = leaveInfo.getPerson_id();
 
-        //根据人员编号获取该人员Person对象
-        Person person = personDao.queryPersonInfoByID(person_id);
-
-
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATEFORMAT_YMD);
-        //封装短信模板参数数据
-        String name = person.getName();
-        String leaveType = leaveInfo.getLeave_type();
-        String leaveDays = Integer.toString(leaveInfo.getLeave_days_projected());
-        String startDate = simpleDateFormat.format(leaveInfo.getStart_date());
-        String endDateMaybe = simpleDateFormat.format(leaveInfo.getEnd_date_maybe());
-        List<String> templateParamList = new ArrayList<>();
-        templateParamList.add(name);
-        templateParamList.add(leaveType);
-        templateParamList.add(leaveDays);
-        templateParamList.add(startDate);
-        templateParamList.add(endDateMaybe);
-        String[] strings = WebUtils.stringListTostringArray(templateParamList);
-        for(String s:strings){
-            System.out.println(s);
-        }
 
     }
 

@@ -25,26 +25,20 @@ public interface AskForLeaveService {
     List<HashMap<String,Object>> queryOnesHistoryInfoByPersonID(Integer person_id,Integer pageNo,Integer pageSize);
 
     //添加请假信息
-     Integer addLeaveInfo(LeaveInfo leaveInfo);
+    Map<String,Object> addLeaveInfo(LeaveInfo leaveInfo) throws Exception;
     //查询库中所有请假待审核信息
-      List<HashMap<String,Object>> queryAllLeaveInfo();
-    //分页查询库中所有请假待审核信息
-      List<HashMap<String,Object>> queryAllLeaveInfoLimit(int pageNo,int pageSize);
+      List<HashMap<String,Object>> queryAllLeaveInfo(Integer pageNo, Integer pageSize);
     //按条件查询请假待审核信息_不分页
-     List<HashMap<String,Object>> querySomeLeaveInfos(Map<String, String[]> map) throws ParseException;
-    //按条件查询请假待审核信息_分页
-     List<HashMap<String,Object>> querySomeLeaveInfosLimit(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
+     List<HashMap<String,Object>> querySomeLeaveInfos(Map<String, String[]> map,Integer pageNo, Integer pageSize) throws ParseException;
     //根据请假信息解析人员编号，并返回此编号对应的人员信息
      List<HashMap<String,Object>> queryPersonInfoByIdRTNMap(int serialnumber) throws ParseException;
     //处理请假审批中同意业务
-     int agreeLeave(int serialnumber);
+     int agreeLeave(int serialnumber) throws Exception;
     //处理请假审批中不同意业务
      int notAgreeLeave(int serialnumber,String approval_reason);
 
     //查询库中所有待销假信息
-      List<HashMap<String,Object>> queryALLResumeWorkInfo();
-    //分页查询库中所有待销假信息
-      List<HashMap<String,Object>> queryALLResumeWorkInfoLimit(int pageNo,int pageSize);
+      List<HashMap<String,Object>> queryALLResumeWorkInfo(Integer pageNo,Integer pageSize);
     //按条件查询待销假信息_不分页
      List<HashMap<String,Object>> querySomeResumeWorkInfo(Map<String, String[]> map) throws ParseException;
     //按条件查询待销假信息_分页
@@ -58,7 +52,7 @@ public interface AskForLeaveService {
     //根据条件查询所有到假未到岗人员
     List<HashMap<String,Object>> querySomeAllCurrentEOLPerson(Map<String, String[]> map,Integer pageNo,Integer pageSize) throws ParseException;
     //处理销假业务
-     int resumeWork(String serialnumberSTR, String end_leave_remarkSTR,String end_dateSTR,String end_leave_operator) throws ParseException;
+    Map<String, Object> resumeWork(Integer person_id,String serialnumberSTR, String end_leave_remarkSTR,String end_dateSTR,String end_leave_operator) throws Exception;
 
     //查询全部历史请假记录
      List<HashMap<String,Object>> queryALLHistoryInfo(User user);

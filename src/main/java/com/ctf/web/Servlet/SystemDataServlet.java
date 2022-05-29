@@ -29,7 +29,7 @@ import java.util.Map;
 public class SystemDataServlet extends BaseServlet{
 
     SystemDataServiceImpl systemDataService = new SystemDataServiceImpl();
-
+    /*——————————————————处理短信相关业务————————————————*/
     //修改短信提醒天数
     public void updateSmsAlertDays(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -141,8 +141,10 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+    /*——————————————————处理短信相关业务————————————————*/
 
-    //新增单位
+    /*——————————————————处理单位相关业务————————————————*/
+    //新增单位：新增单位基本信息
     public void addAOffice(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -156,23 +158,21 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
-
-    //绑定领导
-    public void bindOfficeLeader(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    //新增领导：根据单位id绑定领导
+    public void bindLeaderForOfficeByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
         //获取前端传来的参数
-        String office_name = request.getParameter("office_name");
+        Map<String, String[]> leaderInfo = request.getParameterMap();
+        Leader leader = WebUtils.fillBean(leaderInfo, Leader.class);
 
-        int code = systemDataService.addAOffice(office_name);
+        int code = systemDataService.bindLeaderForOfficeByOfficeId(leader);
 
         //以json格式返回给前端
         String result_json = new Gson().toJson(code);
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
-
-
     // 删除单位
     public void deleteAOfficeByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -197,7 +197,21 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
-    // 修改单位信息
+    // 删除单位领导
+    public void deleteOfficeLeaderByLeaderId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        String id = request.getParameter("id");
+
+       int code = systemDataService.deleteOfficeLeaderByLeaderId(id);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+    // 修改单位基本信息
     public void updateOfficeInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
@@ -215,19 +229,77 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+    // 修改单位领导信息
+    public void updateOfficeLeaderInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+        //获取前端传来的参数
+        Map<String, String[]> leaderInfo = request.getParameterMap();
+        Leader leader = WebUtils.fillBean(leaderInfo, Leader.class);
 
-    //根据单位id查询单位信息
+        int code = systemDataService.updateOfficeLeaderInfo(leader);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(code);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+
+    //查询所有单位数据
+    public void queryOffice(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
+
+        //判断是否需要分页，即看当前页码和每页显示数量是否有值
+        //获取当前页码
+        Integer pageNo = null;
+        //获取每页显示数量
+        Integer pageSize = null;
+        if(request.getParameter("curr")!=null &&  request.getParameter("nums")!=null){
+
+            if(!request.getParameter("curr").equals("") && !request.getParameter("nums").equals("")){
+                pageNo =Integer.valueOf(request.getParameter("curr"));
+                pageSize = Integer.valueOf(request.getParameter("nums"));
+            }
+        }
+
+        //若非超级用户，则根据单位返回相关信息
+        // String user_office = request.getParameter("user_office");
+
+
+
+        //查询单位信息
+        List<HashMap<String,Object>> hashMapList = systemDataService.queryOffice(pageNo, pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",systemDataService.queryOffice(null, null).size());
+        map.put("data",hashMapList);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+    //根据单位id查询单位基础信息
     public void queryOfficeByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
         //获取前端传来的参数
-        Integer office_id = Integer.parseInt( request.getParameter("office_id"));
+        //获取前端传来的参数
+        int office_id = -1;
+        if(request.getParameter("office_id")!=null){
+            if(!request.getParameter("office_id").trim().equals("")) {
+                office_id = Integer.parseInt(request.getParameter("office_id"));
+            }
+        }
 
         //本次查询在进行分页后返回的数据
         Office office = systemDataService.queryOfficeByOfficeId(office_id);
         List<Office> officeList = new ArrayList<>();
         officeList.add(office);
-
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();
@@ -241,13 +313,17 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
-
     //根据单位id查询单位领导信息
     public void queryOfficeLeaderByOfficeId(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
         request.setCharacterEncoding("utf-8");
         //获取前端传来的参数
-        Integer office_id = Integer.parseInt( request.getParameter("office_id"));
+        int office_id = -1;
+        if(request.getParameter("office_id")!=null){
+            if(!request.getParameter("office_id").trim().equals("")) {
+                office_id = Integer.parseInt(request.getParameter("office_id"));
+            }
+        }
 
         //本次查询在进行分页后返回的数据
         List<Leader> leaderList = systemDataService.queryOfficeLeaderByOfficeId(office_id);
@@ -264,7 +340,9 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+    /*——————————————————处理单位相关业务————————————————*/
 
+    /*——————————————————处理职级相关业务————————————————*/
     //新增职级
     public void addALevelInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -326,7 +404,46 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+    //查询职级数据
+    public void queryLevelInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
 
+        //判断是否需要分页，即看当前页码和每页显示数量是否有值
+        //获取当前页码
+        Integer pageNo = null;
+        //获取每页显示数量
+        Integer pageSize = null;
+        if(request.getParameter("curr")!=null &&  request.getParameter("nums")!=null){
+
+            if(!request.getParameter("curr").equals("") && !request.getParameter("nums").equals("")){
+                pageNo =Integer.valueOf(request.getParameter("curr"));
+                pageSize = Integer.valueOf(request.getParameter("nums"));
+            }
+
+        }
+
+        //若非超级用户，则根据单位返回相关信息
+        //String user_office = request.getParameter("user_office");
+
+        //查询本人基本信息获取返回结果
+        List<Level> levels = systemDataService.queryLevel(pageNo, pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",systemDataService.queryLevel(null, null).size());
+        map.put("data",levels);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+    /*——————————————————处理职级相关业务————————————————*/
+
+    /*——————————————————处理假期类型相关业务————————————————*/
     //新增假期类型
     public void addALeaveType(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -388,7 +505,46 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+    //查询请假类型
+    public void queryLeaveType(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //解决post请求方式获取请求参数的中文乱码问题
+        request.setCharacterEncoding("utf-8");
 
+        //判断是否需要分页，即看当前页码和每页显示数量是否有值
+        //获取当前页码
+        Integer pageNo = null;
+        //获取每页显示数量
+        Integer pageSize = null;
+        if(request.getParameter("curr")!=null &&  request.getParameter("nums")!=null){
+
+            if(!request.getParameter("curr").equals("") && !request.getParameter("nums").equals("")){
+                pageNo =Integer.valueOf(request.getParameter("curr"));
+                pageSize = Integer.valueOf(request.getParameter("nums"));
+            }
+
+        }
+
+        //若非超级用户，则根据单位返回相关信息
+        String user_office = request.getParameter("user_office");
+
+        //查询本人基本信息获取返回结果
+        List<LeaveType> leaveTypes = systemDataService.queryLeaveType(pageNo, pageSize);
+
+        //封装成json字符串，通过getWriter().write()返回给页面
+        Map<String,Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        map.put("count",systemDataService.queryLeaveType(null, null).size());
+        map.put("data",leaveTypes);
+
+        //以json格式返回给前端
+        String result_json = new Gson().toJson(map);
+        response.setContentType("text/html;charset=utf-8");
+        response.getWriter().write(result_json);
+    }
+    /*——————————————————处理假期类型相关业务————————————————*/
+
+    /*——————————————————处理用户相关业务————————————————*/
     //新增用户（创建用户）
     public void addAAccount(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -496,118 +652,6 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
-
-    //查询请假类型
-    public void queryLeaveType(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-
-        //判断是否需要分页，即看当前页码和每页显示数量是否有值
-        //获取当前页码
-        Integer pageNo = null;
-        //获取每页显示数量
-        Integer pageSize = null;
-        if(request.getParameter("curr")!=null &&  request.getParameter("nums")!=null){
-
-            if(!request.getParameter("curr").equals("") && !request.getParameter("nums").equals("")){
-                pageNo =Integer.valueOf(request.getParameter("curr"));
-                pageSize = Integer.valueOf(request.getParameter("nums"));
-            }
-
-        }
-
-        //若非超级用户，则根据单位返回相关信息
-        String user_office = request.getParameter("user_office");
-
-        //查询本人基本信息获取返回结果
-        List<LeaveType> leaveTypes = systemDataService.queryLeaveType(pageNo, pageSize);
-
-        //封装成json字符串，通过getWriter().write()返回给页面
-        Map<String,Object> map = new HashMap<>();
-        map.put("code",0);
-        map.put("msg","哈哈");
-        map.put("count",systemDataService.queryLeaveType(null, null).size());
-        map.put("data",leaveTypes);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(map);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
-    }
-    //查询单位数据
-    public void queryOffice(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-
-        //判断是否需要分页，即看当前页码和每页显示数量是否有值
-        //获取当前页码
-        Integer pageNo = null;
-        //获取每页显示数量
-        Integer pageSize = null;
-        if(request.getParameter("curr")!=null &&  request.getParameter("nums")!=null){
-
-            if(!request.getParameter("curr").equals("") && !request.getParameter("nums").equals("")){
-                pageNo =Integer.valueOf(request.getParameter("curr"));
-                pageSize = Integer.valueOf(request.getParameter("nums"));
-            }
-
-        }
-
-        //若非超级用户，则根据单位返回相关信息
-        //String user_office = request.getParameter("user_office");
-
-        //查询本人基本信息获取返回结果
-        List<Office> offices = systemDataService.queryOffice(pageNo, pageSize);
-
-        //封装成json字符串，通过getWriter().write()返回给页面
-        Map<String,Object> map = new HashMap<>();
-        map.put("code",0);
-        map.put("msg","哈哈");
-        map.put("count",systemDataService.queryOffice(null, null).size());
-        map.put("data",offices);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(map);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
-    }
-    //查询职级数据
-    public void queryLevelInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        //解决post请求方式获取请求参数的中文乱码问题
-        request.setCharacterEncoding("utf-8");
-
-        //判断是否需要分页，即看当前页码和每页显示数量是否有值
-        //获取当前页码
-        Integer pageNo = null;
-        //获取每页显示数量
-        Integer pageSize = null;
-        if(request.getParameter("curr")!=null &&  request.getParameter("nums")!=null){
-
-            if(!request.getParameter("curr").equals("") && !request.getParameter("nums").equals("")){
-                pageNo =Integer.valueOf(request.getParameter("curr"));
-                pageSize = Integer.valueOf(request.getParameter("nums"));
-            }
-
-        }
-
-        //若非超级用户，则根据单位返回相关信息
-        //String user_office = request.getParameter("user_office");
-
-        //查询本人基本信息获取返回结果
-        List<Level> levels = systemDataService.queryLevel(pageNo, pageSize);
-
-        //封装成json字符串，通过getWriter().write()返回给页面
-        Map<String,Object> map = new HashMap<>();
-        map.put("code",0);
-        map.put("msg","");
-        map.put("count",systemDataService.queryLevel(null, null).size());
-        map.put("data",levels);
-
-        //以json格式返回给前端
-        String result_json = new Gson().toJson(map);
-        response.setContentType("text/html;charset=utf-8");
-        response.getWriter().write(result_json);
-    }
     //查询所有用户信息
     public void queryAccountInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //解决post请求方式获取请求参数的中文乱码问题
@@ -680,6 +724,9 @@ public class SystemDataServlet extends BaseServlet{
         response.setContentType("text/html;charset=utf-8");
         response.getWriter().write(result_json);
     }
+    /*——————————————————处理用户相关业务————————————————*/
+
+    /*——————————————————处理民族相关业务————————————————*/
     //查询民族信息
     public void bindNationSelectData(HttpServletRequest request,HttpServletResponse response){
         //通过SystemDataService中的queryLevel获取数据
@@ -693,7 +740,7 @@ public class SystemDataServlet extends BaseServlet{
             e.printStackTrace();
         }
     }
-
+    /*——————————————————处理短信相关业务————————————————*/
 }
 
 

@@ -99,7 +99,6 @@
             </div>
         </div>
 
-
         <%--单位信息表格上方工具栏--%>
         <script type="text/html" id="officeInfoTableToolbar">
             <div class="layui-btn-container">
@@ -110,7 +109,7 @@
         <%--单位信息表格内部工具栏--%>
         <script type="text/html" id="officeInfoTableBaseInfo">
             <a class="layui-btn layui-btn-xs" lay-event="updateOfficeInfo" >修改基础信息</a>
-            <a class="layui-btn layui-btn-xs" lay-event="updateLeaderInfo" >修改领导信息</a>
+            <a class="layui-btn layui-btn-xs" lay-event="updateLeaderInfo" >维护领导信息</a>
             {{# if(d.office_name !== "县委组织部"){ }}
             <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteAOfficeInfo">删除该单位</a>
             {{#  } }}
@@ -205,6 +204,8 @@
                 table.on('tool(officeInfo)', function(obj){
                     var data = obj.data; //获得当前行数据
                     var layEvent = obj.event;
+                    //赋值，以便子页面获取
+                    $("#office_id:hidden").val(data.id);
                     //更新单位信息
                     if(layEvent === 'updateOfficeInfo'){
                         var updateOfficeInfoLayer = layer.open({
@@ -235,32 +236,34 @@
                             }
                         });
                     }
-                    //修改单位领导
+                    //维护领导信息
                     if(layEvent === 'updateLeaderInfo'){
-                        var updateOfficeInfoLayer = layer.open({
+                        var minageLeaderLayer = layer.open({
                             type: 2,
-                            title: '更新单位信息',
+                            title: '维护领导信息',
                             maxmin: true, //开启最大化最小化按钮
-                            area: ['600px', '600px'],
+                            area: ['800px', '600px'],
                             anim:2,
                             id:'LAY_layuipro',
                             resize:false,
-                            content: "pages/service/systemInfo/setWords_updateOfficeInfo.jsp",
-                            btn:['更新','取消'],
-                            success: function (layero, index) {
-                                var body = layer.getChildFrame('body', index);
-                                //赋值，以便子页面获取
-                                $("#office_id").val(data.id);
-                            },
+                            content: "pages/service/systemInfo/setWords_minageLeaderInfo.jsp",
+                            btn:['完成'],
                             yes:function (index, layero) {
-                                var body = layer.getChildFrame('body', index);
-                                body.find('#updateOfficeInfoSubmit').click();
-                            },
-                            btn2: function (index, layero) {
-                                layer.close(updateOfficeInfoLayer);
+                                layer.close(minageLeaderLayer);
+                                //重载表格
+                                table.reload('officeInfo', {
+                                    url: 'systemDataServlet?action=queryOffice'
+                                    ,page: {
+                                        curr: currentPage //重新从第 1 页开始
+                                    }
+                                    ,request: {
+                                        pageName: 'curr' //页码的参数名称，默认：page
+                                        ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                    }
+                                });
                             },
                             cancel: function () {
-                                layer.close(updateOfficeInfoLayer);
+                                layer.close(minageLeaderLayer);
                             }
                         });
                     }

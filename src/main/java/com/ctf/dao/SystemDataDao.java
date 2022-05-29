@@ -144,8 +144,7 @@ public class SystemDataDao extends BaseDao{
 
     //根据工作单位id查询工作单位内容
     public Office queryOfficeByOfficeId(Integer office_id){
-        String sql = "select * from office_info_leader" +
-                " where Integer office_id=? ";
+        String sql = "select * from office_info where id=? ";
         return queryForOne(Office.class,sql,office_id);
     }
 
@@ -172,7 +171,7 @@ public class SystemDataDao extends BaseDao{
 
         for(int index = 0;index <= offices.size()-1; index++){
             Office office = offices.get(index);
-            if(office.getId()==1){
+            if(office.getOffice_name().trim().equals("超级管理员")){
                 //是超级管理员的部门，从结果集中删除后返回
                 offices.remove(index);
                 //index要减1，因为删除后list长度少了一个，所有一直加下去会出现indexoutofboundsException错误
@@ -194,5 +193,63 @@ public class SystemDataDao extends BaseDao{
     public List<Leader> queryOfficeLeaderByOfficeId(Integer office_id) {
         String sql = "select * from office_info_leader where office_id=?";
         return queryForList(Leader.class, sql,office_id);
+    }
+    /*
+     * @Description :根据单位id绑定领导
+     * @param: leader 需要新增的领导信息，封装为Leader对象
+     * @return int 操作码
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:17
+     **/
+    public int bindLeaderForOfficeByOfficeId(Leader leader) {
+        String sql = "insert into office_info_leader(office_id," +
+                "office_leader_name,office_leader_type,office_leader_phone) values(?,?,?,?)";
+
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        parmas.add(leader.getOffice_id());
+        parmas.add(leader.getOffice_leader_name());
+        parmas.add(leader.getOffice_leader_type());
+        parmas.add(leader.getOffice_leader_phone());
+
+        return update(sql,parmas.toArray());
+    }
+    /*
+     * @Description : 修改单位领导信息
+     * @param: leader
+     * @return int
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:34
+     **/
+    public int updateOfficeLeaderInfo(Leader leader) {
+        String sql = "update office_info_leader set office_id=?," +
+                "office_leader_name=?," +
+                "office_leader_type=?," +
+                "office_leader_phone=? " +
+                "where id=?";
+
+        //用于保存可变参数
+        List<Object> parmas = new ArrayList<Object>();
+        parmas.add(leader.getOffice_id());
+        parmas.add(leader.getOffice_leader_name());
+        parmas.add(leader.getOffice_leader_type());
+        parmas.add(leader.getOffice_leader_phone());
+        parmas.add(leader.getId());
+
+
+
+        return update(sql,parmas.toArray());
+    }
+
+    /*
+     * @Description :删除单位领导
+     * @param: id
+     * @return int
+     * @Author tianfeichen
+     * @Date 2022/5/14 15:51
+     **/
+    public int deleteOfficeLeaderByLeaderId(int id) {
+        String sql = "delete from office_info_leader where id=?";
+        return update(sql,id);
     }
 }

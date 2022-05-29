@@ -1,14 +1,12 @@
 package com.ctf.dao;
 
+import com.ctf.bean.Leader;
 import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.LeaveInfoCount;
 import com.ctf.bean.Person;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +18,12 @@ class AskForLeaveDaoTest {
 
     @Test
     public void queryRecentWorkDaysByPersonID() {
-        System.out.println(askForLeaveDao.queryRecentWorkDaysByPersonID(12));
+
+        List<LeaveInfo> leaveInfoList = askForLeaveDao.queryResumeWorkInfoByDate(new Date(), 2);
+        for (LeaveInfo leaveInfo:leaveInfoList) {
+            System.out.println(leaveInfo);
+        }
+
     }
 
 

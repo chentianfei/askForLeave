@@ -45,7 +45,7 @@ public class PersonDao extends BaseDao{
         parmas.add(person.getNativePlace());
         parmas.add(person.getMarriage_status());
         parmas.add(person.getName_spouse());
-        parmas.add(person.getMarriage_status());
+        parmas.add(person.getNativeplace_spouse());
         parmas.add(person.getOffice());
         parmas.add(person.getPost());
         parmas.add(person.getLevel());
@@ -139,9 +139,9 @@ public class PersonDao extends BaseDao{
     }
 
     //根据用户单位返回该单位所有人员的人员编号List
-    public List<Object> queryAllPersonIdByOffice(String office){
-        String sql = "select person_id from person_info where office=?";
-        return queryForOneCol(sql,office);
+    public List<Person> queryPersonByOffice(String office){
+        String sql = "select * from person_info where office=?";
+        return queryForList(Person.class,sql,office);
     }
 
     //查询所有人员信息
@@ -178,7 +178,7 @@ public class PersonDao extends BaseDao{
     //根据条件查询人员
     public List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize) {
         //查询人员信息的基础语句
-        StringBuilder personInfoSQL = new StringBuilder("select person_id from person_info where 1=1 ");
+        StringBuilder personInfoSQL = new StringBuilder("select * from person_info where 1=1 ");
         //用于保存可变参数
         List<Object> params = new ArrayList<Object>();
         /*----------------------------------------------------------------------------------------*/

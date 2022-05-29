@@ -28,9 +28,9 @@
                 <a href="javascript:;">系统设置</a>
                 <dl class="layui-nav-child">
                     <dd><a href="ordinaryPages/service/systemInfo/updatePWD.jsp">修改登录密码</a></dd>
-                    <dd><a href="ordinaryPages/service/systemInfo/setWords.jsp">自定义字段</a></dd>
+                    <dd><a href="ordinaryPages/service/systemInfo/sendlog.jsp">自定义字段</a></dd>
                     <dd><a href="ordinaryPages/service/systemInfo/setAlertDay.jsp">修改短信提醒天数</a></dd>
-                    <dd><a href="ordinaryPages/service/systemInfo/accountInfo.jsp">账号管理</a></dd>
+                    <dd><a href="ordinaryPages/service/systemInfo/upData.jsp">账号管理</a></dd>
                 </dl>
             </li>--%>
         </ul>

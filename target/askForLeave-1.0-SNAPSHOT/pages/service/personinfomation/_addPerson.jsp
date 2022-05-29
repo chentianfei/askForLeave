@@ -22,7 +22,7 @@
                     <div class="layui-input-inline" style="width:400px">
                         <input type="text" name="name" placeholder="请输入"
                                autocomplete=“off”
-                               lay-verify="required" id="username"
+                               lay-verify="required" id="name" name="name"
                                class="layui-input">
                     </div>
                 </div>
@@ -45,6 +45,46 @@
                 </div>
 
                 <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">参公年月</label>
+                    <div class="layui-input-inline" style="width:400px" >
+                        <input type="text" class="layui-input" placeholder="请点击"
+                               autocomplete=“off”
+                               id="start_work_date" name="start_work_date"
+                               lay-verify="required">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">婚姻状态</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="marriage_status" value="未婚" id="spinsterhood" lay-verify="required"
+                               lay-filter="spinsterhood" title="未婚" checked="">
+                        <input type="radio" name="marriage_status" value="已婚" id="married" lay-verify="required"
+                               lay-filter="married" title="已婚">
+                        <input type="radio" name="marriage_status" value="丧偶" id="widowed" lay-verify="required"
+                               lay-filter="widowed" title="丧偶">
+                        <input type="radio" name="marriage_status" value="离异" id="divorced" lay-verify="required"
+                               lay-filter="divorced" title="离异">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">配偶姓名</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <input type="tel" id="name_spouse" name="name_spouse" disabled
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">配偶籍贯</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <input type="tel" id="nativeplace_spouse" name="nativeplace_spouse" disabled
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">民族</label>
                     <div class="layui-input-inline" style="width:400px">
                         <select id="nation" name="nation" lay-verify="required" lay-search>
@@ -53,8 +93,7 @@
                     </div>
                 </div>
 
-
-                <div class="layui-form-item">
+                <div class="layui-form-item" >
                     <div class="layui-inline">
                         <label class="layui-form-label" style="width: 150px">本人籍贯</label>
                         <div class="layui-input-inline" style="width: 120px">
@@ -81,9 +120,8 @@
                     </div>
                 </div>
 
-
                 <div class="layui-form-item">
-                          <label class="layui-form-label" style="width:150px">工作单位</label>
+                    <label class="layui-form-label" style="width:150px">工作单位</label>
                     <div class="layui-input-inline" style="width:400px">
                         <select id="office" name="office" lay-verify="required" lay-search>
                             <option value=""></option>
@@ -164,6 +202,10 @@
                     elem: '#birthDate'//指定元素
                     , type: 'date'
                 });
+                laydate.render({
+                    elem: '#start_work_date'//指定元素
+                    , type: 'date'
+                });
 
                 //数字验证
                 form.verify({
@@ -178,21 +220,70 @@
                 bindNationSelectData();
                 bindOfficeSelectData();
 
+                /*点击已婚，弹窗填信息*/
+                form.on('radio(married)', function(data){
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("未知");
+                    $("#nativeplace_spouse").val("未知");
+                    layer.open({
+                        type: 2,
+                        title: '填写配偶信息',
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['500px', '300px'],
+                        content: "pages/service/personinfomation/_addPerson_addSpouse.jsp",
+                        anim:2,
+                        resize:false,
+                        id:'LAY_layuipro',
+                        btn:['提交'],
+                        yes:function (index, layero) {
+                            //提交按钮的回调
+                            var body = layer.getChildFrame('body', index);
+                            // 找到隐藏的提交按钮模拟点击提交
+                            body.find('#addSpouseSubmit').click();
+                        },
+                        cancel: function () {
+                            //右上角关闭回调
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
+                    });
+                });
+                /*点击未婚，清空配偶信息*/
+                form.on('radio(spinsterhood)', function(data){
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("未婚");
+                    $("#nativeplace_spouse").val("未婚");
+                });
+                /*点击丧偶，清空配偶信息*/
+                form.on('radio(widowed)', function(data){
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("丧偶");
+                    $("#nativeplace_spouse").val("丧偶");
+                });
+                /*点击离异，清空配偶信息*/
+                form.on('radio(divorced)', function(data){
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("离异");
+                    $("#nativeplace_spouse").val("离异");
+                });
+
                 form.on('submit(addPersonSubmit)', function(data){
                     const sourceData = data.field;
 
-                    const area_class = sourceData.area_class;
-                    const birthDate = sourceData.birthDate;
-                    const level = sourceData.level;
                     const name = sourceData.name;
-                    const nation = sourceData.nation;
-                    const office = sourceData.office;
-                    const phone = sourceData.phone;
                     const sex = sourceData.sex;
+                    const nation = sourceData.nation;
+                    const birthDate = sourceData.birthDate;
+                    const start_work_date = sourceData.start_work_date;
+                    const marriage_status = sourceData.marriage_status;
+                    const name_spouse = sourceData.name_spouse;
+                    const nativeplace_spouse = sourceData.nativeplace_spouse;
+                    const office = sourceData.office;
                     const post = sourceData.post;
+                    const area_class = sourceData.area_class;
+                    const level = sourceData.level;
+                    const phone = sourceData.phone;
                     const allow_Leave_Days = sourceData.allow_Leave_Days;
-
-                    //解析解析框中的地址内容
+                    /*--------解析解析框中的地址内容-----*/
                     const city = sourceData.city;
                     const district = sourceData.district;
                     const province = sourceData.province;
@@ -205,24 +296,28 @@
                     let provinceName = address.provinceName;
                     let cityName = address.cityName;
                     let districtName = address.districtName;
-
-                    //解析解析框中的地址内容
+                    //封装地址内容
                     const nativePlace = provinceName + ' ' + cityName + ' ' + districtName;
+                    /*--------解析解析框中的地址内容-----*/
 
                     $.ajax({
                         type : 'POST',
                         url : 'personServlet?action=addAPerson',
                         data : {
-                            name : name,
-                            sex : sex,
-                            nation : nation,
-                            birthDate : birthDate,
+                            name:name,
+                            sex:sex,
+                            nation:nation,
+                            birthDate:birthDate,
+                            start_work_date:start_work_date,
                             nativePlace:nativePlace,
-                            office : office,
-                            post : post,
-                            area_class : area_class,
-                            level : level,
-                            phone : phone,
+                            marriage_status:marriage_status,
+                            name_spouse:name_spouse,
+                            nativeplace_spouse:nativeplace_spouse,
+                            office:office,
+                            post:post,
+                            area_class:area_class,
+                            level:level,
+                            phone:phone,
                             allow_Leave_Days:allow_Leave_Days
                         },
                         dataType : 'json',

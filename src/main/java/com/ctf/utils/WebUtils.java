@@ -5,7 +5,6 @@ import com.ctf.dao.AskForLeaveDao;
 import com.ctf.dao.PersonDao;
 import com.ctf.dao.SystemDataDao;
 
-import com.tencentcloudapi.sms.v20210111.models.*;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -17,19 +16,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import com.tencentcloudapi.common.Credential;
-import com.tencentcloudapi.common.exception.TencentCloudSDKException;
-
-//导入可选配置类
-import com.tencentcloudapi.common.profile.ClientProfile;
-import com.tencentcloudapi.common.profile.HttpProfile;
-
-// 导入对应SMS模块的client
-import com.tencentcloudapi.sms.v20210111.SmsClient;
-
-// 导入要请求接口对应的request response类
-
-// 导入要请求接口对应的request response类
 
 
 /**

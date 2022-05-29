@@ -1,6 +1,8 @@
 package com.ctf.service.impl;
 
+import com.ctf.bean.LeaveInfo;
 import com.ctf.bean.Person;
+import com.ctf.dao.AskForLeaveDao;
 import com.ctf.dao.PersonDao;
 import com.ctf.service.PersonService;
 import com.ctf.utils.ExcelToDatabaseUtils;
@@ -9,10 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description :
@@ -43,7 +42,20 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Integer deletePersonInfoByID(Integer person_id) {
+    public Integer deletePersonInfoByID(Integer person_id,String operator) {
+        AskForLeaveServiceImpl askForLeaveService = new AskForLeaveServiceImpl();
+        AskForLeaveDao askForLeaveDao = new AskForLeaveDao();
+        Person person = personDao.queryPersonInfoByID(person_id);
+        List<LeaveInfo> leaveInfoList = askForLeaveService.queryLeaveInfoByPersonId(person_id);
+        for(LeaveInfo leaveInfo : leaveInfoList){
+            leaveInfo.setStatus("已废除");
+            //修改此人名下的请假备份数据
+            askForLeaveDao.updateBackupLeaveInfo(leaveInfo);
+            //记录日志
+            leaveInfo.setStart_leave_operator(operator);
+            askForLeaveDao.addAnOperateLogOfAskforleave(leaveInfo,"删除","人员："+person.toString()+"被删除，该数据被联动删除");
+        }
+        //删除此人信息
         return personDao.deletePersonInfoByID(person_id);
     }
 
@@ -70,8 +82,9 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<Person> queryAllPerson(Integer pageNo,Integer pageSize,String user_office) {
-        return personDao.queryAllPerson(pageNo, pageSize,user_office);
+    public List<HashMap<String,Object>> queryAllPerson(Integer pageNo,Integer pageSize,String user_office) {
+        List<Person> personList = personDao.queryAllPerson(pageNo, pageSize, user_office);
+        return formatInfo(personList);
     }
 
     @Override
@@ -81,7 +94,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person queryPersonInfoById(Integer person_id) {
-        return personDao.queryPersonInfoByID(person_id);
+        Person person = personDao.queryPersonInfoByID(person_id);
+        return person;
     }
 
     @Override
@@ -125,13 +139,20 @@ public class PersonServiceImpl implements PersonService {
             hashMap.put("sex", person.getSex());
             hashMap.put("nation", person.getNation());
             hashMap.put("birthDate", simpleDateFormat.format(person.getBirthDate()));
+            hashMap.put("start_work_date", simpleDateFormat.format(person.getStart_work_date()));
             hashMap.put("nativePlace", person.getNativePlace());
+
+            hashMap.put("marriage_status", person.getMarriage_status());
+            hashMap.put("name_spouse", person.getName_spouse());
+            hashMap.put("nativeplace_spouse", person.getNativeplace_spouse());
+
             hashMap.put("office", person.getOffice());
             hashMap.put("post", person.getPost());
             hashMap.put("area_class", person.getArea_class());
             hashMap.put("level", person.getLevel());
             hashMap.put("phone", person.getPhone());
             hashMap.put("allow_Leave_Days", person.getAllow_Leave_Days());
+
             mapList.add(hashMap);
         }
         return mapList;

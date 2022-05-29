@@ -21,13 +21,7 @@ public class SendMsgTest {
         System.out.println(SendMsg.querySendMsgObjCode(SendMsg.DOESSENDMSGTOSELF));
     }
 
-    @Test
-    public void sendStatusStatistics() {
-        SendMsg.sendStatusStatistics("2021112800","2021120223",
-                SendMsg.SENDMSGSDKAPPID,
-                10L,
-                0L);
-    }
+
 
     @Test
     public void addSmsTemplate() {

@@ -2,6 +2,7 @@ package com.ctf.service;
 
 import com.ctf.bean.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface SystemDataService {
@@ -22,7 +23,7 @@ public interface SystemDataService {
     // 修改单位信息
     int updateOfficeInfo(Office office);
     //查询office 单位名单
-    List<Office> queryOffice(Integer pageNo,Integer pageSize);
+    List<HashMap<String,Object>> queryOffice(Integer pageNo,Integer pageSize);
     //查询office 单位名单
     Office queryOfficeByOfficeId(Integer office_id);
 
@@ -62,4 +63,10 @@ public interface SystemDataService {
     int querySmsAlertDays();
     //根据单位id查询单位领导信息
     List<Leader> queryOfficeLeaderByOfficeId(Integer office_id);
+    //根据单位id绑定领导
+    int bindLeaderForOfficeByOfficeId(Leader leader);
+    // 修改单位领导信息
+    int updateOfficeLeaderInfo(Leader leader);
+    // 删除单位领导
+    int deleteOfficeLeaderByLeaderId(String id);
 }

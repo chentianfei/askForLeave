@@ -35,7 +35,7 @@
                 <div class="layui-row">
                     <div class="layui-col-md12">
                         <div class="layui-card">
-                            <div class="layui-card-header layui-bg-blue">待审批信息查询</div>
+                            <div class="layui-card-header layui-bg-blue">已请假信息查询</div>
                             <div class="layui-card-body">
                                 <%--查询表单开始--%>
                                 <form class="layui-form layui-form-pane">
@@ -227,7 +227,7 @@
                     <div class="layui-row">
                         <div class="layui-col-md12">
                             <div class="layui-card">
-                                <div class="layui-card-header layui-bg-blue">待审核信息</div>
+                                <div class="layui-card-header layui-bg-blue">已请假信息</div>
                                 <div class="layui-card-body">
 
                                     <%--数据展示--%>
@@ -253,26 +253,16 @@
 <%--表格上方工具栏--%>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+        <button class="layui-btn layui-btn-sm" lay-event="batchDelete" id="batchDelete">批量删除</button>
         <button class="layui-btn layui-btn-primary layui-border-green layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
     </div>
 </script>
 
 <%--表格内部工具栏--%>
 <script type="text/html" id="audit">
-    {{#  if(d.approval_status === "待审批"){ }}
-    <a class="layui-btn layui-btn-xs" lay-event="detail">详细信息</a>
-    <a class="layui-btn layui-btn-xs" lay-event="agree">同意</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="notagree">不同意</a>
-    {{#  } else { }}
-    {{#  if(d.approval_status === "同意"){ }}
-    <a class="layui-btn layui-btn-xs" lay-event="toResumeWorkPage">已通过，点击前往销假页面</a>
-    {{#  } else { }}
-    <a class="layui-btn layui-btn-danger layui-btn-xs">审核未通过</a>
-    {{#  } }}
-    {{#  } }}
-
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="update">修改请假数据</a>
+    <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
 </script>
 
 <script>
@@ -287,6 +277,22 @@
         var form = layui.form;
         var laydate = layui.laydate;
         var laytpl = layui.laytpl;
+        var active = {
+            getCheckData: function(){ //获取选中数据
+                var checkStatus = table.checkStatus('idTest')
+                    ,data = checkStatus.data;
+                layer.alert(JSON.stringify(data));
+            }
+            ,getCheckLength: function(){ //获取选中数目
+                var checkStatus = table.checkStatus('idTest')
+                    ,data = checkStatus.data;
+                layer.msg('选中了：'+ data.length + ' 个');
+            }
+            ,isAll: function(){ //验证是否全选
+                var checkStatus = table.checkStatus('idTest');
+                layer.msg(checkStatus.isAll ? '全选': '未全选')
+            }
+        };
 
         bindLevelSelectData();
         bindNationSelectData();
@@ -324,7 +330,8 @@
             ,limit:5
             ,limits:[5,10,15]
             ,cols: [[
-                {field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
+                {type:'checkbox'}
+                ,{field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 110}
                 ,{field:'name', title:'姓名', align:'center',width:110}
                 ,{field:'office', title:'工作单位', align:'center',width:210}
                 ,{field:'post', title:'现任职务', align:'center',width:210}
@@ -340,8 +347,6 @@
                 ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
                 ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
                 ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
-                ,{field:'approval_status', title:'审批状态', align:'center',width:110}
-                ,{field:'approval_reason', title:'审批理由', align:'center',width:180}
                 ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: 250}
             ]]
             ,page:true
@@ -360,21 +365,23 @@
         //行工具栏事件
         table.on('tool(approval)', function(obj){
             var data = obj.data;
+            //获取当前页码
+            var currentPage = $(".layui-laypage-skip .layui-input").val();
             if(obj.event === "detail"){
                 //发起查询人员详细基本信息的ajax请求
                 $.ajax({
                     type: "post",
-                    url: "askForLeaveServlet?action=queryPersonDetail",
+                    url: "askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumber",
                     data:{
                         serialnumber : data.serialnumber
                     },
                     dataType: 'json',
                     success: function (result) {
-                        let sourceData = result[0];
+                        let sourceData = result;
                         //result包含的person数量
                         layer.open({
                             type: 2,
-                            title: '请假者具体信息',
+                            title: '请假详细信息',
                             maxmin: true,
                             area: ['600px', '600px'],
                             content: "pages/service/approvalLeave/_detail.jsp",
@@ -394,18 +401,23 @@
                                 body.find('#post').val(sourceData.post);
                                 body.find('#level').val(sourceData.level);
                                 body.find('#area_class').val(sourceData.area_class);
-                                body.find('#allow_Leave_Days').val(sourceData.allow_Leave_Days);
-                                //获取领导姓名
-                                let leadersName = new Array();
-                                $.each(sourceData.leader,function (index,ele) {
-                                    leadersName.push(ele.name);
-                                })
-                                if(leadersName.length <= 0){
-                                    body.find('#leader').val("暂未绑定领导");
-                                }else {
-                                    body.find('#leader').val(leadersName);
-                                }
 
+                                body.find('#marriage_status').val(sourceData.marriage_status);
+                                body.find('#name_spouse').val(sourceData.name_spouse);
+                                body.find('#nativeplace_spouse').val(sourceData.nativeplace_spouse);
+
+                                body.find('#allow_Leave_Days').val(sourceData.allow_Leave_Days);
+                                body.find('#leave_type').val(sourceData.leave_type);
+                                body.find('#start_date').val(sourceData.start_date);
+                                body.find('#leave_days_projected').val(sourceData.leave_days_projected);
+                                body.find('#work_leader').val(sourceData.work_leader);
+                                body.find('#leave_reason').val(sourceData.leave_reason);
+                                body.find('#approver').val(sourceData.approver);
+                                body.find('#depart_location').val(sourceData.depart_location);
+                                body.find('#arrive_location').val(sourceData.arrive_location);
+                                body.find('#end_date_maybe').val(sourceData.end_date_maybe);
+                                body.find('#start_leave_remark').val(sourceData.start_leave_remark);
+                                body.find('#start_leave_operator').val(sourceData.start_leave_operator);
                             },
                             yes:function (index, layero) {
                                 //关闭该弹窗
@@ -429,61 +441,104 @@
                     }
                 });
             }
-            else if(obj.event === "agree"){
-                //获取当前页码
-                var currentPage = $(".layui-laypage-skip .layui-input").val();
-                /*ajax开始*/
-                $.ajax({
-                    type: "post",
-                    url: "askForLeaveServlet?action=agreeLeave",
-                    data:{
-                        serialnumber : data.serialnumber
-                    },
-                    dataType: 'json',
-                    success: function (result) {
-                        if(result == 1){
-                            //重载表格
-                            table.reload('approval', {
-                                url: 'askForLeaveServlet?action=queryAllLeaveInfo'
-                                ,page: {
-                                    curr: currentPage//重新从第 1 页开始
+            else if(obj.event === "update"){
+                var updateLeaveInfoLayer = layer.open({
+                    type: 2,
+                    title: '修改请假数据',
+                    maxmin: true, //开启最大化最小化按钮
+                    area: ['600px', '600px'],
+                    content: "pages/service/approvalLeave/_updateLeaveInfoLayer.jsp",
+                    anim:2,
+                    id:'LAY_layuipro',
+                    resize:false,
+                    btn:['修改','取消'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        var iframeWin = window[layero.find('iframe')[0]['name']];
+                        //初始化表单数据的值
+                        body.find("#serialnumber").val(data.serialnumber);
+                        body.find("#nameInput").val(data.name);
+                        body.find("#office").val(data.office);
+                        body.find("#post").val(data.post);
+                        body.find("#phone").val(data.phone);
+                        body.find("#start_date").val(replaceYMDChinese(data.start_date));
+                        body.find("#leave_days_projected").val(data.leave_days_projected);
+                        body.find("#work_leader").val(data.work_leader);
+                        body.find("#leave_reason").val(data.leave_reason);
+                        body.find("#approver").val(data.approver);
+                        body.find("#depart_location").val(data.depart_location);
+                        body.find("#arrive_location").val(data.arrive_location);
+                        body.find("#start_leave_remark").val(data.start_leave_remark);
+
+                        //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
+                        $.ajax({
+                            url: 'systemDataServlet?action=queryLeaveType',
+                            dataType: 'json',
+                            type: 'post',
+                            success: function (result) {
+                                var sourceData = result.data;
+                                if (sourceData !== null) {
+                                    $.each(sourceData, function (index, item) {
+                                        if (data.leave_type == item.leave_type) {
+                                            body.find("#leave_type").append(
+                                                "<option selected>"+data.leave_type+"</option>>"
+                                            );
+                                        } else {
+                                            body.find("#leave_type").append($("<option>").attr("value", item.leave_type).text(item.leave_type));
+                                        }
+                                    });
+                                } else {
+                                    $("#leave_type").append(new Option("暂无数据", ""));
                                 }
-                                ,request: {
-                                    pageName: 'curr' //页码的参数名称，默认：page
-                                    ,limitName: 'nums' //每页数据量的参数名，默认：limit
-                                }
-                            });
-                        }else {
-                            layer.msg('业务提交失败', {
-                                icon : 5
-                            });
-                        }
-                    },
-                    error: function (e) {
-                        // 异常提示
-                        layer.msg('网络故障'+e.status, {
-                            icon : 5
+                                //重新渲染，特别重要，不然写的不起作用
+                                iframeWin.layui.form.render("select");
+                            }
                         });
+
+                    },
+                    yes:function (index, layero) {
+                        //更新按钮的回调
+                        var body = layer.getChildFrame('body', index);
+                        // 找到隐藏的提交按钮模拟点击提交
+                        body.find('#updateLeaveInfoSubmit').click();
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    btn2: function (index, layero) {
+                        //取消按钮的回调
+                        layer.close(updateLeaveInfoLayer);
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    cancel: function () {
+                        layer.close(updateLeaveInfoLayer);
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
                     }
                 });
-                /*ajax结束*/
             }
-            else if(obj.event === "notagree"){
-                //获取当前页码
-                var currentPage = $(".layui-laypage-skip .layui-input").val();
-                layer.prompt({title: '请填写不同意理由', formType: 2},
-                    function(text, index){
+            else if(obj.event === "delete"){
+                layer.prompt(
+                    {title:"请填写删除原因"
+                        ,formType: 2
+                        ,btn:["您的行为将会写入日志，确认删除吗？","取消"]
+                    },
+                    function (val,index2) {
+                        // val 输入值；index2 该窗口索引
                         /*ajax开始*/
                         $.ajax({
                             type: "post",
-                            url: "askForLeaveServlet?action=notAgreeLeave",
+                            url: "askForLeaveServlet?action=deleteALeaveInfoBySerialnumber",
                             data:{
-                                serialnumber : data.serialnumber,
-                                approval_reason : text
+                                serialnumber: data.serialnumber,
+                                delete_reason: val,
+                                delete_operator:"${sessionScope.user.operator}"
                             },
                             dataType: 'json',
                             success: function (result) {
-                                if(result != -1){
+                                if(result.code == 1){
+                                    layer.msg('删除成功', {
+                                        icon : 6
+                                    });
                                     //重载表格
                                     table.reload('approval', {
                                         url: 'askForLeaveServlet?action=queryAllLeaveInfo'
@@ -496,47 +551,82 @@
                                         }
                                     });
                                 }else {
-                                    layer.msg('业务提交失败', {
+                                    layer.msg('业务提交失败:'+result.message, {
                                         icon : 5
                                     });
                                 }
-                                layer.close(index);
                             },
                             error: function (e) {
                                 // 异常提示
                                 layer.msg('网络故障'+e.status, {
                                     icon : 5
                                 });
-                                layer.close(index);
                             }
                         });
                         /*ajax结束*/
-
+                        layer.close(index2);
                     }
-                );
-            }
-            else if(obj.event === "toResumeWorkPage"){
-                //跳转到销假页面
-                window.location.href = "pages/service/endOfLeave/endOfLeave.jsp"
+                    )
             }
         });
 
         //头工具栏事件
         table.on('toolbar(approval)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
+            //获取当前页码
+            var currentPage = $(".layui-laypage-skip .layui-input").val();
             switch(obj.event){
-                case 'batchAgree':
+                case 'batchDelete':
                     var data = checkStatus.data;
-                    $.each(data,function (index,ele) {
-                        console.log(ele.serialnumber);
+                    var serialnumber_set = new Array();
+                    $.each(data,function (index,element) {
+                        var serialnumber = element.serialnumber;
+                        serialnumber_set.push(serialnumber);
                     })
-                    //layer.alert(JSON.stringify(data));
-                    break;
-                case 'batchNotAgree':
-                    var data = checkStatus.data;
-                    $.each(data,function (index,ele) {
-                        console.log(ele.serialnumber);
-                    })
+                    layer.prompt(
+                        {title:"请填写批量删除原因"
+                            ,formType: 2
+                            ,btn:["您的行为将会写入日志，确认删除吗？","取消"]
+                        },
+                        function (val,index2) {
+                            // val 输入值；index2 该窗口索引
+                            /*ajax开始*/
+                            $.ajax({
+                                type: "post",
+                                url: "askForLeaveServlet?action=batchDeleteALeaveInfoBySerialnumber",
+                                data:{
+                                    serialnumber_set: JSON.stringify(serialnumber_set),
+                                    delete_reason: val,
+                                    delete_operator:"${sessionScope.user.operator}"
+                                },
+                                dataType: 'json',
+                                success: function (result) {
+                                    layer.msg('完成，'+result.message, {
+                                        icon : 6
+                                    });
+                                    //重载表格
+                                    table.reload('approval', {
+                                        url: 'askForLeaveServlet?action=queryAllLeaveInfo'
+                                        ,page: {
+                                            curr: currentPage//重新从第 1 页开始
+                                        }
+                                        ,request: {
+                                            pageName: 'curr' //页码的参数名称，默认：page
+                                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                        }
+                                    });
+                                },
+                                error: function (e) {
+                                    // 异常提示
+                                    layer.msg('网络故障'+e.status, {
+                                        icon : 5
+                                    });
+                                }
+                            });
+                            /*ajax结束*/
+                            layer.close(index2);
+                        }
+                    )
                     break;
                 //导出数据
                 case 'export':

@@ -204,8 +204,8 @@
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-primary layui-border-green layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
         <button class="layui-btn layui-btn-sm" lay-event="addAPerson" id="addAPerson">新增人员</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
-        <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>
+        <%--<button class="layui-btn layui-btn-sm" lay-event="batchAddPerson" id="batchAddPerson" >批量新增人员</button>
+        <button class="layui-btn layui-btn-xs" lay-event="uploadBtn" id="uploadBtn" ><i class="layui-icon">&#xe67c;</i>上传</button>--%>
     </div>
 </script>
 
@@ -268,7 +268,7 @@
                 ,{field:'level', title:'职级',align:"center",width: 120}
                 ,{field:'phone', title:'联系电话',align:"center",width: 125}
                 ,{field:'allow_Leave_Days', title:'允许休假天数',align:"center",width: 120}
-                ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:220}
+                ,{fixed: 'right', title:'操作',align:"center", toolbar: '#baseInfo',width:140}
             ]]
             ,page: true
             ,parseData: function(res) { //res 即为原始返回的数据
@@ -362,17 +362,27 @@
                         //console.log(body.html()) //得到iframe页的body内容
 
                         //初始化表单数据的值
+                        /*配偶信息*/
+                        body.find("input[name=marriage_status][value=未婚]").attr("checked", data.marriage_status == "未婚" ? true : false);
+                        body.find("input[name=marriage_status][value=已婚]").attr("checked", data.marriage_status == "已婚" ? true : false);
+                        body.find("input[name=marriage_status][value=丧偶]").attr("checked", data.marriage_status == "丧偶" ? true : false);
+                        body.find("input[name=marriage_status][value=离异]").attr("checked", data.marriage_status == "离异" ? true : false);
+                        body.find("#name_spouse").val(data.name_spouse);
+                        body.find("#nativeplace_spouse").val(data.nativeplace_spouse);
+                        /*本人信息*/
                         body.find("input[name=sex][value=男]").attr("checked", data.sex == "男" ? true : false);
                         body.find("input[name=sex][value=女]").attr("checked", data.sex == "女" ? true : false);
                         body.find("#name").val(data.name);
-                        body.find("#birthDate").val(data.birthDate);
+                        body.find("#birthDate").val(replaceYMDChinese(data.birthDate));
+                        body.find("#start_work_date").val(replaceYMDChinese(data.start_work_date));
                         body.find("#post").val(data.post);
                         body.find("#phone").val(data.phone);
                         body.find("#allow_Leave_Days").val(data.allow_Leave_Days);
                         //为工作类区绑定下拉框
                         body.find("#area_class option[value='" + data.area_class+"']")
                             .attr("selected", "selected");
-                        body.find("#person_id").val(data.person_id)
+                        body.find("#person_id:hidden").val(data.person_id);
+
                         //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
                         $.ajax({
                             url: 'systemDataServlet?action=queryLevelInfo',

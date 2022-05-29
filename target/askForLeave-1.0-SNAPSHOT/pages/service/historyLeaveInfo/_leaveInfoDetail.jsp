@@ -110,13 +110,6 @@
                         </div>
                     </div>
 
-                    <div class="layui-form-item">
-                        <label class="layui-form-label" style="font-size: 11px">相关领导</label>
-                        <div class="layui-input-block">
-                            <input type="text" id="leader" class="layui-input"
-                                   disabled autocomplete="off" >
-                        </div>
-                    </div>
                 </form>
             </div>
         </div>
@@ -150,7 +143,7 @@
                     </div>
 
                     <div class="layui-form-item">
-                        <label class="layui-form-label" style="font-size: 11px">预计到岗日期</label>
+                        <label class="layui-form-label" style="font-size: 11px">预计请假天数</label>
                         <div class="layui-input-block">
                             <input type="text" id="leave_days_projected" class="layui-input"
                                    disabled autocomplete="off" >
@@ -269,11 +262,6 @@
         var laydate = layui.laydate;
         var element = layui.element;
 
-        /*//初始化预计到岗时间
-        laydate.render({
-            elem: '#birthDate'
-            ,format: 'yyyy年MM月dd日'
-        });*/
     })
 </script>
 

@@ -54,17 +54,34 @@
                     </div>
                 </div>
 
+
                 <div class="layui-form-item">
                     <label class="layui-form-label" style="width:150px">婚姻状态</label>
                     <div class="layui-input-block">
-                        <input type="radio" name="marriage_status" value="spinsterhood"
+                        <input type="radio" name="marriage_status" value="未婚" id="spinsterhood" lay-verify="required"
                                lay-filter="spinsterhood" title="未婚" checked="">
-                        <input type="radio" name="marriage_status" value="married"
+                        <input type="radio" name="marriage_status" value="已婚" id="married" lay-verify="required"
                                lay-filter="married" title="已婚">
-                        <input type="radio" name="marriage_status" value="widowed"
+                        <input type="radio" name="marriage_status" value="丧偶" id="widowed" lay-verify="required"
                                lay-filter="widowed" title="丧偶">
-                        <input type="radio" name="marriage_status" value="divorced"
+                        <input type="radio" name="marriage_status" value="离异" id="divorced" lay-verify="required"
                                lay-filter="divorced" title="离异">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">配偶姓名</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <input type="tel" id="name_spouse" name="name_spouse" disabled
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label" style="width:150px">配偶籍贯</label>
+                    <div class="layui-input-inline" style="width:400px">
+                        <input type="tel" id="nativeplace_spouse" name="nativeplace_spouse" disabled
+                               autocomplete="off" class="layui-input">
                     </div>
                 </div>
 
@@ -164,18 +181,6 @@
                     </div>
                 </div>
 
-                <%--接受子页面传来的nativeplace_spouse的值，以便后续发送--%>
-                <input  type="hidden" class="layui-input"
-                        name="nativeplace_spouse"
-                        style="display:none"
-                        id="nativeplace_spouse"  />
-
-                <%--接受name_spouse的值，以便后续发送--%>
-                <input  type="hidden" class="layui-input"
-                        name="name_spouse"
-                        style="display:none"
-                        id="name_spouse"  />
-
                 <button type="submit" class="layui-btn" style="display:none"
                         id="addPersonSubmit" lay-submit lay-filter="addPersonSubmit"></button>
                 <button type="reset" class="layui-btn" style="display:none"
@@ -218,7 +223,10 @@
 
                 /*点击已婚，弹窗填信息*/
                 form.on('radio(married)', function(data){
-                   layer.open({
+                    //清空name_spouse与nativeplace_spouse的值
+                    $("#name_spouse").val("未知");
+                    $("#nativeplace_spouse").val("未知");
+                    layer.open({
                         type: 2,
                         title: '填写配偶信息',
                         maxmin: true, //开启最大化最小化按钮
@@ -227,19 +235,12 @@
                         anim:2,
                         resize:false,
                         id:'LAY_layuipro',
-                        btn:['提交','重置'],
+                        btn:['提交'],
                         yes:function (index, layero) {
                             //提交按钮的回调
                             var body = layer.getChildFrame('body', index);
                             // 找到隐藏的提交按钮模拟点击提交
                             body.find('#addSpouseSubmit').click();
-                        },
-                        btn2: function (index, layero) {
-                            //重置按钮的回调
-                            var body = layer.getChildFrame('body', index);
-                            // 找到隐藏的提交按钮模拟点击提交
-                            body.find('#addSpouseReset').click();
-                            return false;// 开启该代码可禁止点击该按钮关闭
                         },
                         cancel: function () {
                             //右上角关闭回调
@@ -250,20 +251,20 @@
                 /*点击未婚，清空配偶信息*/
                 form.on('radio(spinsterhood)', function(data){
                     //清空name_spouse与nativeplace_spouse的值
-                    $("#name_spouse").val("");
-                    $("#nativeplace_spouse").val("");
+                    $("#name_spouse").val("未婚");
+                    $("#nativeplace_spouse").val("未婚");
                 });
                 /*点击丧偶，清空配偶信息*/
                 form.on('radio(widowed)', function(data){
                     //清空name_spouse与nativeplace_spouse的值
-                    $("#name_spouse").val("");
-                    $("#nativeplace_spouse").val("");
+                    $("#name_spouse").val("丧偶");
+                    $("#nativeplace_spouse").val("丧偶");
                 });
                 /*点击离异，清空配偶信息*/
                 form.on('radio(divorced)', function(data){
                     //清空name_spouse与nativeplace_spouse的值
-                    $("#name_spouse").val("");
-                    $("#nativeplace_spouse").val("");
+                    $("#name_spouse").val("离异");
+                    $("#nativeplace_spouse").val("离异");
                 });
 
                 form.on('submit(addPersonSubmit)', function(data){

@@ -125,7 +125,7 @@
                                                     <div class="layui-form-item">
                                                         <label class="layui-form-label" style="width: 100px">出发地</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <input type="text" name="depart_location"
+                                                            <input type="text" name="depart_location" value="未知"
                                                                    autocomplete="off" lay-verify="required"
                                                                    id="depart_location" placeholder=""
                                                                    class="layui-input">
@@ -136,7 +136,7 @@
                                                         <label class="layui-form-label"
                                                                style="width: 100px">到达地</label>
                                                         <div class="layui-input-inline" style="width: 400px">
-                                                            <input type="text" name="arrive_location"
+                                                            <input type="text" name="arrive_location" value="未知"
                                                                    autocomplete="off" lay-verify="required"
                                                                    id="arrive_location" placeholder=""
                                                                    class="layui-input">
@@ -244,6 +244,8 @@
         <script>
             //全局使用的人员编号
             var person_id_value;
+            var office;
+            var phone;
             var operatorId = "${sessionScope.user.id}";
 
             //全局取消回车默认事件
@@ -409,6 +411,29 @@
                 form.on('select(person_info)', function(data){
                     //给person_id赋值
                     person_id_value = data.value;
+
+                    $.ajax({
+                        type: "post",
+                        url: "personServlet?action=queryPersonInfoByIdRTNList",
+                        data:{
+                            person_id : person_id_value
+                        },
+                        dataType: 'json',
+                        success: function (result) {
+                            console.log(result.data[0]);
+                            let sourceData = result.data[0];
+                            office = sourceData.office;
+                            phone = sourceData.phone;
+                        },
+                        //请求失败，包含具体的错误信息
+                        error: function (e) {
+                            // 异常提示
+                            parent.layer.msg('网络故障', {
+                                icon : 5
+                            });
+                        }
+                    });
+
                     //初始化“查看详情”按钮
                     laytpl(getTemplate).render(person_id_value, function (html) {
                         $('#showPersonDetailDiv').html(html);
@@ -459,6 +484,8 @@
                         ,page : true
                     });
 
+                    //初始化本单位当前请假情况（详情，总人数，请假人数，在岗率）
+
                 });
 
                 //初始化请假种类下拉框
@@ -489,67 +516,122 @@
                     $('#addALeaveInfoSubmit').addClass(DISABLED);
                     $('#addALeaveInfoSubmit').attr('disabled', 'disabled');
 
-                    $.ajax({
-                        url: 'askForLeaveServlet?action=addLeaveInfo',
-                        dataType: 'json',
-                        data: {
-                            name:sourceData.nameInput,
-                            person_id:person_id_value,
-                            leave_type:sourceData.leave_type,
-                            start_date:sourceData.start_date,
-                            leave_days_projected:sourceData.leave_days_projected,
-                            work_leader:sourceData.work_leader,
-                            leave_reason:sourceData.leave_reason,
-                            approver:sourceData.approver,
-                            depart_location:sourceData.depart_location,
-                            arrive_location:sourceData.arrive_location,
-                            start_leave_remark:sourceData.start_leave_remark,
-                            start_leave_operator:"${sessionScope.user.operator}"
-                        },
-                        type: 'post',
-                        success: function (data) {
-                            console.log("data: "+data);
-                            if(data == 1){
-                                layer.msg('操作成功!是否前往审核页面？', {
-                                    icon: 1
-                                    ,time: 0
-                                    ,id: 'LAY_layuipro'
-                                    ,btn: ['前往审核', '继续添加']
-                                    ,yes: function(index){
-                                        //点击了前往审核
-                                        //关闭消息提示
-                                        layer.close(index);
-                                        //点击重置按钮实现重置
-                                        $("#resetBtn").click();
-                                        //跳转到审核页面
-                                        window.location.href = "pages/service/approvalLeave/approvalLeave.jsp"
-                                    }
-                                    ,btn2:function(index){
-                                        //点击了继续添加
-                                        //关闭消息提示
-                                        layer.close(index);
-                                        //撤销样式
-                                        $('#addALeaveInfoSubmit').removeClass(DISABLED);
-                                        $('#addALeaveInfoSubmit').removeAttr('disabled');
-                                        //点击重置按钮实现重置
-                                        $("#resetBtn").click();
-                                    }
-                                });
-                            }else {
-                                layer.msg('业务提交失败', {
+                    var confirmLayer = layer.confirm('确认提交？', {
+                        btn: ['确定','返回'] //按钮
+                    }, function(){
+                        $.ajax({
+                            url: 'askForLeaveServlet?action=addLeaveInfo',
+                            dataType: 'json',
+                            data: {
+                                name:sourceData.nameInput,
+                                person_id:person_id_value,
+                                office:office,
+                                phone:phone,
+                                leave_type:sourceData.leave_type,
+                                start_date:sourceData.start_date,
+                                leave_days_projected:sourceData.leave_days_projected,
+                                work_leader:sourceData.work_leader,
+                                leave_reason:sourceData.leave_reason,
+                                approver:sourceData.approver,
+                                depart_location:sourceData.depart_location,
+                                arrive_location:sourceData.arrive_location,
+                                start_leave_remark:sourceData.start_leave_remark,
+                                start_leave_operator:"${sessionScope.user.operator}"
+                            },
+                            type: 'post',
+                            success: function (data) {
+                                console.log("data: "+data);
+
+                                var leaveInfo = data.leave_info;
+
+                                if(data.code == 1){
+                                    layer.msg('操作成功!', {
+                                        icon: 1
+                                        ,time: 0
+                                        ,id: 'LAY_layuipro'
+                                        ,btn: ['前往打印', '继续添加']
+                                        ,yes: function(index){
+                                            //点击了前往审核
+                                            //关闭消息提示
+                                            layer.close(index);
+                                            //点击重置按钮实现重置
+                                            $("#resetBtn").click();
+                                            //跳转到打印页面
+                                            var printLayer = layer.open({
+                                                type: 2,
+                                                title: '打印回执单',
+                                                maxmin: true, //开启最大化最小化按钮
+                                                area: ['800px', '1000px'],
+                                                content: "pages/service/askForLeave/_print.jsp",
+                                                anim:2,
+                                                id:'LAY_layuipro',
+                                                resize:false,
+                                                btn:['打印','前往待销假页面'],
+                                                success: function (layero, index) {
+                                                    var body = layer.getChildFrame('body', index);
+                                                    //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                                                    var iframeWin = window[layero.find('iframe')[0]['name']];
+                                                    //初始化表单数据的值
+                                                    body.find("#serialnumber").val(leaveInfo.serialnumber);
+                                                    body.find("#name").val(leaveInfo.name);
+                                                    body.find("#leave_type").val(leaveInfo.leave_type);
+                                                    body.find("#leave_days_projected").val(leaveInfo.leave_days_projected);
+                                                    body.find("#start_date1").val(leaveInfo.start_date);
+                                                    body.find("#start_date2").val(leaveInfo.start_date);
+                                                    body.find("#end_date_maybe").val(leaveInfo.end_date_maybe);
+                                                },
+                                                yes:function (index, layero) {
+                                                    //更新按钮的回调
+                                                    var body = layer.getChildFrame('body', index);
+                                                    // 找到隐藏的提交按钮模拟点击提交
+                                                    body.find('#updatePersonSubmit').click();
+                                                    //return false 开启该代码可禁止点击该按钮关闭
+                                                },
+                                                btn2: function (index, layero) {
+                                                    //取消按钮的回调
+                                                    layer.close(printLayer);
+                                                    //return false 开启该代码可禁止点击该按钮关闭
+                                                },
+                                                cancel: function () {
+                                                    layer.close(printLayer);
+                                                    //右上角关闭回调
+                                                    //return false 开启该代码可禁止点击该按钮关闭
+                                                }
+                                            });
+                                        }
+                                        ,btn2:function(index){
+                                            //点击了继续添加
+                                            //关闭消息提示
+                                            layer.close(index);
+                                            //撤销样式
+                                            $('#addALeaveInfoSubmit').removeClass(DISABLED);
+                                            $('#addALeaveInfoSubmit').removeAttr('disabled');
+                                            //点击重置按钮实现重置
+                                            $("#resetBtn").click();
+                                        }
+                                    });
+                                }else {
+                                    layer.msg('业务提交失败，原因：'+data.msg, {
+                                        icon : 5
+                                    });
+                                    $('#addALeaveInfoSubmit').removeClass(DISABLED);
+                                    $('#addALeaveInfoSubmit').removeAttr('disabled');
+                                }
+                            },
+                            error:function(e){
+                                // 异常提示
+                                layer.msg('网络故障'+e.status, {
                                     icon : 5
                                 });
-                                $('#addALeaveInfoSubmit').removeClass(DISABLED);
-                                $('#addALeaveInfoSubmit').removeAttr('disabled');
                             }
-                        },
-                        error:function(e){
-                            // 异常提示
-                            layer.msg('网络故障'+e.status, {
-                                icon : 5
-                            });
-                        }
+                        });
+                    }, function(){
+                        var DISABLED = 'layui-btn-disabled';
+                        $('#addALeaveInfoSubmit').removeClass(DISABLED);
+                        $('#addALeaveInfoSubmit').removeAttr('disabled');
+                        layer.close(confirmLayer);
                     });
+
 
                     return false;
                 });

@@ -260,6 +260,11 @@
             style="display:none"
             id="query_action"  value="queryALLResumeWorkInfo"/>
 
+    <%--接受serialnumber_set的值，以便子页面获取，该数据在操作成功后用于保存批量销假的序列号集合--%>
+    <input  type="hidden" class="layui-input"
+            name="serialnumber_set"
+            style="display:none"
+            id="serialnumber_set" />
 </div>
 
 <%--表格内部工具栏--%>
@@ -271,8 +276,7 @@
 <%--表格上方工具栏--%>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+        <button class="layui-btn layui-btn-sm" lay-event="batchResumeWork" id="batchResumeWork">批量销假</button>
         <button class="layui-btn layui-btn-primary layui-border-green layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
     </div>
 </script>
@@ -326,23 +330,24 @@
             ,limit:5
             ,limits:[5,10,15]
             , cols: [[
-                {field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
+                {type:'checkbox'}
+                ,{field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 110}
                 ,{field:'name', title:'姓名', align:'center',width:110}
                 ,{field:'office', title:'工作单位', align:'center',width:210}
                 ,{field:'post', title:'现任职务', align:'center',width:210}
                 ,{field:'phone', title:'联系电话', align:'center',width:130}
                 ,{field:'leave_type', title:'请假类型', align:'center',width:110}
-                ,{field:'start_date',title:'开始日期',align:'center',width:140}
+                ,{field:'start_date',title:'开始日期',align:"center",width:140}
                 ,{field:'leave_days_projected', title:'请假天数', align:'center',width:90}
-                ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
+                ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:200}
                 ,{field:'leave_reason', title:'请假事由', align:'center',width:160}
+                ,{field:'approver', title:'批准人', align:'center',width:100}
                 ,{field:'depart_location', title:'出发地', align:'center',width:130}
                 ,{field:'arrive_location', title:'到达地', align:'center',width:130}
-                ,{field:'approver', title:'批准人', align:'center',width:100}
-                ,{field:'work_leader', title:'不在岗期间主持工作领导', align:'center',width:200}
-                ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
+                ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
                 ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
-                ,{fixed: 'right', title:'操作', align:'center',id:"toolbar", toolbar: '#audit',width: 165}
+                ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
+                ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: 150}
             ]]
             ,page : true
             ,parseData: function(res) { //res 即为原始返回的数据
@@ -360,11 +365,9 @@
         //行工具栏事件
         table.on('tool(resumeWorkInfo)', function (obj) {
             var data = obj.data;
-
             //给隐藏域赋值，方便子页面取值
             var start_date = data.start_date;
             $("#minDate").val(start_date);
-
             if (obj.event === "endOfLeave") {
                 //获取当前页码
                 let currentPage = $(".layui-laypage-skip .layui-input").val();
@@ -397,8 +400,7 @@
                                         end_leave_operator:"${sessionScope.user.operator}"
                                     },
                                     success: function (result) {
-                                        let code = result.data;
-                                        if(code == 1){
+                                        if(result.code == 1){
                                             //备份与删除成功，调用obj.del()方法删除此行数据，调用table.render（）刷新表格数据
                                             obj.del();
                                             layer.msg('销假成功', {icon: 1,time: 1000});
@@ -435,7 +437,7 @@
                             title: '请输入正确参数',
                             maxmin: true, //开启最大化最小化按钮
                             area:['500px', '500px'],
-                            content: "pages/service/endOfLeave/_endLeaveDate.jsp",
+                            content: "pages/service/endOfLeave/_endLeaveInfo.jsp",
                             anim:2,
                             resize:false,
                             id:'LAY_layuipro',
@@ -493,8 +495,7 @@
                             end_leave_operator:"${sessionScope.user.operator}"
                         },
                         success: function (result) {
-                            let code = result.data;
-                            if(code == 1){
+                            if(result.code == 1){
                                 //备份与删除成功，调用obj.del()方法删除此行数据，调用table.render（）刷新表格数据
                                 obj.del();
                                 layer.msg('销假成功', {icon: 1,time: 1000});
@@ -528,19 +529,43 @@
         table.on('toolbar(resumeWorkInfo)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
-                case 'batchAgree':
+                case 'batchResumeWork':
                     var data = checkStatus.data;
-                    $.each(data,function (index,ele) {
-                        console.log(ele.serialnumber);
+                    //获取批量操作的序列号集合
+                    var serialnumber_set = new Array();
+                    $.each(data,function (index,element) {
+                        var serialnumber = element.serialnumber;
+                        serialnumber_set.push(serialnumber);
                     })
-                    //layer.alert(JSON.stringify(data));
-                    break;
-                case 'batchNotAgree':
-                    var data = checkStatus.data;
-                    $.each(data,function (index,ele) {
-                        console.log(ele.serialnumber);
-                    })
-                    //layer.alert(JSON.stringify(data));
+                    //赋值隐藏域
+                    $("#serialnumber_set:hidden").val(serialnumber_set);
+                    var table_elem_name = $("#table_elem_name:hidden").val();
+                    var query_action = $("#query_action:hidden").val();
+                    layer.open({
+                        type: 2,
+                        title: '请输入相关数据',
+                        maxmin: true, //开启最大化最小化按钮
+                        area:['500px', '500px'],
+                        content: "pages/service/endOfLeave/_setEndLeaveInfoWhenBatch.jsp",
+                        anim:2,
+                        resize:false,
+                        id:'LAY_layuipro',
+                        btn:['提交','取消'],
+                        yes:function (index, layero) {
+                            //提交按钮的回调
+                            var body = layer.getChildFrame('body', index);
+                            // 找到隐藏的提交按钮模拟点击提交
+                            body.find('#batchResumeWorkSubmit').click();
+                        },
+                        btn2:function (index, layero) {
+                          layer.close(index);
+                        },
+                        cancel: function () {
+                            //右上角关闭回调
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        }
+                    });
+
                     break;
                 //导出数据
                 case 'export':

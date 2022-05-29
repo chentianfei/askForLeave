@@ -265,14 +265,14 @@
 <%--表格内部工具栏--%>
 <script type="text/html" id="audit">
     <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="update">修改</a>
     <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
 </script>
 
 <%--表格上方工具栏--%>
 <script type="text/html" id="toolbar">
     <div class="layui-btn-container">
-        <%--<button class="layui-btn layui-btn-sm" lay-event="batchAgree" id="batchAgree">批量同意</button>
-        <button class="layui-btn layui-btn-sm" lay-event="batchNotAgree" id="batchNotAgree" >批量不同意</button>--%>
+        <button class="layui-btn layui-btn-sm" lay-event="batchDelete" id="batchDelete">批量删除</button>
         <button class="layui-btn layui-btn-primary layui-border-green layui-btn-sm" lay-event="export" id="export" >导出当前查询数据</button>
     </div>
 </script>
@@ -333,7 +333,8 @@
             ,limit:5
             ,limits:[5,10,15]
             , cols: [[
-                {field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 80}
+                {type:'checkbox'}
+                ,{field: 'serialnumber', title: '流水号', unresize:true,align:'center',width: 110}
                 ,{field:'name', title:'姓名', align:'center',width:110}
                 ,{field:'office', title:'工作单位', align:'center',width:210}
                 ,{field:'post', title:'现任职务', align:'center',width:210}
@@ -346,14 +347,14 @@
                 ,{field:'approver', title:'批准人', align:'center',width:100}
                 ,{field:'depart_location', title:'出发地', align:'center',width:130}
                 ,{field:'arrive_location', title:'到达地', align:'center',width:130}
-                ,{field:'end_date_maybe',title:'预计到岗日期',align:"center",width:140}
+                ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
                 ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
                 ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
                 ,{field: "end_date", title: '实际到岗日期', align:'center',width:150}
                 ,{field: 'leave_days_actual', title: '实际请假天数', align:'center',width:100}
                 ,{field: 'end_leave_remark', title: '销假备注',align:'center',width:190}
                 ,{field: 'end_leave_operator', title: '销假操作者',align:'center',width:170}
-                ,{fixed: 'right', title: '操作', toolbar: '#audit',id:"toolbar",width: 120}
+                ,{fixed: 'right', title: '操作', toolbar: '#audit',id:"toolbar",width: 170}
             ]]
             ,page : true
             ,parseData: function(res) { //res 即为原始返回的数据
@@ -408,16 +409,6 @@
                                 body.find('#level').val(sourceData.level);
                                 body.find('#area_class').val(sourceData.area_class);
                                 body.find('#allow_Leave_Days').val(sourceData.allow_Leave_Days);
-                                //获取领导姓名
-                                let leadersName = new Array();
-                                $.each(sourceData.leader,function (index,ele) {
-                                    leadersName.push(ele.name);
-                                })
-                                if(leadersName.length <= 0){
-                                    body.find('#leader').val("暂未绑定领导");
-                                }else {
-                                    body.find('#leader').val(leadersName);
-                                }
 
                                 body.find('#serialnumber').val(sourceData.serialnumber);
                                 body.find('#leave_type').val(sourceData.leave_type);
@@ -467,23 +458,22 @@
                 layer.prompt(
                     {title:"请填写删除原因"
                         ,formType: 2
-                        ,btn:["确认删除","取消"]
+                        ,btn:["您的行为将会写入日志，确认删除吗？","取消"]
                     },
                     function (val,index2) {
                         // val 输入值；index2 该窗口索引
                         /*向后台发起ajax请求*/
                         $.ajax({
                             type: "post",
-                            url: "askForLeaveServlet?action=deleteAHistoryInfo",
-                            dataType:"JSON",
+                            url: "askForLeaveServlet?action=deleteAHistoryInfoBySerialnumber",
                             data: {
                                 serialnumber: data.serialnumber,
                                 delete_reason: val,
                                 delete_operator:"${sessionScope.user.operator}"
                             },
+                            dataType:"JSON",
                             success: function (result) {
-                                let code = result.data;
-                                if(code == 1){
+                                if(result.code == 1){
                                     obj.del();
                                     layer.msg('删除成功', {icon: 1,time: 1000});
                                     table.reload('historyInfo', {
@@ -512,25 +502,143 @@
 
 
             }
+            else if(obj.event === "update"){
+                var currentPage = $(".layui-laypage-skip .layui-input").val();
+                console.log(data)
+                var updateLeaveInfoLayer = layer.open({
+                    type: 2,
+                    title: '修改请假数据',
+                    maxmin: true, //开启最大化最小化按钮
+                    area: ['600px', '600px'],
+                    content: "pages/service/historyLeaveInfo/_updateHistoryLeaveInfoLayer.jsp",
+                    anim:2,
+                    id:'LAY_layuipro',
+                    resize:false,
+                    btn:['修改','取消'],
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        var iframeWin = window[layero.find('iframe')[0]['name']];
+                        //初始化表单数据的值
+                        body.find("#serialnumber").val(data.serialnumber);
+                        body.find("#nameInput").val(data.name);
+                        body.find("#office").val(data.office);
+                        body.find("#post").val(data.post);
+                        body.find("#phone").val(data.phone);
+                        body.find("#start_date").val(replaceYMDChinese(data.start_date));
+                        body.find("#leave_days_projected").val(data.leave_days_projected);
+                        body.find("#work_leader").val(data.work_leader);
+                        body.find("#leave_reason").val(data.leave_reason);
+                        body.find("#approver").val(data.approver);
+                        body.find("#depart_location").val(data.depart_location);
+                        body.find("#arrive_location").val(data.arrive_location);
+                        body.find("#start_leave_remark").val(data.start_leave_remark);
+
+                        //通过ajax为弹框页面职级下拉框拉取当前页面数据并绑定数据库中其他数据
+                        $.ajax({
+                            url: 'systemDataServlet?action=queryLeaveType',
+                            dataType: 'json',
+                            type: 'post',
+                            success: function (result) {
+                                var sourceData = result.data;
+                                if (sourceData !== null) {
+                                    $.each(sourceData, function (index, item) {
+                                        if (data.leave_type == item.leave_type) {
+                                            body.find("#leave_type").append(
+                                                "<option selected>"+data.leave_type+"</option>>"
+                                            );
+                                        } else {
+                                            body.find("#leave_type").append($("<option>").attr("value", item.leave_type).text(item.leave_type));
+                                        }
+                                    });
+                                } else {
+                                    $("#leave_type").append(new Option("暂无数据", ""));
+                                }
+                                //重新渲染，特别重要，不然写的不起作用
+                                iframeWin.layui.form.render("select");
+                            }
+                        });
+
+                        body.find("#end_date").val(replaceYMDChinese(data.end_date));
+                        body.find("#end_leave_remark").val(data.end_leave_remark);
+                    },
+                    yes:function (index, layero) {
+                        //更新按钮的回调
+                        var body = layer.getChildFrame('body', index);
+                        // 找到隐藏的提交按钮模拟点击提交
+                        body.find('#updateHistoryInfoSubmit').click();
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    btn2: function (index, layero) {
+                        //取消按钮的回调
+                        layer.close(updateLeaveInfoLayer);
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    cancel: function () {
+                        layer.close(updateLeaveInfoLayer);
+                        //右上角关闭回调
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    }
+                });
+            }
         });
 
         //头工具栏事件
         table.on('toolbar(historyInfo)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
+            var currentPage = $(".layui-laypage-skip .layui-input").val();
             switch(obj.event){
-                case 'batchAgree':
+                case 'batchDelete':
                     var data = checkStatus.data;
-                    $.each(data,function (index,ele) {
-                        console.log(ele.serialnumber);
+                    var serialnumber_set = new Array();
+                    $.each(data,function (index,element) {
+                        var serialnumber = element.serialnumber;
+                        serialnumber_set.push(serialnumber);
                     })
-                    //layer.alert(JSON.stringify(data));
-                    break;
-                case 'batchNotAgree':
-                    var data = checkStatus.data;
-                    $.each(data,function (index,ele) {
-                        console.log(ele.serialnumber);
-                    })
-                    //layer.alert(JSON.stringify(data));
+                    layer.prompt(
+                        {title:"请填写批量删除原因"
+                            ,formType: 2
+                            ,btn:["您的行为将会写入日志，确认删除吗？","取消"]
+                        },
+                        function (val,index2) {
+                            // val 输入值；index2 该窗口索引
+                            /*ajax开始*/
+                            $.ajax({
+                                type: "post",
+                                url: "askForLeaveServlet?action=batchDeleteHistoryInfoBySerialnumber",
+                                data:{
+                                    serialnumber_set: JSON.stringify(serialnumber_set),
+                                    delete_reason: val,
+                                    delete_operator:"${sessionScope.user.operator}"
+                                },
+                                dataType: 'json',
+                                success: function (result) {
+                                    layer.msg('完成，'+result.message, {
+                                        icon : 6
+                                    });
+                                    //重载表格
+                                    table.reload('historyInfo', {
+                                        url: 'askForLeaveServlet?action=queryALLHistoryInfo'
+                                        ,page: {
+                                            curr: currentPage//重新从第 1 页开始
+                                        }
+                                        ,request: {
+                                            pageName: 'curr' //页码的参数名称，默认：page
+                                            ,limitName: 'nums' //每页数据量的参数名，默认：limit
+                                        }
+                                    });
+                                },
+                                error: function (e) {
+                                    // 异常提示
+                                    layer.msg('网络故障'+e.status, {
+                                        icon : 5
+                                    });
+                                }
+                            });
+                            /*ajax结束*/
+                            layer.close(index2);
+                        }
+                    )
                     break;
                 //导出数据
                 case 'export':

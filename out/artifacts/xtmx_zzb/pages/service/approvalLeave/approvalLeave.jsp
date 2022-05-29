@@ -340,8 +340,6 @@
                 ,{field:'end_date_maybe',title:'预计到岗日期',align:'center',width:140}
                 ,{field:'start_leave_remark', title:'请假备注', align:'center',width:190}
                 ,{field:'start_leave_operator', title:'请假操作者', align:'center',width:170}
-                ,{field:'approval_status', title:'审批状态', align:'center',width:110}
-                ,{field:'approval_reason', title:'审批理由', align:'center',width:180}
                 ,{fixed: 'right', title:'操作', align:'center', toolbar: '#audit',width: 250}
             ]]
             ,page:true

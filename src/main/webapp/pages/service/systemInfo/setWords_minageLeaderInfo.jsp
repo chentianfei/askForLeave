@@ -16,6 +16,7 @@
     <form class="layui-form">
         <div style="padding: 10px">
             <%--单位信息--%>
+
             <div class="layui-row">
                 <div class="layui-col-md12">
                     <div class="layui-row">
@@ -26,6 +27,7 @@
                     </div>
                 </div>
             </div>
+
             <%--领导信息--%>
             <div class="layui-row">
                 <div class="layui-col-md12">
@@ -49,6 +51,7 @@
 
         </div>
 
+
         <%--隐藏域--%>
         <div class="layui-form-item">
             <div class="layui-inline">
@@ -57,18 +60,27 @@
             </div>
         </div>
 
+
+        <%--隐藏域--%>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <input  type="hidden" class="layui-input" name="leader_id"
+                        style="display:none" id="leader_id" >
+            </div>
+        </div>
+
     </form>
 
     <%--头部工具--%>
     <script type="text/html" id="toolbar_header">
         <div class="layui-btn-container">
-            <button class="layui-btn layui-btn-sm" lay-event="bindLeader" id="bindLeader">绑定领导</button>
+            <button class="layui-btn layui-btn-sm" lay-event="bindLeader" id="bindLeader">新增领导</button>
         </div>
     </script>
 
-
     <%--行工具--%>
     <script type="text/html" id="toolbar_line">
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="updateLeaderInfo">修改领导信息</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="deleteLeader">删除</a>
     </script>
 
@@ -84,25 +96,33 @@
             var layer = layui.layer;
             var index = parent.layer.getFrameIndex(window.name);
             var office_id = parent.$("#office_id:hidden").val();
+            //给隐藏域传值
+            $("#office_id:hidden").val(office_id);
 
-            //初始化下属信息表
+            //初始化单位信息表
             var office_info_table =table.render({
                 elem: '#office_info'
-                ,url:'personServlet?action=queryOfficeByOfficeId'
+                ,url:'systemDataServlet?action=queryOfficeByOfficeId'
                 ,title: '单位信息表'
                 ,where: {
-                    office_id: office_id
+                    office_id:  office_id
                 }
                 ,cols: [
-                    {field:'id', title:'单位id',align:"center",width:150}
-                    ,{field:'office_name', title:'单位名称',align:"center"}
+                   [
+                       {field:'id', title:'单位id',align:"center",width:150}
+                       ,{field:'office_name', title:'单位名称',align:"center"}
+                   ]
                 ]
+                ,defaultToolbar: []
+                ,text: {
+                    none: '暂未绑定领导，请点击左上角按钮进行绑定' //默认：无数据。
+                }
             });
 
             //初始化领导信息表
             var leader_info_table = table.render({
                 elem: '#leader_info'
-                ,url:'personServlet?action=queryRelatedLeader'
+                ,url:'systemDataServlet?action=queryOfficeLeaderByOfficeId'
                 ,toolbar: '#toolbar_header' //开启头部工具栏，并为其绑定左侧模板
                 ,title: '领导信息表'
                 ,where: {
@@ -110,14 +130,10 @@
                 }
                 ,cols: [
                     [
-                        {field:'name', title:'姓名',align:"center"}
-                        ,{field:'sex', title:'性别',align:"center"}
-                        ,{field:'office', title:'工作单位',align:"center"}
-                        ,{field:'post', title:'现任职务',align:"center"}
-                        ,{field:'phone', title:'联系电话',align:"center"}
-                        ,{fixed: 'right', title:'操作', toolbar: '#toolbar_line',
-                        align:"center",
-                        width:80}
+                        {field:'office_leader_name', title:'单位领导姓名',align:"center"}
+                        ,{field:'office_leader_type', title:'领导属性',align:"center", width:150}
+                        ,{field:'office_leader_phone', title:'联系电话',align:"center", width:120}
+                        ,{fixed: 'right', title:'操作', toolbar: '#toolbar_line',align:"center", width:200}
                     ]
                 ]
                 ,defaultToolbar: []
@@ -139,17 +155,12 @@
                             maxmin: true,
                             btn:['提交'],
                             anim:2,
-                            content: "pages/service/personinfomation/_showRelatedLeader_bindLeader.jsp",
-                            success: function (layero, index) {
-                                var body = parent.layer.getChildFrame('body', index);
-                                //给隐藏域传值
-                                body.find("#subordinate_id").val(subordinate_id);
-                            },
+                            content: "pages/service/systemInfo/setWords_minageLeaderInfo_addLeaderInfo.jsp",
                             yes:function (index, layero) {
                                 var body = parent.layer.getChildFrame('body', index);
 
                                 // 找到隐藏的提交按钮模拟点击提交
-                                body.find('#bindLeaderSubmit').click();
+                                body.find('#addLeaderInfoSubmit').click();
 
                                 //刷新本页面
                                 self.location.reload();
@@ -178,10 +189,9 @@
 
                         $.ajax({
                             type : 'POST',
-                            url : 'personServlet?action=deleteTheLeader',
+                            url : 'systemDataServlet?action=deleteOfficeLeaderByLeaderId',
                             data : {
-                                leader_id : data.person_id,
-                                subordinate_id : subordinate_id
+                                id : data.id
                             },
                             dataType : 'json',
                             success : function(data) {
@@ -191,10 +201,13 @@
                                 });
 
                                 //重载表格
-                                parent.layui.table.reload('personinformation', {
-                                    url: 'personServlet?action=queryAllPerson'
+                                parent.layui.table.reload('leader_info_table', {
+                                    url: 'systemDataServlet?action=queryOfficeLeaderByOfficeId'
                                     ,page: {
                                         curr: currentPage //重新从第 1 页开始
+                                    }
+                                    ,where: {
+                                        office_id: office_id
                                     }
                                     ,request: {
                                         pageName: 'curr' //页码的参数名称，默认：page
@@ -216,6 +229,40 @@
 
                         layer.close(index);
                     });
+                }
+                else if(obj.event === 'updateLeaderInfo'){
+                    var updateOfficeLeaderInfoLayer = layer.open({
+                        type: 2,
+                        title: '更新领导信息',
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['600px', '400px'],
+                        anim:2,
+                        id:'LAY_layuipro',
+                        resize:false,
+                        content: "pages/service/systemInfo/setWords_minageLeaderInfo_updateLeaderInfo.jsp",
+                        btn:['更新','取消'],
+                        success: function (layero, index) {
+                            var body = layer.getChildFrame('body', index);
+                            //赋值，以便子页面取值
+                            $("#leader_id").val(data.id);
+                            //初始化表单数据的值
+                            body.find("#office_leader_name").val(data.office_leader_name);
+                            body.find("#office_leader_phone").val(data.office_leader_phone);
+                            body.find("input[name=office_leader_type][value=正职]").attr("checked", data.office_leader_type == "正职" ? true : false);
+                            body.find("input[name=office_leader_type][value=副职]").attr("checked", data.office_leader_type == "副职" ? true : false);
+                            body.find("input[name=office_leader_type][value=主持工作的副职]").attr("checked", data.office_leader_type == "主持工作的副职" ? true : false);
+                        },
+                        yes:function (index, layero) {
+                            var body = layer.getChildFrame('body', index);
+                            body.find('#updateLeaderInfoSubmit').click();
+                        },
+                        btn2: function (index, layero) {
+                            layer.close(updateOfficeLeaderInfoLayer);
+                        },
+                        cancel: function () {
+                            layer.close(updateOfficeLeaderInfoLayer);
+                        }
+                    })
                 }
             });
 

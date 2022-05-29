@@ -1,6 +1,8 @@
 package com.ctf.bean;
 
 public class Leader{
+    //领导编号
+    private Integer id;
     //单位编号
     private Integer office_id;
     //单位领导姓名【2022年新系统新增】
@@ -10,8 +12,11 @@ public class Leader{
     //单位领导联系方式【2022年新系统新增】
     private String office_leader_phone;
 
-    public Leader(Integer office_id, String office_leader_name,
-                  String office_leader_type, String office_leader_phone) {
+    public Leader() {
+    }
+
+    public Leader(Integer id, Integer office_id, String office_leader_name, String office_leader_type, String office_leader_phone) {
+        this.id = id;
         this.office_id = office_id;
         this.office_leader_name = office_leader_name;
         this.office_leader_type = office_leader_type;
@@ -21,11 +26,20 @@ public class Leader{
     @Override
     public String toString() {
         return "Leader{" +
-                "office_id=" + office_id +
+                "id=" + id +
+                ", office_id=" + office_id +
                 ", office_leader_name='" + office_leader_name + '\'' +
                 ", office_leader_type='" + office_leader_type + '\'' +
                 ", office_leader_phone='" + office_leader_phone + '\'' +
                 '}';
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getOffice_id() {

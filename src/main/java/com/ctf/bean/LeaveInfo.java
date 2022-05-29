@@ -29,30 +29,24 @@ public class  LeaveInfo {
     private String start_leave_remark;//请假备注
     private Date end_date_maybe;//预计到岗日期
     private String start_leave_operator;//请假操作员
-    private String approval_status;//审批状态
-    private String approval_reason;//审批理由
+    private String office;//请假者单位【2022年新系统新增】
+    private String phone;//请假者联系方式【2022年新系统新增】
+    private int does_print;//回执单打印次数【2022年新系统新增】
+    private String status;//事务状态【2022年新系统新增】：使用中，已废除
 
     private Date end_date;//销假日期（实际到岗日期）
     private String end_leave_remark;//销假备注
     private String end_leave_operator;//销假操作员
-    private Integer leave_days_actual;//请假天数（实际请假天数）
-
-
+    private Integer leave_days_actual;//请假天数（实际请假天数）]
 
     public LeaveInfo() {
     }
 
-    public LeaveInfo(Integer serialnumber, String name,
-                     Integer person_id, String leave_type,
-                     Date start_date,
-                     Integer leave_days_projected, String work_leader,
-                     String leave_reason, String approver,
-                     String depart_location, String arrive_location,
-                     String start_leave_remark, Date end_date_maybe,
-                     String start_leave_operator, String approval_status,
-                     Date end_date, String end_leave_remark,
-                     String end_leave_operator, Integer leave_days_actual,
-                     String approval_reason) {
+    public LeaveInfo(Integer serialnumber, String name, Integer person_id, String leave_type, Date start_date,
+                     Integer leave_days_projected, String work_leader, String leave_reason, String approver,
+                     String depart_location, String arrive_location, String start_leave_remark, Date end_date_maybe,
+                     String start_leave_operator, String office, String phone, int does_print, Date end_date,
+                     String end_leave_remark, String end_leave_operator, Integer leave_days_actual,String status) {
         this.serialnumber = serialnumber;
         this.name = name;
         this.person_id = person_id;
@@ -67,54 +61,74 @@ public class  LeaveInfo {
         this.start_leave_remark = start_leave_remark;
         this.end_date_maybe = end_date_maybe;
         this.start_leave_operator = start_leave_operator;
-        this.approval_status = approval_status;
+        this.office = office;
+        this.phone = phone;
+        this.does_print = does_print;
         this.end_date = end_date;
         this.end_leave_remark = end_leave_remark;
         this.end_leave_operator = end_leave_operator;
         this.leave_days_actual = leave_days_actual;
-        this.approval_reason = approval_reason;
+        this.status = status;
     }
 
     @Override
     public String toString() {
         return "LeaveInfo{" +
-                "serialnumber=" + serialnumber +
-                ", name='" + name + '\'' +
-                ", person_id=" + person_id +
-                ", leave_type='" + leave_type + '\'' +
-                ", start_date=" + start_date +
-                ", leave_days_projected=" + leave_days_projected +
-                ", work_leader='" + work_leader + '\'' +
-                ", leave_reason='" + leave_reason + '\'' +
-                ", approver='" + approver + '\'' +
-                ", depart_location='" + depart_location + '\'' +
-                ", arrive_location='" + arrive_location + '\'' +
-                ", start_leave_remark='" + start_leave_remark + '\'' +
-                ", end_date_maybe=" + end_date_maybe +
-                ", start_leave_operator='" + start_leave_operator + '\'' +
-                ", approval_status='" + approval_status + '\'' +
-                ", end_date=" + end_date +
-                ", end_leave_remark='" + end_leave_remark + '\'' +
-                ", end_leave_operator='" + end_leave_operator + '\'' +
-                ", leave_days_actual=" + leave_days_actual +
-                ", approval_reason='" + approval_reason + '\'' +
+                "流水号=" + serialnumber +
+                ", 请假者姓名='" + name + '\'' +
+                ", 人员编号=" + person_id +
+                ", 请假种类='" + leave_type + '\'' +
+                ", 开始日期=" + start_date +
+                ", 预计请假天数=" + leave_days_projected +
+                ", 不在岗期间主持工作领导='" + work_leader + '\'' +
+                ", 请假事由='" + leave_reason + '\'' +
+                ", 批准人='" + approver + '\'' +
+                ", 出发地='" + depart_location + '\'' +
+                ", 到达地='" + arrive_location + '\'' +
+                ", 请假备注='" + start_leave_remark + '\'' +
+                ", 预计到岗日期=" + end_date_maybe +
+                ", 请假操作员='" + start_leave_operator + '\'' +
+                ", 请假者单位='" + office + '\'' +
+                ", 请假者联系方式='" + phone + '\'' +
+                ", 回执单打印次数=" + does_print +
+                ", 事务状态=" + status +
+                ", 销假日期=" + end_date +
+                ", 销假备注='" + end_leave_remark + '\'' +
+                ", 销假操作员='" + end_leave_operator + '\'' +
+                ", 实际请假天数'=" + leave_days_actual +
                 '}';
     }
 
-    public String getApproval_reason() {
-        return approval_reason;
+    public String getStatus() {
+        return status;
     }
 
-    public void setApproval_reason(String approval_reason) {
-        this.approval_reason = approval_reason;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public String getApproval_status() {
-        return approval_status;
+    public String getOffice() {
+        return office;
     }
 
-    public void setApproval_status(String approval_status) {
-        this.approval_status = approval_status;
+    public void setOffice(String office) {
+        this.office = office;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public int getDoes_print() {
+        return does_print;
+    }
+
+    public void setDoes_print(int does_print) {
+        this.does_print = does_print;
     }
 
     public Date getEnd_date() {
