@@ -60,10 +60,10 @@ public class PersonServlet extends BaseServlet{
                         fileName = fileName.substring(index + 1);
                     }
                     //定义上传文件的存放路径
-                    String path = "E:"+File.separator+"uploadFiles"
+                   /* String path = "E:"+File.separator+"uploadFiles"
                             +File.separator+"AskForLeave"
-                            +File.separator+"zbx-jyj";
-                    /*String path = File.separator+"Users"+File.separator+"tianfeichen"+File.separator+"Desktop";*/
+                            +File.separator+"zbx-jyj";*/
+                    String path = File.separator+"Users"+File.separator+"tianfeichen"+File.separator+"Desktop";
                     //定义上传文件的完整路径
                     filePath = String.format("%s"+File.separator+"%s", path, fileName);
 
