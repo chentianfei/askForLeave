@@ -35,6 +35,21 @@
                 <ul class="layui-timeline">
 
                     <li class="layui-timeline-item">
+                        <i class="layui-icon layui-timeline-axis"></i>
+                        <div class="layui-timeline-content layui-text">
+                            <h3 class="layui-timeline-title">2022年6月12日</h3>
+                            <p>修复了一些已知问题、优化部分查询逻辑、上线部分新功能</p>
+                            <ul>
+                                <li>修复了搜索产生的人员信息无法进行数据更新的问题</li>
+                                <li>修复了人员信息搜索无法通过性别搜索的问题</li>
+                                <li>修复了人员信息搜索无法通过性别搜索的问题</li>
+                                <li>优化了历史记录查询界面的数据查询逻辑</li>
+                                <li>新增了请假信息校验，通过为回执单新增信息校验二维码，实现数据校验</li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="layui-timeline-item">
                        <i class="layui-icon layui-timeline-axis"></i>
                         <div class="layui-timeline-content layui-text">
                             <h3 class="layui-timeline-title">2022年5月26日</h3>
@@ -45,6 +60,8 @@
                         </div>
                     </li>
 
+
+                </ul>
             </div>
 
             <%--底部信息--%>

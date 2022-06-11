@@ -55,13 +55,10 @@
 
                 form.render();
                 var serialnumber = parent.$("#serialnumber:hidden").val();
-                var QRCodeURL1 = "http://139.186.143.253:8080/askForLeaveeef17b05f4be5012/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+parent.$("#serialnumber:hidden").val();
-                var QRCodeURL = "http://192.168.1.4:8080/askForLeave_war_exploded/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber;
-                //new QRCode(document.getElementById("qrcode"),QRCodeURL);
 
-               // 带背景色二维码
+                // 带背景色二维码
                 var qrcode = new QRCode(document.getElementById("qrcode"), {
-                    text: "http://192.168.1.4:8080/askForLeave_war_exploded/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber,
+                    text: "http://139.186.143.253:8080/askForLeaveeef17b05f4be5012/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber,
                     width: 90,
                     height: 90,
                     colorDark: "#424242",
