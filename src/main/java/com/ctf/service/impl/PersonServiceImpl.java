@@ -88,8 +88,9 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize) {
-        return personDao.querySomePerson(map,pageNo,pageSize);
+    public List<HashMap<String, Object>> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize) {
+        List<Person> personList = personDao.querySomePerson(map,pageNo,pageSize);
+        return formatInfo(personList);
     }
 
     @Override

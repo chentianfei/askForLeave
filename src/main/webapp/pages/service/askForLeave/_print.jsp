@@ -20,18 +20,23 @@
                     <p>&nbsp;&nbsp;特此批复！</p>
                 </div>
 
-                <div style="width:800px;height:100px;font-family: FangSong_GB2312;font-size: 18px;line-height: 24px">
-                    <p style="text-align: right;margin-right:40px;margin-top:45px;">中共谢通门县委组织部</p>
-                    <p class="date2" style="text-align: right; margin-bottom: 0; margin-right: 70px;"><span id="operate_date"></span></p>
+                <div style="text-align:right;width:800px;height:60px;font-family: FangSong_GB2312;font-size: 18px;line-height: 24px">
+                   <div>
+                        <p style="text-align: right;margin-right:40px;margin-top:45px;">中共谢通门县委组织部</p>
+                        <p class="date2" style="text-align: right; margin-bottom: 0; margin-right: 70px;"><span id="operate_date"></span></p>
+                    </div>
                 </div>
-            </div>
 
-            <div style="float:left;width:500px;height:100px;">
-                <p style="display:inline;"></p>
-                <p style="display:inline;"></p>
-                <p style="display:inline;">备注：此批复拿回单位备案</p>
-            </div>
+                <div id="qrcode" style="position:fixed;top:220px;left:200px;">
+                </div>
 
+                <div >
+                    <p style="display:inline;"></p>
+                    <p style="display:inline;"></p>
+                    <p style="display:inline;">备注：此批复拿回单位备案</p>
+                </div>
+
+            </div>
         </div>
         <!--endprint-->
         <button type="submit" class="layui-btn" style="display:none"
@@ -49,6 +54,20 @@
                 var table = layui.table;
 
                 form.render();
+                var serialnumber = parent.$("#serialnumber:hidden").val();
+                var QRCodeURL1 = "http://139.186.143.253:8080/askForLeaveeef17b05f4be5012/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+parent.$("#serialnumber:hidden").val();
+                var QRCodeURL = "http://192.168.1.4:8080/askForLeave_war_exploded/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber;
+                //new QRCode(document.getElementById("qrcode"),QRCodeURL);
+
+               // 带背景色二维码
+                var qrcode = new QRCode(document.getElementById("qrcode"), {
+                    text: "http://192.168.1.4:8080/askForLeave_war_exploded/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber,
+                    width: 90,
+                    height: 90,
+                    colorDark: "#424242",
+                    colorLight: "#ffffff",
+                    correctLevel: 1 // 二维码结构复杂性 0~3
+                });
 
                 function dayin(){
                     bdhtml=window.document.body.innerHTML;//获取当前页的html代码

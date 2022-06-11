@@ -19,7 +19,8 @@
 <script type="text/javascript" src="static/js/city-picker.js"></script>
 <script type="text/javascript" src="static/js/leave_ctf.js"></script>
 <script type="text/javascript" src="static/js/jutils.min.js"></script>
+<script type="text/javascript" src="static/js/qrcode.js"></script>
 
 <title>谢通门县委组织部请销假管理系统</title>
 
-<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>

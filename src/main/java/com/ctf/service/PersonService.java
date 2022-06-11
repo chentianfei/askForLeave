@@ -1,9 +1,7 @@
 package com.ctf.service;
 
-import com.ctf.bean.Office;
 import com.ctf.bean.Person;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +28,7 @@ public interface PersonService {
     //查询库中所有人员信息
     List<HashMap<String,Object>>  queryAllPerson(Integer pageNo,Integer pageSize,String user_office);
     //根据不定条件查询人员信息
-    List<Person> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize);
+    List<HashMap<String, Object>> querySomePerson(Map<String, String[]> map, Integer pageNo, Integer pageSize);
     //根据人员编号查询单个人员信息
     Person queryPersonInfoById(Integer person_id);
     //根据人员编号查询单个人员信息，返回绑定好领导的list

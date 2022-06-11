@@ -326,8 +326,7 @@ public class PersonServlet extends BaseServlet{
         Map<String, String[]> map = request.getParameterMap();
 
         //本次查询在进行分页后返回的数据
-        List<Person> personList = personService.querySomePerson(map,pageNo,pageSize);
-
+        List<HashMap<String,Object>> personList = personService.querySomePerson(map,pageNo,pageSize);
 
         //封装成json字符串，通过getWriter().write()返回给页面
         Map<String,Object> result = new HashMap<>();

@@ -68,6 +68,111 @@ public class AskForLeaveServlet extends BaseServlet{
          response.getWriter().write(result_json);
      }
 
+     //根据序列号查询一条请假数据（用于二维码扫描后手机端显示）
+     public void queryALeaveInfoForPrintBySerialnumberForQRCode(HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
+         //解决post请求方式获取请求参数的中文乱码问题
+         request.setCharacterEncoding("utf-8");
+
+         String serialnumber_str = request.getParameter("serialnumber");
+         Integer serialnumber = null;
+         if(serialnumber_str!=null){
+             if(!serialnumber_str.trim().equals("")){
+                 serialnumber = Integer.parseInt(serialnumber_str);
+             }
+         }
+
+         HashMap<String, Object> hashMap = askForLeaveService.queryALeaveInfoForPrintBySerialnumber(serialnumber);
+         request.setAttribute("LeaveInfo",hashMap);
+        /* for(Map.Entry<String,Object> entry:hashMap.entrySet()){
+             String key = entry.getKey();
+             Object value = entry.getValue();
+             switch (key){
+                 case "person_id":
+                     request.setAttribute("person_id",value);
+                     break;
+                 case "name":
+                     request.setAttribute("name",value);
+                     break;
+                 case "sex":
+                     request.setAttribute("sex",value);
+                     break;
+                 case "birthDate":
+                     request.setAttribute("birthDate",value);
+                     break;
+                 case "nation":
+                     request.setAttribute("nation",value);
+                     break;
+                 case "nativePlace":
+                     request.setAttribute("nativePlace",value);
+                     break;
+                 case "phone":
+                     request.setAttribute("phone",value);
+                     break;
+                 case "office":
+                     request.setAttribute("office",value);
+                     break;
+                 case "post":
+                     request.setAttribute("post",value);
+                     break;
+                 case "level":
+                     request.setAttribute("level",value);
+                     break;
+                 case "area_class":
+                     request.setAttribute("area_class",value);
+                     break;
+                 case "allow_Leave_Days":
+                     request.setAttribute("allow_Leave_Days",value);
+                     break;
+                 case "marriage_status":
+                     request.setAttribute("marriage_status",value);
+                     break;
+                 case "name_spouse":
+                     request.setAttribute("name_spouse",value);
+                     break;
+                 case "nativeplace_spouse":
+                     request.setAttribute("nativeplace_spouse",value);
+                     break;
+                 case "leave_type":
+                     request.setAttribute("leave_type",value);
+                     break;
+                 case "start_date":
+                     request.setAttribute("start_date",value);
+                     break;
+                 case "leave_days_projected":
+                     request.setAttribute("leave_days_projected",value);
+                     break;
+                 case "work_leader":
+                     request.setAttribute("work_leader",value);
+                     break;
+                 case "leave_reason":
+                     request.setAttribute("leave_reason",value);
+                     break;
+                 case "approver":
+                     request.setAttribute("approver",value);
+                     break;
+                 case "depart_location":
+                     request.setAttribute("depart_location",value);
+                     break;
+                 case "arrive_location":
+                     request.setAttribute("arrive_location",value);
+                     break;
+                 case "end_date_maybe":
+                     request.setAttribute("end_date_maybe",value);
+                     break;
+                 case "start_leave_remark":
+                     request.setAttribute("start_leave_remark",value);
+                     break;
+                 case "start_leave_operator":
+                     request.setAttribute("start_leave_operator",value);
+                     break;
+             }
+         }*/
+
+         String url = "pages/service/askForLeave/_print_detail.jsp";
+         //跳转到指定页面
+         request.getRequestDispatcher(url).forward(request,response);
+     }
+
      //更新请假数据
      public void  updateLeaveInfo(HttpServletRequest request,HttpServletResponse response) throws IOException {
          //解决post请求方式获取请求参数的中文乱码问题

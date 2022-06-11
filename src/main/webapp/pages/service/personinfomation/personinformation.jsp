@@ -55,8 +55,8 @@
                                                 <select name="sex" lay-search autocomplete=“off”>
                                                     <option value=""></option>
                                                     <%--mysql中为enum枚举类型，从1开始--%>
-                                                    <option value="1">男</option>
-                                                    <option value="2">女</option>
+                                                    <option value="男">男</option>
+                                                    <option value="女">女</option>
                                                 </select>
                                             </div>
                                         </div>

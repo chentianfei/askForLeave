@@ -242,6 +242,12 @@
                     style="display:none"
                     id="person_id"  />
 
+            <%--接受serialnumber的值，获取需要向父页面赋值的元素名称--%>
+            <input  type="hidden" class="layui-input"
+                    name="serialnumber"
+                    style="display:none"
+                    id="serialnumber"  />
+
             <%--表格上方工具栏--%>
             <script type="text/html" id="toolbar">
                 <div class="layui-btn-container">
@@ -610,7 +616,6 @@
                             },
                             type: 'post',
                             success: function (data) {
-                                console.log("data: " + data);
                                 var leaveInfo = data.leave_info;
                                 if (data.code == 1) {
                                     var printLayer = layer.msg('操作成功!', {
@@ -619,6 +624,7 @@
                                         , id: 'LAY_layuipro'
                                         , btn: ['前往打印', '返回继续添加']
                                         , yes: function (index) {
+                                            $("#serialnumber:hidden").val(leaveInfo.serialnumber);
                                             $.ajax({
                                                 url: 'askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumber',
                                                 dataType: 'json',

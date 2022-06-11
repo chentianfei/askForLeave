@@ -240,7 +240,7 @@
                     <div class="layui-row">
                         <div class="layui-col-md12">
                             <div class="layui-card">
-                                <div class="layui-card-header layui-bg-blue">历史请假记录</div>
+                                <div class="layui-card-header layui-bg-blue">历史请假记录（只显示当前年度的信息，可通过搜索查询全部信息）</div>
                                 <div class="layui-card-body">
 
                                     <%--数据展示--%>

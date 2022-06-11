@@ -697,8 +697,9 @@ public class AskForLeaveServiceImpl {
         return hashMap;
     }
 
+    //根据序列号查询一条请假数据
     public HashMap<String, Object> queryALeaveInfoForPrintBySerialnumber(Integer serialnumber){
-        LeaveInfo leaveInfo = askForLeaveDao.queryALeaveInfoBySerialnumber(serialnumber);
+        LeaveInfo leaveInfo = askForLeaveDao.queryALeaveInfoBacupsBySerialnumber(serialnumber);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日");
         int person_id = leaveInfo.getPerson_id();
@@ -1269,6 +1270,7 @@ public class AskForLeaveServiceImpl {
      */
     public HashMap<String, Object> queryAHistoryInfo(int serialnumber) {
         LeaveInfo leaveInfo = askForLeaveDao.queryAHistoryInfo(serialnumber);
+        System.out.println(leaveInfo);
         return getInfoRTNMap(leaveInfo);
     }
 

@@ -25,12 +25,24 @@ public class ALoginFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         //返回除去host（域名或者ip）部分的路径
         String uri = req.getRequestURI();
+        String actual_url = req.getServletPath()+req.getQueryString();
+        /*
+        String getServerName()：获取服务器名，localhost；
+        String getServerPort()：获取服务器端口号，8080；
+        String getContextPath()：获取项目名，/Example；
+        String getServletPath()：获取Servlet路径，/AServlet；
+        String getQueryString()：获取参数部分，即问号后面的部分：username=zhangsan
+        String getRequestURI()：获取请求URI，等于项目名+Servlet路径：/Example/AServlet
+        String getRequestURL()：获取请求URL，等于不包含参数的整个请求路径：http://localhost:8080/Example/AServlet
+        String request.getRemoteAddr()：获取服务器的IP，如localhost对应ip为127.0.0.1
+        * */
 
         //如果获取到的路径包含这以下几个：登录页面、登录的servlet、css样式、js代码、验证码实现类，则不拦截放行，如果少了哪个的话，页面会显示不完整，过滤器就会把没有写到下面的资源给拦截了
         if(uri.contains("login.jsp")
                 || uri.contains("/loginServlet")
                 || uri.contains("/static/")
                 || uri.contains("favicon.ico")
+                || actual_url.contains("/askForLeaveServletaction=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber=")
         ){
             //访问登录资源可以直接访问：放行
             chain.doFilter(request, response);

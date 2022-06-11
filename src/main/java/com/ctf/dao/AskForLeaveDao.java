@@ -1266,8 +1266,19 @@ public class AskForLeaveDao extends BaseDao {
 
     //查询所有历史请假记录（已销假数据）（展示历史请假记录用）
     public List<LeaveInfo>  queryALLHistoryInfo(User user,Integer pageNo, Integer pageSize){
+
+        //获取当前年份数据
+        String currentYear = DateUtils.getCurrentYear();
+
+        //生成需求的年份数据
+        String theNextYearDate = currentYear+"-12-31";
+        String thisYearDate = currentYear+"-01-01";
+
         //初始化sql语句
-        StringBuilder sql = new StringBuilder("select * from resume_work r,approval_backups a where a.serialnumber=r.serialnumber ");
+        StringBuilder sql = new StringBuilder("select * from resume_work r,approval_backups a where " +
+                " r.end_date>'" + thisYearDate +"' and r.end_date<'"+theNextYearDate+ "'"+
+                "  and a.serialnumber=r.serialnumber ");
+
         //用于保存可变参数
         List<Object> parmas = new ArrayList<Object>();
         //判断用户角色
