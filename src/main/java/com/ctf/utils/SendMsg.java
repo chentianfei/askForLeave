@@ -23,7 +23,7 @@ public class SendMsg {
     public static final String DOESSENDMSGTOSELF = "doesSendSelfCode";
 
     //短信签名
-    public static final String SIGNNAME_XTMXWZZB = "谢通门县委组织部";
+    public static final String SIGNNAME_XTMXWZZB = "谢通门县人社局";
 
     //请假审批同意后请假者本人收到的短信提醒模板ID
     public static final String TEMPLATEID_TOSELFWHENASKFORLEAVE = "SMS_125023145";
