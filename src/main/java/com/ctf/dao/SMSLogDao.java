@@ -40,7 +40,7 @@ public class SMSLogDao extends BaseDao{
     }
 
     //根据请假流水号  查询  向 今天之前  所有到期未销假人员  发送提醒短信的次数
-    public int queryCountOfAlertsms_history(int SerialNo_askforleave_thisSystem){
+   /* public int queryCountOfAlertsms_history(int SerialNo_askforleave_thisSystem){
         SimpleDateFormat simpleDateFormat =  new SimpleDateFormat("yyyy-MM-dd");
         //当前日期的前一天
         String yesterday = simpleDateFormat.format(DateUtils.addAndSubtractDays(new Date(), -2));
@@ -53,13 +53,14 @@ public class SMSLogDao extends BaseDao{
                 " and TemplateId='"+ SendMsg.TEMPLATEID_ALERTTORETURN_HISTORY+"'";
 
         return queryForList(SMSSendLog.class,sql,SerialNo_askforleave_thisSystem).size();
-    }
+    }*/
+
     //根据请假流水号  查询  向 今天假期到假未销假人员  发送提醒短信的次数
-    public int queryCountOfAlertsms_today(int SerialNo_askforleave_thisSystem){
+   /* public int queryCountOfAlertsms_today(int SerialNo_askforleave_thisSystem){
         String sql = "select * from sms_sendlog where SerialNo_askforleave_thisSystem=? and TemplateId='"
                 + SendMsg.TEMPLATEID_ALERTTORETURN +"'";
 
         return queryForList(SMSSendLog.class,sql,SerialNo_askforleave_thisSystem).size();
-    }
+    }*/
 
 }

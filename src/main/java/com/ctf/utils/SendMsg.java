@@ -16,6 +16,23 @@ import java.util.Date;
 import java.util.Map;
 
 public class SendMsg {
+    //AK信息
+    public static final String accessKeyId="LTAIdXrYjYBMjsvk";
+    //AK信息
+    public static final String accessKeySecret="gagBAEHM1jBsjksCZwAjD36MQkag3L";
+    //短信消息队列名称
+    public static final String queueName="Alicom-Queue-1084226009586079-SmsUp";
+    //云通信产品下的回执消息类型:短信回执
+    public static final String SmsReport = "SmsReport";
+    //云通信产品下的回执消息类型:短信上行
+    public static final String SmsUp = "SmsUp";
+    //云通信产品下的回执消息类型:国际短信回执
+    public static final String GlobeSmsReport = "GlobeSmsReport";
+    //云通信产品下的回执消息类型:语音呼叫
+    public static final String VoiceReport = "VoiceReport";
+    //云通信产品下的回执消息类型:流量直冲
+    public static final String FlowReport = "FlowReport";
+
 
     //是否发送给领导
     public static final String DOESSENDMSGTOLEADER = "doesSendLeaderCode";
@@ -26,19 +43,19 @@ public class SendMsg {
     public static final String SIGNNAME_XTMXWZZB = "谢通门县人社局";
 
     //请假审批同意后请假者本人收到的短信提醒模板ID
-    public static final String TEMPLATEID_TOSELFWHENASKFORLEAVE = "SMS_125023145";
+    public static final String TEMPLATEID_TOSELFWHENASKFORLEAVE = "SMS_134328596";
     //请假审批同意后请假者领导收到的短信提醒模板ID
-    public static final String TEMPLATEID_TOLEADERWHENASKFORLEAVE = "SMS_211245926";
+    public static final String TEMPLATEID_TOLEADERWHENASKFORLEAVE = "SMS_243620431";
     //到假前本人收到的提示短信模板ID
-    public static final String TEMPLATEID_TOSELFFORALERT = "SMS_133260961";
-    //到期未销假（之前）提醒短信（谢通门县）模板ID
+    public static final String TEMPLATEID_TOSELFFORALERT = "SMS_134313442";
+   /* //到期未销假（之前）提醒短信（谢通门县）模板ID
     public static final String TEMPLATEID_ALERTTORETURN_HISTORY = "SMS_235481059";
     //当日到假未到岗提醒短信（谢通门县）ID
-    public static final String TEMPLATEID_ALERTTORETURN = "SMS_235481060";
+    public static final String TEMPLATEID_ALERTTORETURN = "SMS_235481060";*/
     //销假成功后本人收到的短信提醒模板ID
-    public static final String TEMPLATEID_TOSELFWHENRESUMEWORK = "SMS_156466190";
+    public static final String TEMPLATEID_TOSELFWHENRESUMEWORK = "SMS_156471258";
     //销假成功后绑定领导收到的短信提醒模板ID
-    public static final String TEMPLATEID_TOLEADERWHENRESUMEWORK = "SMS_134323450";
+    public static final String TEMPLATEID_TOLEADERWHENRESUMEWORK = "SMS_243640461";
 
 
     //根据发送对象标志查询是否发送的代码
@@ -62,9 +79,9 @@ public class SendMsg {
         //获取阿里云client
         Config config = new Config()
                 // 您的AccessKey ID
-                .setAccessKeyId("LTAIrznzfGI8Nw8W")
+                .setAccessKeyId(accessKeyId)
                 // 您的AccessKey Secret
-                .setAccessKeySecret("URvG5IqMoPIbxGcvq3uArvGm3lwFBp");
+                .setAccessKeySecret(accessKeySecret);
         // 访问的域名
         config.endpoint = "dysmsapi.aliyuncs.com";
         Client client = new Client(config);
@@ -86,9 +103,9 @@ public class SendMsg {
         //获取阿里云client
         Config config = new Config()
                 // 您的AccessKey ID
-                .setAccessKeyId("LTAIrznzfGI8Nw8W")
+                .setAccessKeyId(accessKeyId)
                 // 您的AccessKey Secret
-                .setAccessKeySecret("URvG5IqMoPIbxGcvq3uArvGm3lwFBp");
+                .setAccessKeySecret(accessKeySecret);
         // 访问的域名
         config.endpoint = "dysmsapi.aliyuncs.com";
         Client client = new Client(config);
@@ -110,32 +127,35 @@ public class SendMsg {
     public static String getSMSContent(String templateId,Map<String,String> templateParamList){
         String[] strings = ConvertorALSM.Map2Array(templateParamList);
 
-        if(templateId.equals("SMS_134323450")){
+        if(templateId.equals("SMS_243640461")){
             //销假成功后根据请假流水号给领导发送短信
-            /*尊敬的${name}，您好，您单位${user_work_address}的${name2}已销假，请知悉！*/
+            /* 尊敬的${name}，您好，您单位${user_work_address}的${name2}已销假，请知悉！*/
             return "尊敬的"+strings[0]+"，您好，您单位"+strings[1]+"的"+strings[2]+"已销假，请知悉！";
         }
-        else  if(templateId.equals("SMS_156466190")){
+        else  if(templateId.equals("SMS_156471258")){
             //销假成功后根据请假流水号给本人发送短信
-            /*  ${name}，您好，您已于${time}销假成功，请及时到岗！*/
+            /*${name}，您好，您已于${time}销假成功，请及时到岗！*/
             return  strings[0]+"，您好，您已于"+strings[1]+"销假成功，请及时到岗！";
         }
-        else  if(templateId.equals("SMS_133260961")){
+        else  if(templateId.equals("SMS_134313442")){
             //即将到假时给本人发送提醒短信
-            /*${name}，您好，您的请假时间即将到期，请假时间为${time1}到${time2},请注意及时归假*/
+            /* ${name}，您好，您的请假时间即将到期，请假时间为${time1}到${time2},请注意及时归假*/
             return strings[0]+"，您好，您的请假时间即将到期，请假时间为"+strings[1]+"到"+strings[1]+",请注意及时归假";
         }
-        else  if(templateId.equals("SMS_211245926")){
+        else  if(templateId.equals("SMS_243620431")){
             //请假审批后根据请假流水号给领导发送短信
-           /*  尊敬的${name}，您好，您单位${user_work_address}的${name2}请${kind}假申请已通过审核，
-           请假天数为${day}天，请假时间为${time1}到${time2}，事由：${reason}，请知悉！*/
+            /*
+            尊敬的${name}，您好，您单位${user_work_address}的${name2}请${kind}假申请已通过审核，
+            请假天数为${day}天，请假时间为${time1}到${time2}，事由：${reason}，请知悉！*/
             return   "尊敬的"+strings[0]+"，您好，您单位"+strings[1]+"的"+strings[2]+"请"+strings[3]+"假申请已通过审核，" +
                     "请假天数为"+strings[4]+"天，请假时间为"+strings[5]+"到"+strings[6]+"，事由："+strings[7]+"，请知悉！";
         }
-        else  if(templateId.equals("SMS_125023145")){
+        else  if(templateId.equals("SMS_134328596")){
             //请假审批后根据请假流水号给本人发送短信
-           /*${name}，您好，您的${kind}假申请已通过审核，请假天数为${day}天，
-                请假时间为${time1}到${time2}，请按规定时间归假！*/
+            /*
+            ${name}，您好，您的${kind}假申请已通过审核，请假天数为${day}天，
+            请假时间为${time1}到${time2}，请按规定时间归假！
+            * */
             return  strings[0]+"，您好，您的"+strings[1]+"假申请已通过审核，请假天数为"+strings[2]+"天，" +
                     "请假时间为"+strings[3]+"到"+strings[4]+"，请按规定时间归假！";
         }else {

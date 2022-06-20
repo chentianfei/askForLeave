@@ -143,6 +143,16 @@
                                                     </div>
 
                                                     <div class="layui-form-item">
+                                                        <label class="layui-form-label" style="width: 100px">操作者</label>
+                                                        <div class="layui-input-inline" style="width: 400px">
+                                                            <input type="text" name="start_leave_operator"
+                                                                   autocomplete="off" lay-verify="required"
+                                                                   id="start_leave_operator" placeholder=""
+                                                                   class="layui-input">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="layui-form-item">
                                                         <label class="layui-form-label" style="width: 100px">备注</label>
                                                         <div class="layui-input-inline" style="width: 400px">
                                                             <textarea placeholder="" name="start_leave_remark"
@@ -612,7 +622,7 @@
                                 depart_location:sourceData.depart_location,
                                 arrive_location:sourceData.arrive_location,
                                 start_leave_remark:sourceData.start_leave_remark,
-                                start_leave_operator:"${sessionScope.user.operator}"
+                                start_leave_operator:sourceData.start_leave_operator
                             },
                             type: 'post',
                             success: function (data) {

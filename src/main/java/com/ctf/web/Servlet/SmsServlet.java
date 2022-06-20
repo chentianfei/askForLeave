@@ -99,7 +99,6 @@ public class SmsServlet extends BaseServlet{
     }
 
     public void getReceiveMessageFromOperation(HttpServletRequest request, HttpServletResponse response){
-
         BufferedReader br = null;
         String line = null;
         StringBuilder sb = new StringBuilder();

@@ -3,6 +3,7 @@ package com.ctf.web.Filter;
 import com.ctf.bean.Role;
 import com.ctf.bean.User;
 import com.ctf.dao.UserDao;
+import com.ctf.web.Servlet.ReceiveDemo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,11 +68,9 @@ public class ALoginFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override
     public void destroy() {
-
     }
 }

@@ -39,6 +39,9 @@
         <url-pattern>/quartzInitializer</url-pattern>
     </servlet-mapping>
 
+    <!--启动阿里云短信返回信息监听-->
+   <!-- <listener>
+        <listener-class>com.ctf.web.Listener.AliyunSmsListener</listener-class>
+    </listener>-->
 
-        
 </web-app>

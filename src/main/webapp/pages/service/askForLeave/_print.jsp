@@ -13,7 +13,7 @@
                 <p style="text-align: right; font-weight: bold; margin-right: 70px; margin-bottom: 5px;font-family: KaiTi_GB2312;font-size: 15px">编号:<span id="serialnumber"></span></p>
                 <div style="font-family: FangSong_GB2312;font-size: 18px;line-height: 24px">
                     <p><u id="office_name" style="font-family: FangSong_GB2312"></u>：</p>
-                    <p>&nbsp;&nbsp;经我部批准同意你单位<u id="name"></u>同志请<u id="leave_type"></u>假
+                    <p>&nbsp;&nbsp;经我局批准同意你单位<u id="name"></u>同志请<u id="leave_type"></u>假
                         <u id="leave_days_projected"></u>天
                         ，该同志离岗时间为<u id="start_date1"></u>，假期自<u id="start_date2"></u>起至<u id="end_date_maybe"></u>止
                         。</p>
@@ -22,7 +22,7 @@
 
                 <div style="text-align:right;width:800px;height:60px;font-family: FangSong_GB2312;font-size: 18px;line-height: 24px">
                    <div>
-                        <p style="text-align: right;margin-right:40px;margin-top:45px;">中共谢通门县委组织部</p>
+                        <p style="text-align: right;margin-right:40px;margin-top:45px;">谢通门县人社局</p>
                         <p class="date2" style="text-align: right; margin-bottom: 0; margin-right: 70px;"><span id="operate_date"></span></p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
 
                 // 带背景色二维码
                 var qrcode = new QRCode(document.getElementById("qrcode"), {
-                    text: "http://139.186.143.253:8080/askForLeaveeef17b05f4be5012/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber,
+                    text: "http://139.186.143.253:8080/askForLeave37f22ccdb90f3fb8/askForLeaveServlet?action=queryALeaveInfoForPrintBySerialnumberForQRCode&serialnumber="+serialnumber,
                     width: 90,
                     height: 90,
                     colorDark: "#424242",

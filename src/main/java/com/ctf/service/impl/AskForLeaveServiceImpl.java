@@ -30,8 +30,16 @@ public class AskForLeaveServiceImpl {
     //销假成功后根据请假流水号给领导发送短信
     private List<SendSmsResponse> sendMsgToLeaderBySerialnumberWhenResumeWork(int serialnumber) throws Exception {
         /*
+        xtmx_zzb
         尊敬的${name}，您好，您单位${user_work_address}的${name2}已销假，请知悉！
         */
+
+        /*
+        xtmx_rsj SMS_134319641—>SMS_243640461
+        尊敬的${name}，您好，您单位${user_work_address}的${name2}已销假，请知悉！
+        *
+        * */
+
         List<SendSmsResponse> sendSmsResponseList = new ArrayList<>();
         //此短信模板code
         String TemplateId = SendMsg.TEMPLATEID_TOLEADERWHENRESUMEWORK;
@@ -118,8 +126,14 @@ public class AskForLeaveServiceImpl {
     //销假成功后根据请假流水号给本人发送短信
     private SendSmsResponse sendMsgToSelfBySerialnumberWhenResumeWork(int serialnumber) throws Exception {
          /*
-            ${name}，您好，您已于${time}销假成功，请及时到岗！
+         xtmx_zzb
+         ${name}，您好，您已于${time}销假成功，请及时到岗！
          * */
+
+        /*
+        xtmx_rsj 2 SMS_156471258
+        ${name}，您好，您已于${time}销假成功，请及时到岗！
+        * */
         //此短信模板code
         String TemplateId = SendMsg.TEMPLATEID_TOSELFWHENRESUMEWORK;
         //此方法短信签名
@@ -192,9 +206,13 @@ public class AskForLeaveServiceImpl {
 
     //****即将到假时给本人发送提醒短信
     public SendSmsResponse sendMsgToSelfBySerialnumberForAlert(int serialnumber) throws Exception {
-        /*
+        /* xtmx_zzb
         ${name}，您好，您的请假时间即将到期，请假时间为${time1}到${time2},请注意及时归假
          * */
+
+        /* xtmx_rsj SMS_134313442
+        ${name}，您好，您的请假时间即将到期，请假时间为${time1}到${time2},请注意及时归假
+        * */
         //此短信模板code
         String TemplateId = SendMsg.TEMPLATEID_TOSELFFORALERT;
         //此方法短信签名
@@ -271,10 +289,15 @@ public class AskForLeaveServiceImpl {
 
     //请假审批后根据请假流水号给领导发送短信
     private List<SendSmsResponse> sendMsgToLeaderBySerialnumberWhenAskForLeave(int serialnumber) throws Exception {
-        /*
+        /* xtmx_zzb
         尊敬的${name}，您好，您单位${user_work_address}的${name2}请${kind}假申请已通过审核，
         请假天数为${day}天，请假时间为${time1}到${time2}，事由：${reason}，请知悉！
          * */
+
+        /* xtmx_rsj SMS_211245929->SMS_243620431
+        尊敬的${name}，您好，您单位${user_work_address}的${name2}请${kind}假申请已通过审核，
+        请假天数为${day}天，请假时间为${time1}到${time2}，事由：${reason}，请知悉！
+        * */
         List<SendSmsResponse> sendSmsResponseList = new ArrayList<>();
         //此短信模板code
         String TemplateId = SendMsg.TEMPLATEID_TOLEADERWHENASKFORLEAVE;
@@ -378,9 +401,16 @@ public class AskForLeaveServiceImpl {
     //请假审批后根据请假流水号给本人发送短信
     private SendSmsResponse sendMsgToSelfBySerialnumberWhenAskForLeave(int serialnumber) throws Exception {
        /*
-        aliyun:${name}，您好，您的${kind}假申请已通过审核，请假天数为${day}天，
-                请假时间为${time1}到${time2}，请按规定时间归假！
+        xtmx_zzb
+        ${name}，您好，您的${kind}假申请已通过审核，请假天数为${day}天，
+        请假时间为${time1}到${time2}，请按规定时间归假！
          */
+
+        /*
+        xtmx_rsj SMS_134328596
+        ${name}，您好，您的${kind}假申请已通过审核，请假天数为${day}天，
+        请假时间为${time1}到${time2}，请按规定时间归假！
+        * */
 
         //此短信模板code
         String TemplateId = SendMsg.TEMPLATEID_TOSELFWHENASKFORLEAVE;
@@ -808,7 +838,7 @@ public class AskForLeaveServiceImpl {
             hashMap.put("start_leave_remark",leaveInfo.getStart_leave_remark());
             hashMap.put("start_leave_operator",leaveInfo.getStart_leave_operator());
             //新增提醒短信发送数据
-            hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_history(leaveInfo.getSerialnumber()));
+            /*hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_history(leaveInfo.getSerialnumber()));*/
 
             mapList.add(hashMap);
         }
@@ -927,7 +957,7 @@ public class AskForLeaveServiceImpl {
             hashMap.put("start_leave_remark",leaveInfo.getStart_leave_remark());
             hashMap.put("start_leave_operator",leaveInfo.getStart_leave_operator());
             //新增提醒短信发送数据
-            hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_today(leaveInfo.getSerialnumber()));
+            /*hashMap.put("send_alertsms_count",smsLogDao.queryCountOfAlertsms_today(leaveInfo.getSerialnumber()));*/
 
             mapList.add(hashMap);
         }
